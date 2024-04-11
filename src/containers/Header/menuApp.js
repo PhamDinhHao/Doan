@@ -2,7 +2,7 @@ export const adminMenu = [
     { //hệ thống
         name: 'Tổng quan', menus: [
             {
-                name: 'menu.system.system-administrator.header', link: '/system/user-manage'
+                name: 'menu.system.system-administrator.header', link: '/system/aaaaaa'
                 // subMenus: [
                 //     { name: 'menu.system.system-administrator.user-manage', link: '/system/user-manage' },
                 //     { name: 'menu.system.system-administrator.product-manage', link: '/system/product-manage' },
@@ -10,7 +10,7 @@ export const adminMenu = [
                 // ]
             },
             {
-                name: 'menu.system.system-administrator.user-manage', link: '/system/product-manage'
+                name: 'menu.system.system-administrator.user-manage', link: '/system/aaaa'
             }
 
         ]
@@ -18,7 +18,7 @@ export const adminMenu = [
     {
         name: 'Hàng hóa', menus: [
             {
-                name: 'Danh mục', link: '/system/user-manage'
+                name: 'Danh mục', link: '/system/product'
 
             },
             {
@@ -35,11 +35,11 @@ export const adminMenu = [
     {
         name: 'Giao dịch', menus: [
             {
-                name: 'Đặt hàng', link: '/system/user-manage'
+                name: 'Đặt hàng', link: '/system/order'
 
             },
             {
-                name: 'Hóa đơn', link: '/system/product-manage'
+                name: 'Hóa đơn', link: '/system/receipt'
             }
             ,
             {
@@ -52,11 +52,11 @@ export const adminMenu = [
     {
         name: 'Đối tác', menus: [
             {
-                name: 'Khách hàng', link: '/system/user-manage'
+                name: 'Khách hàng', link: '/system/customer'
 
             },
             {
-                name: 'Nhà cung cấp', link: '/system/product-manage'
+                name: 'Nhà cung cấp', link: '/system/supplier'
             }
 
 
@@ -70,20 +70,20 @@ export const adminMenu = [
     {
         name: 'Báo cáo', menus: [
             {
-                name: 'Bán hàng', link: '/system/user-manage'
+                name: 'Bán hàng', link: '/system/aaa'
 
             },
             {
-                name: 'Đặt hàng', link: '/system/product-manage'
+                name: 'Đặt hàng', link: '/system/aaaa'
             },
             {
-                name: 'Hàng hóa', link: '/system/product-manage'
+                name: 'Hàng hóa', link: '/system/aaaa'
             },
             {
-                name: 'Khách hàng', link: '/system/product-manage'
+                name: 'Khách hàng', link: '/system/aaaa'
             },
             {
-                name: 'Nhà cung cấp', link: '/system/product-manage'
+                name: 'Nhà cung cấp', link: '/system/aaaa'
             },
 
 
