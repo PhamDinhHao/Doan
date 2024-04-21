@@ -3,4 +3,25 @@ const getAllCustomer = (inputid) => {
   return axios.get(`/api/get-all-customer?id=${inputid}`);
 };
 
-export { getAllCustomer };
+const createNewCustomerService = (data) => {
+  return axios.post("/api/create-new-customer", data);
+};
+
+const deleteCustomerService = (customerid) => {
+  return axios.delete("/api/delete-customer", {
+    data: {
+      id: customerid,
+    },
+  });
+};
+
+const editCustomerService = (inputdata) => {
+  return axios.put("/api/edit-customer", inputdata);
+};
+
+export {
+  getAllCustomer,
+  createNewCustomerService,
+  deleteCustomerService,
+  editCustomerService,
+};

@@ -87,7 +87,7 @@ class ModelUpdateSupplier extends Component {
                 size='lg'
                 centered>
                 <ModalHeader toggle={() => { this.toggle() }} >
-                    Create a new user
+                    Update User
                 </ModalHeader>
                 <ModalBody>
                     <div className='modal-supplier-body'>
