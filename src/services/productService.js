@@ -8,9 +8,21 @@ const createNewProductService = (data) => {
   return axios.post("/api/create-new-product", data);
 };
 
+const deleteProductService = (productid) => {
+  return axios.delete("/api/delete-product", {
+    data: {
+      id: productid,
+    },
+  });
+};
+
+const editProductService = (inputdata) => {
+  return axios.put("/api/edit-product", inputdata);
+};
+
 export {
   getAllProducts,
   createNewProductService,
-  // deleteCustomerService,
-  // editCustomerService,
+  deleteProductService,
+  editProductService,
 };

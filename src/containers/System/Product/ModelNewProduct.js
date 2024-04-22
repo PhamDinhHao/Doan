@@ -48,6 +48,7 @@ class ModelNewProduct extends Component {
       ...copyState,
     });
   };
+
   checkValideInput = () => {
     let isValid = true;
     let arrInput = [
