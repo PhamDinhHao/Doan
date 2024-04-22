@@ -6,6 +6,7 @@ import adminReducer from "./adminReducer";
 import userReducer from "./userReducer";
 import supplierReducer from "./supplierReducer";
 import customerReducer from "./customerReducer";
+import productReducer from "./productReducer";
 
 import autoMergeLevel2 from "redux-persist/lib/stateReconciler/autoMergeLevel2";
 import storage from "redux-persist/lib/storage";
@@ -31,4 +32,5 @@ export default (history) =>
     app: appReducer,
     supplier: supplierReducer,
     customer: customerReducer,
+    product: productReducer,
   });
