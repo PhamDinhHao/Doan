@@ -2,6 +2,8 @@ import actionTypes from "./actionTypes";
 import {
   getAllProducts,
   createNewProductService,
+  deleteProductService,
+  editProductService,
 } from "../../services/productService";
 
 export const fetchAllProductsStart = () => {
@@ -55,4 +57,58 @@ export const saveProductSuccess = () => ({
 });
 export const saveProductFailed = () => ({
   type: actionTypes.CREATE_PRODUCT_FAILDED,
+});
+
+export const deleteProduct = (productid) => {
+  return async (dispatch, getState) => {
+    try {
+      let res = await deleteProductService(productid);
+
+      if (res && res.errCode === 0) {
+        // toast.success("delete a new user success") //thu vien toastify
+        dispatch(deleteProductSuccess());
+        dispatch(fetchAllProductsStart());
+      } else {
+        // toast.success("delete a new Supplier error")
+        dispatch(deleteProductFailed());
+      }
+    } catch (error) {
+      // toast.success("delete a new Supplier error")
+      dispatch(deleteProductFailed());
+      console.log("error", error);
+    }
+  };
+};
+export const deleteProductSuccess = () => ({
+  type: actionTypes.DELETE_PRODUCT_SUCCESS,
+});
+export const deleteProductFailed = () => ({
+  type: actionTypes.DELETE_PRODUCT_FAILDED,
+});
+
+export const editProduct = (data) => {
+  return async (dispatch, getState) => {
+    try {
+      let res = await editProductService(data);
+
+      if (res && res.errCode === 0) {
+        // toast.success("update user success") //thu vien toastify
+        dispatch(editProductSuccess());
+        dispatch(fetchAllProductsStart());
+      } else {
+        // toast.success("Edit  user error")
+        dispatch(editProductFailed());
+      }
+    } catch (error) {
+      // toast.success("Edituser error")
+      dispatch(editProductFailed());
+      console.log("error", error);
+    }
+  };
+};
+export const editProductSuccess = () => ({
+  type: actionTypes.EDIT_PRODUCT_SUCCESS,
+});
+export const editProductFailed = () => ({
+  type: actionTypes.EDIT_PRODUCT_FAILDED,
 });

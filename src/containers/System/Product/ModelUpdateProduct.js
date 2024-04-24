@@ -9,43 +9,45 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { emitter } from "../../../utils/emitter";
 import _, { isEmpty } from "lodash";
 
-class ModelUpdateCustomer extends Component {
+class ModelUpdateProduct extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: "",
-      phoneNumber: "",
-      address: "",
-      gender: "",
-      birthday: "",
-      debtCustomer: "",
+      productName: "",
+      category: "",
+      cost: "",
+      sale: "",
+      image: "",
+      quantity: "",
+      description: "",
     };
     this.listenToEmitter();
   }
   listenToEmitter() {
     emitter.on("EVENT_CLEAR_MODAL_DATA", () => {
       this.setState({
-        name: "",
-        phoneNumber: "",
-        address: "",
-        gender: "",
-        birthday: "",
-        debtCustomer: "",
+        productName: "",
+        category: "",
+        cost: "",
+        sale: "",
+        image: "",
+        quantity: "",
+        description: "",
       });
     });
   }
-
   componentDidMount() {
-    let customer = this.props.currentCustomer;
-    if (customer && !isEmpty(customer)) {
+    let product = this.props.currentProduct;
+    if (product && !isEmpty(product)) {
       this.setState({
-        id: customer.id,
-        name: customer.name,
-        phoneNumber: customer.phoneNumber,
-        gender: customer.gender,
-        birthday: customer.birthday,
-        debtCustomer: customer.debtCustomer,
-        address: customer.address,
+        id: product.id,
+        productName: product.productName,
+        category: product.category,
+        cost: product.cost,
+        sale: product.sale,
+        image: product.image,
+        quantity: product.quantity,
+        description: product.description,
       });
     }
   }
@@ -53,6 +55,7 @@ class ModelUpdateCustomer extends Component {
   toggle = () => {
     this.props.toggleFromParent();
   };
+
   handleOnChangeInput = (event, id) => {
     let copyState = { ...this.state };
     copyState[id] = event.target.value;
@@ -60,15 +63,17 @@ class ModelUpdateCustomer extends Component {
       ...copyState,
     });
   };
+
   checkValideInput = () => {
     let isValid = true;
     let arrInput = [
-      "name",
-      "phoneNumber",
-      "address",
-      "debtCustomer",
-      "gender",
-      "birthday",
+      "productName",
+      "category",
+      "cost",
+      "sale",
+      //   "image",
+      "quantity",
+      "description",
     ];
     for (let i = 0; i < arrInput.length; i++) {
       if (!this.state[arrInput[i]]) {
@@ -80,11 +85,11 @@ class ModelUpdateCustomer extends Component {
     return isValid;
   };
 
-  handleUpdateCustomer = () => {
+  handleUpdateProduct = () => {
     let isValid = this.checkValideInput();
     if (isValid == true) {
       //call apicreat modal
-      this.props.editCustomer(this.state);
+      this.props.editProduct(this.state);
     }
   };
 
@@ -104,62 +109,64 @@ class ModelUpdateCustomer extends Component {
             this.toggle();
           }}
         >
-          Create a new user
+          Update product
         </ModalHeader>
         <ModalBody>
           <div className="modal-supplier-body">
             <div className="input-container">
-              <label>Tên khách hàng</label>
-              <input
-                type="text"
-                onChange={(event) => this.handleOnChangeInput(event, "name")}
-                value={this.state.name}
-              ></input>
-            </div>
-            <div className="input-container">
-              <label>Số điện thoại</label>
+              <label>Tên sản phẩm</label>
               <input
                 type="text"
                 onChange={(event) =>
-                  this.handleOnChangeInput(event, "phoneNumber")
+                  this.handleOnChangeInput(event, "productName")
                 }
-                value={this.state.phoneNumber}
+                value={this.state.productName}
               ></input>
             </div>
             <div className="input-container">
-              <label>Số nợ</label>
+              <label>Loại sản phẩm</label>
               <input
                 type="text"
                 onChange={(event) =>
-                  this.handleOnChangeInput(event, "debtCustomer")
+                  this.handleOnChangeInput(event, "category")
                 }
-                value={this.state.debtCustomer}
+                value={this.state.category}
               ></input>
             </div>
             <div className="input-container">
-              <label>Giới Tính</label>
+              <label>Giá mua</label>
               <input
                 type="text"
-                onChange={(event) => this.handleOnChangeInput(event, "gender")}
-                value={this.state.gender}
+                onChange={(event) => this.handleOnChangeInput(event, "cost")}
+                value={this.state.cost}
               ></input>
             </div>
             <div className="input-container">
-              <label>Ngày Sinh</label>
+              <label>Giá bán</label>
               <input
-                type="date"
+                type="text"
+                onChange={(event) => this.handleOnChangeInput(event, "sale")}
+                value={this.state.sale}
+              ></input>
+            </div>
+            <div className="input-container">
+              <label>Số lượng</label>
+              <input
+                type="number"
                 onChange={(event) =>
-                  this.handleOnChangeInput(event, "birthday")
+                  this.handleOnChangeInput(event, "quantity")
                 }
-                value={this.state.birthday}
+                value={this.state.quantity}
               ></input>
             </div>
             <div className="input-container max-width-input">
-              <label>Địa chỉ</label>
+              <label>Mô tả</label>
               <input
                 type="text"
-                onChange={(event) => this.handleOnChangeInput(event, "address")}
-                value={this.state.address}
+                onChange={(event) =>
+                  this.handleOnChangeInput(event, "description")
+                }
+                value={this.state.description}
               ></input>
             </div>
           </div>
@@ -169,7 +176,7 @@ class ModelUpdateCustomer extends Component {
             color="primary"
             className="px-3"
             onClick={() => {
-              this.handleUpdateCustomer();
+              this.handleUpdateProduct();
             }}
           >
             Update
@@ -197,7 +204,4 @@ const mapDispatchToProps = (dispatch) => {
   return {};
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ModelUpdateCustomer);
+export default connect(mapStateToProps, mapDispatchToProps)(ModelUpdateProduct);
