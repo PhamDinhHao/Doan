@@ -2,17 +2,24 @@ import React, { Component } from "react";
 import { FormattedMessage } from "react-intl";
 import { connect } from "react-redux";
 import * as actions from "../../../store/actions";
+import ModelNewProduct from "./ModelNewProduct";
 
 class ProductManage extends Component {
   constructor(props) {
     super(props);
     this.state = {
       productRedux: [],
-      //   isOpenNewCustomer: false,
+      isOpenNewProduct: false,
       //   isOpenModalEditCustomer: false,
       //   customerEdit: {},
     };
   }
+
+  toggleProductModal = () => {
+    this.setState({
+      isOpenNewProduct: !this.state.isOpenNewProduct,
+    });
+  };
 
   componentDidMount() {
     this.props.fetchProductRedux();
@@ -26,17 +33,40 @@ class ProductManage extends Component {
     }
   }
 
+  handleAddNewProduct = () => {
+    this.setState({
+      isOpenNewProduct: true,
+    });
+  };
+
+  createNewProduct = async (data) => {
+    try {
+      let response = await this.props.createNewProductRedux(data);
+      if (response && response.errCode !== 0) {
+        alert(response.errMessage);
+      } else {
+        this.setState({
+          isOpenNewProduct: false,
+        });
+        // emitter.emit("EVENT_CLEAR_MODAL_DATA", { id: "your id" });
+      }
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   render() {
     // return <div className="text-center">Manage products</div>;
     let arrProducts = this.state.productRedux;
     return (
       <div>
-        {/* <ModelNewCustomer
-          isOpen={this.state.isOpenNewCustomer}
-          toggleFromParent={this.toggleCustomerModal}
-          createNewCustomer={this.createNewCustomer}
+        <ModelNewProduct
+          isOpen={this.state.isOpenNewProduct}
+          toggleFromParent={this.toggleProductModal}
+          createNewProduct={this.createNewProduct}
         />
-        {this.state.isOpenModalEditCustomer && (
+        {/* {this.state.isOpenModalEditCustomer && (
           <ModelUpdateCustomer
             isOpen={this.state.isOpenModalEditCustomer}
             toggleFromParent={this.toggleCustomerEditModal}
@@ -46,12 +76,12 @@ class ProductManage extends Component {
         )} */}
 
         <div className="mx-1">
-          {/* <button
+          <button
             className="btn btn-primary px-3 mt-5"
-            onClick={() => this.handleAddNewCustomer()}
+            onClick={() => this.handleAddNewProduct()}
           >
             <i className="fas fa-plus"></i>Thêm mới sản phẩm
-          </button> */}
+          </button>
         </div>
         <div className="suppliers-table mt-4 mx-3">
           <table id="SupplierManage">
@@ -113,6 +143,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     fetchProductRedux: () => dispatch(actions.fetchAllProductsStart()),
+    createNewProductRedux: (data) => dispatch(actions.createNewProduct(data)),
   };
 };
 
