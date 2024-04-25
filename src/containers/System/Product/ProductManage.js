@@ -94,6 +94,7 @@ class ProductManage extends Component {
   render() {
     // return <div className="text-center">Manage products</div>;
     let arrProducts = this.state.productRedux;
+
     return (
       <div>
         <ModelNewProduct
@@ -142,7 +143,7 @@ class ProductManage extends Component {
                       <td>{item.sale}</td>
                       <td>{item.quantity}</td>
                       <td>{item.description}</td>
-                      <td>{item.image}</td>
+
 
                       <td>
                         <button

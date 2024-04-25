@@ -10,7 +10,7 @@ export const fetchAllProductsStart = () => {
   return async (dispatch, getState) => {
     try {
       let res = await getAllProducts("ALL");
-      console.log("res", res);
+
       if (res && res.errCode === 0) {
         dispatch(fetchAllProductsSuccess(res.products.reverse())); ///reverse giup dao nguoc mang
       } else {
