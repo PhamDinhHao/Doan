@@ -43,7 +43,7 @@ export const adminMenu = [
             }
             ,
             {
-                name: 'Nhập hàng', link: '/system/product-manage'
+                name: 'Nhập hàng', link: '/system/purchase'
             }
 
         ]

@@ -5,6 +5,8 @@ import UserManage from "../containers/System/UserManage";
 import ProductManage from "../containers/System/Product/ProductManage";
 import CustomerManage from "../containers/System/Customer/CustomerManage";
 import SupplierManage from "../containers/System/Supplier/SupplierManage";
+import PurchaseManage from "../containers/System/Purchase/PurchaseManage";
+import PurchaseNew from "../containers/System/Purchase/PurchaseNew";
 import RegisterPackageGroupOrAcc from "../containers/System/RegisterPackageGroupOrAcc";
 
 class System extends Component {
@@ -18,11 +20,15 @@ class System extends Component {
             <Route path="/system/product" component={ProductManage} />
             <Route path="/system/customer" component={CustomerManage} />
             <Route path="/system/supplier" component={SupplierManage} />
-            <Route path="/system/product-manage" component={ProductManage} />
+            <Route path="/system/purchase" component={PurchaseManage} />
+            <Route path="/system/purchase-new" component={PurchaseNew} />
+
             <Route
               path="/system/register-package-group-or-account"
               component={RegisterPackageGroupOrAcc}
             />
+
+
             <Route
               component={() => {
                 return <Redirect to={systemMenuPath} />;
