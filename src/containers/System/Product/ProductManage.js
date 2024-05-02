@@ -56,9 +56,14 @@ class ProductManage extends Component {
           title: 'Actions',
           dataIndex: '',
           render: (text, record) => (
-            <button onClick={() => this.handleUpdateProduct(record)}>
-              {"Button Text"}
-            </button>
+            <div>
+              <button className="btn-edit" onClick={() => this.handleUpdateProduct(record)}>
+                <i className='fas fa-pencil-alt' ></i>
+              </button>
+              <button className="btn-delete" onClick={() => this.handleDeleteProduct(record)}>
+                <i className="fas fa-trash"></i>
+              </button>
+            </div>
           ),
         },
       ]
@@ -68,12 +73,7 @@ class ProductManage extends Component {
 
   }
 
-  handleDetail = (record) => {
-    console.log("chceck id", record)
-  }
-  handleDelete = (record) => {
 
-  }
   handleSelectionTypeChange = (e) => {
     this.setState({
       selectionType: e.target.value,
