@@ -11,6 +11,7 @@ const getAllProducts = (inputid) => {
 
 
 const createNewProductService = (data) => {
+
   return axios.post("/api/create-new-product", data);
 };
 
