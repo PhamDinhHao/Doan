@@ -24,6 +24,7 @@ const deleteProductService = (productid) => {
 };
 
 const editProductService = (inputdata) => {
+  console.log("check input", inputdata)
   return axios.put("/api/edit-product", inputdata);
 };
 
