@@ -11,6 +11,8 @@ class PurchaseNew extends Component {
     this.state = {
       supplierValue: "",
       supplierSuggestions: [],
+      productValue: "",
+      productSuggestions: [],
     };
   }
 
@@ -23,6 +25,9 @@ class PurchaseNew extends Component {
         this.props.supplierSuggestions
       );
       this.setState({ supplierSuggestions: this.props.supplierSuggestions });
+    }
+    if (prevProps.productSuggestions !== this.props.productSuggestions) {
+      this.setState({ productSuggestions: this.props.productSuggestions });
     }
   }
 
@@ -42,7 +47,17 @@ class PurchaseNew extends Component {
     }
   };
 
-  renderSuggestion = (suggestion) => <div>{suggestion.name}</div>;
+  getProductSuggestions = async (value) => {
+    try {
+      this.props.fetchProductSuggestionsRedux(value);
+    } catch (error) {
+      console.error("error fetching product suggestions", error);
+    }
+  };
+
+  renderSupplierSuggestion = (suggestion) => <div>{suggestion.name}</div>;
+
+  renderProductSuggestion = (suggestion) => <div>{suggestion.productName}</div>;
 
   onSupplierChange = (event, { newValue }) => {
     this.setState({
@@ -51,8 +66,19 @@ class PurchaseNew extends Component {
     this.getSupplierSuggestions(newValue);
   };
 
-  onSuggestionsFetchRequested = ({ value }) => {
+  onProductChange = (event, { newValue }) => {
+    this.setState({
+      productValue: newValue,
+    });
+    this.getProductSuggestions(newValue);
+  };
+
+  onSupplierSuggestionsFetchRequested = ({ value }) => {
     this.getSupplierSuggestions(value);
+  };
+
+  onProductSuggestionsFetchRequested = ({ value }) => {
+    this.getProductSuggestions(value);
   };
 
   onSuggestionsClearRequested = () => {
@@ -60,13 +86,24 @@ class PurchaseNew extends Component {
   };
 
   render() {
-    const { supplierValue, supplierSuggestions } = this.state;
-    console.log("supplierSuggestions:", supplierSuggestions);
+    const {
+      supplierValue,
+      supplierSuggestions,
+      productValue,
+      productSuggestions,
+    } = this.state;
+    // console.log("productSuggestions:", productSuggestions);
 
     const supplierInputProps = {
       placeholder: "Search supplier",
       value: supplierValue,
       onChange: this.onSupplierChange,
+    };
+
+    const productInputProps = {
+      placeholder: "Search product",
+      value: productValue,
+      onChange: this.onProductChange,
     };
     // console.log("Autosuggest props:", {
     //   suggestions: supplierSuggestions,
@@ -89,7 +126,19 @@ class PurchaseNew extends Component {
               <button>
                 <i class="fas fa-search icon"></i>
               </button>
-              <input type="text" placeholder="Search product"></input>
+              {/* <input type="text" placeholder="Search product"></input> */}
+              <div class="suggestion-container">
+                <Autosuggest
+                  suggestions={productSuggestions}
+                  onSuggestionsFetchRequested={
+                    this.onProductSuggestionsFetchRequested
+                  }
+                  onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+                  getSuggestionValue={(suggestion) => suggestion.productName}
+                  renderSuggestion={this.renderProductSuggestion}
+                  inputProps={productInputProps}
+                />
+              </div>
               <button>
                 <i class="fas fa-plus"></i>
               </button>
@@ -126,14 +175,18 @@ class PurchaseNew extends Component {
                 <i class="fas fa-search icon"></i>
               </button>
               {/* <input type="text" placeholder="Search supplier"></input> */}
-              <Autosuggest
-                suggestions={supplierSuggestions}
-                onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
-                onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-                getSuggestionValue={(suggestion) => suggestion.name}
-                renderSuggestion={this.renderSuggestion}
-                inputProps={supplierInputProps}
-              />
+              <div class="suggestion-container">
+                <Autosuggest
+                  suggestions={supplierSuggestions}
+                  onSuggestionsFetchRequested={
+                    this.onSupplierSuggestionsFetchRequested
+                  }
+                  onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+                  getSuggestionValue={(suggestion) => suggestion.name}
+                  renderSuggestion={this.renderSupplierSuggestion}
+                  inputProps={supplierInputProps}
+                />
+              </div>
               <button>
                 <i class="fas fa-plus"></i>
               </button>
@@ -159,13 +212,18 @@ class PurchaseNew extends Component {
 }
 
 const mapStateToProps = (state) => {
-  return { supplierSuggestions: state.supplier.supplierSuggestions };
+  return {
+    supplierSuggestions: state.supplier.supplierSuggestions,
+    productSuggestions: state.product.productSuggestions,
+  };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
     fetchSupplierSuggestionsRedux: (value) =>
       dispatch(actions.fetchSupplierSuggestions(value)),
+    fetchProductSuggestionsRedux: (value) =>
+      dispatch(actions.fetchProductSuggestions(value)),
   };
 };
 
