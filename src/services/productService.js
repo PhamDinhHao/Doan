@@ -11,6 +11,7 @@ const getAllProducts = (inputid) => {
 
 
 const createNewProductService = (data) => {
+
   return axios.post("/api/create-new-product", data);
 };
 
@@ -23,6 +24,7 @@ const deleteProductService = (productid) => {
 };
 
 const editProductService = (inputdata) => {
+  console.log("check input", inputdata)
   return axios.put("/api/edit-product", inputdata);
 };
 

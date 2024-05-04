@@ -7,18 +7,23 @@ import { Button, Modal } from "reactstrap";
 import { ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { emitter } from "../../../utils/emitter";
-
+import { CommonUtils } from '../../../utils';
+import './ModelNewProduct.scss'
+import Lightbox from 'react-image-lightbox';
+import Select from 'react-select';
 class ModelNewProduct extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      isOpen: false,
+
       productName: "",
       category: "",
-      cost: "",
-      sale: "",
+
       image: "",
       quantity: "",
       description: "",
+      previewImgUrl: "",
     };
     this.listenToEmitter();
   }
@@ -35,7 +40,7 @@ class ModelNewProduct extends Component {
       });
     });
   }
-  componentDidMount() {}
+  componentDidMount() { }
 
   toggle = () => {
     this.props.toggleFromParent();
@@ -53,10 +58,8 @@ class ModelNewProduct extends Component {
     let isValid = true;
     let arrInput = [
       "productName",
-      "category",
-      "cost",
-      "sale",
-      //   "image",
+      // "category",
+      "image",
       "quantity",
       "description",
     ];
@@ -78,106 +81,162 @@ class ModelNewProduct extends Component {
       this.props.createNewProduct(this.state);
     }
   };
+  handleOnchangeImage = async (event) => {
+    let data = event.target.files;
+    let file = data[0];
+    if (file) {
+      let base64 = await CommonUtils.getBase64(file);
+
+      let objectUrl = URL.createObjectURL(file);
+
+      this.setState({
+        previewImgUrl: objectUrl,
+        image: base64
+      })
+
+    }
+
+
+  }
+
 
   render() {
     return (
-      <Modal
-        isOpen={this.props.isOpen}
-        toggle={() => {
-          this.toggle();
-        }}
-        className={"model-supplier-container"}
-        size="lg"
-        centered
-      >
-        <ModalHeader
+      <div>
+        <Modal
+          isOpen={this.props.isOpen}
           toggle={() => {
             this.toggle();
           }}
+          className={"model-supplier-container"}
+          size="lg"
+          centered
         >
-          Create a new product
-        </ModalHeader>
-        <ModalBody>
-          <div className="modal-supplier-body">
-            <div className="input-container">
-              <label>Tên sản phẩm</label>
-              <input
-                type="text"
-                onChange={(event) =>
-                  this.handleOnChangeInput(event, "productName")
-                }
-                value={this.state.productName}
-              ></input>
-            </div>
-            <div className="input-container">
-              <label>Loại sản phẩm</label>
-              <input
-                type="text"
-                onChange={(event) =>
-                  this.handleOnChangeInput(event, "category")
-                }
-                value={this.state.category}
-              ></input>
-            </div>
-            <div className="input-container">
-              <label>Giá mua</label>
-              <input
-                type="text"
-                onChange={(event) => this.handleOnChangeInput(event, "cost")}
-                value={this.state.cost}
-              ></input>
-            </div>
-            <div className="input-container">
-              <label>Giá bán</label>
-              <input
-                type="text"
-                onChange={(event) => this.handleOnChangeInput(event, "sale")}
-                value={this.state.sale}
-              ></input>
-            </div>
-            <div className="input-container">
-              <label>Số lượng</label>
-              <input
-                type="number"
-                onChange={(event) =>
-                  this.handleOnChangeInput(event, "quantity")
-                }
-                value={this.state.quantity}
-              ></input>
-            </div>
-            <div className="input-container max-width-input">
-              <label>Mô tả</label>
-              <input
-                type="text"
-                onChange={(event) =>
-                  this.handleOnChangeInput(event, "description")
-                }
-                value={this.state.description}
-              ></input>
-            </div>
-          </div>
-        </ModalBody>
-        <ModalFooter>
-          <Button
-            color="primary"
-            className="px-3"
-            onClick={() => {
-              this.handleAddNewProduct();
-            }}
-          >
-            Add new
-          </Button>{" "}
-          <Button
-            color="secondary"
-            className="px-3"
-            onClick={() => {
+          <ModalHeader
+            toggle={() => {
               this.toggle();
             }}
           >
-            Close
-          </Button>
-        </ModalFooter>
-      </Modal>
+            Create a new product
+          </ModalHeader>
+          <ModalBody>
+            <div className="modal-supplier-body">
+              <div className="input-container">
+                <label>Tên sản phẩm</label>
+                <input
+                  type="text"
+                  onChange={(event) =>
+                    this.handleOnChangeInput(event, "productName")
+                  }
+                  value={this.state.productName}
+                ></input>
+              </div>
+              <div className="input-container">
+                <label >
+                  Loại sản phẩm
+                  <i className="fas fa-plus" style={{ marginLeft: "10px" }}></i>
+                </label>
+
+                <Select onChange={(event) =>
+                  this.handleOnChangeInput(event, "category")}
+                  value={this.state.category} >
+
+                </Select>
+              </div>
+
+
+              <div className="input-container">
+                <label>Số lượng</label>
+                <input
+                  type="number"
+                  onChange={(event) =>
+                    this.handleOnChangeInput(event, "quantity")
+                  }
+                  value={this.state.quantity}
+                ></input>
+              </div>
+              <div className="input-container">
+                <label >
+                  Nhà cung cấp
+                  <i className="fas fa-plus" style={{ marginLeft: "10px" }}></i>
+                </label>
+
+                <Select onChange={(event) =>
+                  this.handleOnChangeInput(event, "category")}
+                  value={this.state.category} >
+
+                </Select>
+              </div>
+              <div className="input-container">
+
+              </div>
+              <div className="input-container">
+                <label >
+                  Đơn vị
+                  <i className="fas fa-plus" style={{ marginLeft: "10px" }}></i>
+                </label>
+
+                <Select onChange={(event) =>
+                  this.handleOnChangeInput(event, "category")}
+                  value={this.state.category} >
+
+                </Select>
+              </div>
+              <div className="input-container max-width-input">
+                <label>Mô tả</label>
+                <input
+                  type="text"
+                  onChange={(event) =>
+                    this.handleOnChangeInput(event, "description")
+                  }
+                  value={this.state.description}
+                ></input>
+              </div>
+              <div className="col-md-3">
+                <label htmlFor="inputImage" className="form-label">Hình ảnh</label>
+                <div className='preview-img-container'>
+                  <input id='previewImg' type="file" hidden
+                    onChange={(event) => this.handleOnchangeImage(event)}
+                  />
+                  <label className='label-upload' htmlFor='previewImg'>Tải ảnh <i className='fas fa-upload'></i></label>
+                  <div className='preview-image' style={{ backgroundImage: `url(${this.state.previewImgUrl})` }}
+
+                  >
+
+                  </div>
+                </div>
+
+
+              </div>
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              color="primary"
+              className="px-3"
+              onClick={() => {
+                this.handleAddNewProduct();
+              }}
+            >
+              Add new
+            </Button>{" "}
+            <Button
+              color="secondary"
+              className="px-3"
+              onClick={() => {
+                this.toggle();
+              }}
+            >
+              Close
+            </Button>
+          </ModalFooter>
+
+        </Modal>
+
+      </div>
+
+
+
     );
   }
 }

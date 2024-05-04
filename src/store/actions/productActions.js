@@ -6,17 +6,29 @@ import {
   editProductService,
 } from "../../services/productService";
 
-export const fetchAllProductsStart = () => {
+export const fetchAllProductsStart = (inputId) => {
   return async (dispatch, getState) => {
     try {
-      let res = await getAllProducts("ALL");
+      if (!inputId) {
+        let res = await getAllProducts("ALL");
 
-      if (res && res.errCode === 0) {
-        dispatch(fetchAllProductsSuccess(res.products.reverse())); ///reverse giup dao nguoc mang
-      } else {
-        // toast.success("Fetch all Suppplier error")
-        dispatch(fetchAllProductsFailed());
+        if (res && res.errCode === 0) {
+          dispatch(fetchAllProductsSuccess(res.products.reverse())); ///reverse giup dao nguoc mang
+        } else {
+          // toast.success("Fetch all Suppplier error")
+          dispatch(fetchAllProductsFailed());
+        }
       }
+      else {
+        let res = await getAllProducts(inputId);
+        if (res && res.errCode === 0) {
+          dispatch(fetchAllProductsSuccess(res.products.reverse())); ///reverse giup dao nguoc mang
+        } else {
+          // toast.success("Fetch all Suppplier error")
+          dispatch(fetchAllProductsFailed());
+        }
+      }
+
     } catch (error) {
       // toast.success("Fetch all Suppplier error")
       dispatch(fetchAllProductsFailed());

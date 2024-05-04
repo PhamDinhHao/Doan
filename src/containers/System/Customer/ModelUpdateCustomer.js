@@ -60,6 +60,7 @@ class ModelUpdateCustomer extends Component {
       ...copyState,
     });
   };
+
   checkValideInput = () => {
     let isValid = true;
     let arrInput = [
