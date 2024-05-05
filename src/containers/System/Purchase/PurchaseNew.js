@@ -4,6 +4,8 @@ import { connect } from "react-redux";
 import "./PurchaseNew.scss";
 import Autosuggest from "react-autosuggest";
 import * as actions from "../../../store/actions";
+import DatePicker from "../../../components/Input/DatePicker";
+// import InputSuggest from "../../../components/Input/InputSuggest";
 
 class PurchaseNew extends Component {
   constructor(props) {
@@ -13,6 +15,9 @@ class PurchaseNew extends Component {
       supplierSuggestions: [],
       productValue: "",
       productSuggestions: [],
+      tableData: [],
+      updatedTableData: [],
+      selectedDate: new Date(),
     };
   }
 
@@ -20,10 +25,10 @@ class PurchaseNew extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.supplierSuggestions !== this.props.supplierSuggestions) {
-      console.log(
-        "Supplier suggestions received:",
-        this.props.supplierSuggestions
-      );
+      // console.log(
+      //   "Supplier suggestions received:",
+      //   this.props.supplierSuggestions
+      // );
       this.setState({ supplierSuggestions: this.props.supplierSuggestions });
     }
     if (prevProps.productSuggestions !== this.props.productSuggestions) {
@@ -85,12 +90,99 @@ class PurchaseNew extends Component {
     this.setState({ supplierSuggestions: [] });
   };
 
+  onProductTableSuggestionSelected = (event, { suggestion }) => {
+    // const { tableData } = this.state;
+    // const newProduct = {
+    //   id: suggestion.id,
+    //   name: suggestion.productName,
+    //   quantity: 1,
+    //   price: 0,
+    // };
+    // const newTableData = [...tableData, newProduct];
+    // this.setState({ tableData: newTableData });
+    // this.setState({ productValue: "" });
+    const { tableData } = this.state;
+    const existingProductIndex = tableData.findIndex(
+      (product) => product.id === suggestion.id
+    );
+
+    if (existingProductIndex !== -1) {
+      // Sản phẩm đã tồn tại trong bảng
+      const updatedTableData = [...tableData];
+      updatedTableData[existingProductIndex].quantity++; // Tăng số lượng sản phẩm
+      this.setState({ tableData: updatedTableData });
+    } else {
+      // Sản phẩm chưa tồn tại trong bảng
+      const newProduct = {
+        id: suggestion.id,
+        name: suggestion.productName,
+        quantity: 1,
+        price: 0,
+      };
+      const newTableData = [...tableData, newProduct];
+      this.setState({ tableData: newTableData });
+    }
+  };
+
+  onQuantityIncrease = (index) => {
+    const { tableData } = this.state;
+    const updatedTableData = [...tableData];
+    updatedTableData[index].quantity++;
+    this.setState({ tableData: updatedTableData });
+  };
+
+  onQuantityDecrease = (index) => {
+    const { tableData } = this.state;
+    const updatedTableData = [...tableData];
+    updatedTableData[index].quantity--;
+    this.setState({ tableData: updatedTableData });
+  };
+
+  onPriceChange = (index, newPrice) => {
+    const { tableData } = this.state;
+    const updatedTableData = [...tableData];
+    updatedTableData[index].price = newPrice;
+    this.setState({ tableData: updatedTableData });
+  };
+
+  onDeleteProduct = (index) => {
+    const { tableData } = this.state;
+    const updatedTableData = [...tableData];
+    updatedTableData.splice(index, 1);
+    this.setState({ tableData: updatedTableData });
+  };
+
+  getTotalQuantity = () => {
+    const { tableData } = this.state;
+    let totalQuantity = 0;
+    tableData.forEach((product) => {
+      totalQuantity += product.quantity;
+    });
+    return totalQuantity;
+  };
+
+  getTotalMoney = () => {
+    const { tableData } = this.state;
+    let totalMoney = 0;
+    tableData.forEach((product) => {
+      totalMoney += product.quantity * product.price;
+    });
+    return totalMoney;
+  };
+
+  handleDateChange = (date) => {
+    this.setState({ selectedDate: date });
+  };
+
   render() {
     const {
       supplierValue,
       supplierSuggestions,
       productValue,
       productSuggestions,
+      tableData,
+      updatedTableData,
+      selectedDate,
     } = this.state;
     // console.log("productSuggestions:", productSuggestions);
 
@@ -137,6 +229,7 @@ class PurchaseNew extends Component {
                   getSuggestionValue={(suggestion) => suggestion.productName}
                   renderSuggestion={this.renderProductSuggestion}
                   inputProps={productInputProps}
+                  onSuggestionSelected={this.onProductTableSuggestionSelected}
                 />
               </div>
               <button>
@@ -148,6 +241,7 @@ class PurchaseNew extends Component {
             <table>
               <thead>
                 <tr>
+                  <th></th>
                   <th>STT</th>
                   <th>Id</th>
                   <th>Name</th>
@@ -156,7 +250,52 @@ class PurchaseNew extends Component {
                   <th>Total</th>
                 </tr>
               </thead>
-              <tbody></tbody>
+              <tbody>
+                {tableData.map((product, index) => (
+                  <tr key={index}>
+                    <td>
+                      <button
+                        className="delete-btn"
+                        onClick={() => this.onDeleteProduct(index)}
+                      >
+                        <i
+                          className="fas fa-trash"
+                          style={{ color: "#B22222" }}
+                        ></i>
+                      </button>
+                    </td>
+                    <td>{index + 1}</td>
+                    <td>{product.id}</td>
+                    <td>{product.name}</td>
+                    <td>
+                      <button
+                        className="quantity-btn"
+                        onClick={() => this.onQuantityDecrease(index)}
+                        disabled={product.quantity <= 1}
+                      >
+                        -
+                      </button>
+                      <span className="quantity">{product.quantity}</span>
+                      <button
+                        className="quantity-btn"
+                        onClick={() => this.onQuantityIncrease(index)}
+                      >
+                        +
+                      </button>
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        value={product.price}
+                        onChange={(e) =>
+                          this.onPriceChange(index, e.target.value)
+                        }
+                      />
+                    </td>
+                    <td>{product.quantity * product.price}</td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
           </div>
         </div>
@@ -167,7 +306,10 @@ class PurchaseNew extends Component {
                 <span>user</span>
               </div>
               <div class="datetime-picker">
-                <span>time</span>
+                <DatePicker
+                  value={selectedDate}
+                  onChange={this.handleDateChange}
+                />
               </div>
             </div>
             <div class="search-bar">
@@ -193,11 +335,11 @@ class PurchaseNew extends Component {
             </div>
             <div class="quantity-box">
               <span>quantity:</span>
-              <span class="total-quantity">0</span>
+              <span class="total-quantity">{this.getTotalQuantity()}</span>
             </div>
             <div class="money-box">
               <span>total:</span>
-              <span class="total-money">0</span>
+              <span class="total-money">{this.getTotalMoney()}</span>
             </div>
           </div>
           <div class="wrap-button">

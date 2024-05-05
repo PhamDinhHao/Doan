@@ -116,6 +116,22 @@ th {
   background-color: #f2f2f2;
 }
 
+.quantity-btn {
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.quantity-btn:hover,
+.quantity-btn:focus {
+  border-color: #999;
+}
+
+.quantity {
+  margin: 0 5px;
+}
+
 .item-right {
   width: 30%;
   background-color: lightblue;
@@ -160,6 +176,16 @@ th {
 .quantity-box .total-quantity,
 .money-box .total-money {
   margin-left: 10px;
+}
+
+.total-quantity {
+  border: 1px solid black;
+  // border-radius: 5px;
+  padding: 5px;
+}
+
+.total-money {
+  font-weight: bold;
 }
 
 .wrap-button {
