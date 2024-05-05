@@ -7,6 +7,7 @@ import {
 } from "../../services/productService";
 
 export const fetchAllProductsStart = (inputId) => {
+
   return async (dispatch, getState) => {
     try {
       if (!inputId) {
@@ -46,6 +47,7 @@ export const fetchAllProductsFailed = () => ({
 });
 
 export const createNewProduct = (data) => {
+
   return async (dispatch, getState) => {
     try {
       let res = await createNewProductService(data);

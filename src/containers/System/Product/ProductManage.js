@@ -9,8 +9,9 @@ import Select from 'react-select';
 import { Divider, Radio, Table } from "antd";
 import { getAllProducts } from '../../../services/productService'
 import { reduce, template } from "lodash";
-
-
+import { emitter } from "../../../utils/emitter";
+import { getAllCategory } from "../../../services/categoryService";
+import Checkbox from "antd/es/checkbox/Checkbox";
 
 
 
@@ -21,6 +22,7 @@ class ProductManage extends Component {
     super(props);
     this.state = {
       productRedux: [],
+
       isOpenNewProduct: false,
       isOpenModalEditProduct: false,
       productEdit: {},
@@ -29,10 +31,6 @@ class ProductManage extends Component {
       selectedProduct: [],
 
       tempProduct: [],
-
-      selectionType: 'checkbox',
-      loading: false,
-      selectedRowKeys: [],
       columns: [
         {
           title: 'Tên sản phẩm',
@@ -53,7 +51,15 @@ class ProductManage extends Component {
           dataIndex: 'quantity',
         },
         {
-          title: 'Actions',
+          title: 'Giá nhập',
+          dataIndex: 'costPrice',
+        },
+        {
+          title: 'Giá bán',
+          dataIndex: 'salePrice',
+        },
+        {
+          title: 'Hoạt động',
           dataIndex: '',
           render: (text, record) => (
             <div>
@@ -66,8 +72,9 @@ class ProductManage extends Component {
             </div>
           ),
         },
-      ]
+      ],
 
+      arrCategorys: [],
     };
 
 
@@ -85,8 +92,10 @@ class ProductManage extends Component {
     });
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     this.props.fetchProductRedux();
+    await this.getAllCategoryFromReact();
+
   }
 
   async componentDidUpdate(prevProps, prevState, snapshot) {
@@ -97,29 +106,15 @@ class ProductManage extends Component {
         listProduct: dataSelect
       });
     }
-    // if (prevState.selectedProduct !== this.state.selectedProduct) {
-    //   console.log("check state", this.state.selectedProduct[0].value)
-    //   if (this.state.selectedProduct) {
-    //     let res = await getAllProducts(this.state.selectedProduct[0].value)
-    //     this.setState({
-    //       tempProduct: res.products
-    //     })
-    //     console.log("check all", this.state.tempProduct)
-    //     // this.setState({
-    //     //   productRedux: res.products,
 
-    //     // });
-    //   }
 
-    //   // this.props.fetchProductRedux(this.state.listProduct.value)
-    // }
 
   }
   handleChangeSelect = async (selectedProduct) => {
     this.setState({ selectedProduct: selectedProduct });
   };
   filterProducts = (products, selectedOption) => {
-    console.log("check oop", selectedOption)
+
     if (selectedOption === null) return products;
     if (selectedOption.length === 0) return products; // If no option selected, return all products
     return products.filter(product => product.id === selectedOption.value);
@@ -150,13 +145,14 @@ class ProductManage extends Component {
 
       let response = await this.props.createNewProductRedux(data);
 
+
       if (response && response.errCode !== 0) {
         alert(response.errMessage);
       } else {
         this.setState({
           isOpenNewProduct: false,
         });
-        // emitter.emit("EVENT_CLEAR_MODAL_DATA", { id: "your id" });
+        emitter.emit('EVENT_CLEAR_MODAL_DATA', { 'id': 'your id' })
       }
 
     } catch (error) {
@@ -170,7 +166,7 @@ class ProductManage extends Component {
   };
 
   handleUpdateProduct = (product) => {
-    console.log("check suooo", product);
+
     this.setState({
       isOpenModalEditProduct: true,
       productEdit: product,
@@ -197,11 +193,25 @@ class ProductManage extends Component {
       console.log(error);
     }
   };
+  getAllCategoryFromReact = async () => {
+
+    let response = await getAllCategory('ALL');
+
+    if (response && response.errCode == 0) {
+      this.setState({
+        arrCategorys: response.categorys
+      })
+
+    }
+
+  }
+
 
 
   render() {
     // return <div className="text-center">Manage products</div>;
     const filteredProducts = this.filterProducts(this.state.productRedux, this.state.selectedProduct);
+    let { checkedList, arrCategorys } = this.state;
 
 
 
@@ -213,6 +223,28 @@ class ProductManage extends Component {
           <div className="main-left">
             <div className="heading-page">
               <span className="ng-binding">Hàng hóa</span>
+            </div>
+            <div className="checkbox-fillList">
+              <label style={{ fontWeight: "600" }}>Loại hàng hóa</label>
+              {arrCategorys && arrCategorys.length > 0 &&
+                arrCategorys.map((item, index) => {
+                  return (
+
+                    <Checkbox className="check-box" key={index}>
+                      {item.categoryName}
+                    </Checkbox>
+
+
+
+                  )
+                })
+              }
+
+
+
+
+
+
             </div>
           </div>
           <div className="main-right">
@@ -254,82 +286,14 @@ class ProductManage extends Component {
                   />
                 )}
 
-                {/* <div className="mx-1">
-                  <button
-                    className="btn btn-primary px-3 mt-5"
-                    onClick={() => this.handleAddNewProduct()}
-                  >
-                    <i className="fas fa-plus"></i>Thêm mới sản phẩm
-                  </button>
-                </div> */}
+
 
                 <div className="suppliers-table mt-4">
-                  {/* <table id="SupplierManage">
 
-                    <tbody>
-                      <tr>
-                        <th>Tên Sản phẩm</th>
-                        <th>Loại Sản phẩm</th>
-                        <th>Giá Mua</th>
-                        <th>Giá Bán</th>
-                        <th>Số Lượng</th>
-                        <th>Mô Tả</th>
-                        <th>Hình</th>
-                        <th></th>
-                      </tr>
-                      {arrProducts &&
-                        arrProducts.length > 0 &&
-                        arrProducts.map((item, index) => {
-                          return (
-                            <tr key={index}>
-                              <td>{item.productName}</td>
-                              <td>{item.category}</td>
-                              <td>{item.cost}</td>
-                              <td>{item.sale}</td>
-                              <td>{item.quantity}</td>
-                              <td>{item.description}</td>
-
-
-                              <td>
-                                <button
-                                  className="btn-edit"
-                                  onClick={() => this.handleUpdateProduct(item)}
-                                >
-                                  <i className="fas fa-pencil-alt"></i>
-                                </button>
-                                <button
-                                  className="btn-delete"
-                                  onClick={() => this.handleDeleteProduct(item)}
-                                >
-                                  <i className="fas fa-trash"></i>
-                                </button>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                    </tbody>
-
-                  </table> */}
                   <div>
-                    {/* <Radio.Group
-                      onChange={this.handleSelectionTypeChange}
-                      value={selectionType}
-                    >
-                      <Radio value="checkbox">Checkbox</Radio>
-                      <Radio value="radio">Radio</Radio>
-                    </Radio.Group> */}
-
-
-
-
                     <Table
-                      pagination={{ pageSize: 4 }} scroll={{ y: 240 }} columns={this.state.columns} dataSource={filteredProducts} onRow={(record, rowIndex) => {
-                        // return {
-                        //   onClick: event => {
-                        //     this.handleDetail(record)
+                      pagination={{ pageSize: 10 }} scroll={{ y: 240 }} columns={this.state.columns} dataSource={filteredProducts} onRow={(record, rowIndex) => {
 
-                        //   },
-                        // };
 
                       }} />
 
@@ -341,76 +305,7 @@ class ProductManage extends Component {
         </div>
       </div>
 
-      // <div>
-      //   <ModelNewProduct
-      //     isOpen={this.state.isOpenNewProduct}
-      //     toggleFromParent={this.toggleProductModal}
-      //     createNewProduct={this.createNewProduct}
-      //   />
-      //   {this.state.isOpenModalEditProduct && (
-      //     <ModelUpdateProduct
-      //       isOpen={this.state.isOpenModalEditProduct}
-      //       toggleFromParent={this.toggleProductEditModal}
-      //       currentProduct={this.state.productEdit}
-      //       editProduct={this.doEditProduct}
-      //     />
-      //   )}
 
-      //   <div className="mx-1">
-      //     <button
-      //       className="btn btn-primary px-3 mt-5"
-      //       onClick={() => this.handleAddNewProduct()}
-      //     >
-      //       <i className="fas fa-plus"></i>Thêm mới sản phẩm
-      //     </button>
-      //   </div>
-      //   <div className="suppliers-table mt-4 mx-3">
-      //     <table id="SupplierManage">
-      //       <tbody>
-      //         <tr>
-      //           <th>Tên Sản phẩm</th>
-      //           <th>Loại Sản phẩm</th>
-      //           <th>Giá Mua</th>
-      //           <th>Giá Bán</th>
-      //           <th>Số Lượng</th>
-      //           <th>Mô Tả</th>
-      //           <th>Hình</th>
-      //           <th></th>
-      //         </tr>
-      //         {arrProducts &&
-      //           arrProducts.length > 0 &&
-      //           arrProducts.map((item, index) => {
-      //             return (
-      //               <tr key={index}>
-      //                 <td>{item.productName}</td>
-      //                 <td>{item.category}</td>
-      //                 <td>{item.cost}</td>
-      //                 <td>{item.sale}</td>
-      //                 <td>{item.quantity}</td>
-      //                 <td>{item.description}</td>
-
-
-      //                 <td>
-      //                   <button
-      //                     className="btn-edit"
-      //                     onClick={() => this.handleUpdateProduct(item)}
-      //                   >
-      //                     <i className="fas fa-pencil-alt"></i>
-      //                   </button>
-      //                   <button
-      //                     className="btn-delete"
-      //                     onClick={() => this.handleDeleteProduct(item)}
-      //                   >
-      //                     <i className="fas fa-trash"></i>
-      //                   </button>
-      //                 </td>
-      //               </tr>
-      //             );
-      //           })}
-      //       </tbody>
-      //     </table>
-      //   </div>
-      // </div>
     );
   }
 }
@@ -418,6 +313,7 @@ class ProductManage extends Component {
 const mapStateToProps = (state) => {
   return {
     listproducts: state.product.products,
+    listSuppliers: state.supplier.suppliers
   };
 };
 
@@ -427,6 +323,8 @@ const mapDispatchToProps = (dispatch) => {
     createNewProductRedux: (data) => dispatch(actions.createNewProduct(data)),
     deleteProductRedux: (id) => dispatch(actions.deleteProduct(id)),
     editProductRedux: (data) => dispatch(actions.editProduct(data)),
+    createNewSupplierRedux: (data) => dispatch(actions.createNewSupplier(data)),
+
   };
 };
 
