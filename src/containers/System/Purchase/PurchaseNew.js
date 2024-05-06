@@ -15,8 +15,8 @@ class PurchaseNew extends Component {
       supplierSuggestions: [],
       productValue: "",
       productSuggestions: [],
-      tableData: [],
-      updatedTableData: [],
+      products: [],
+      updatedproducts: [],
       selectedDate: new Date(),
     };
   }
@@ -91,26 +91,26 @@ class PurchaseNew extends Component {
   };
 
   onProductTableSuggestionSelected = (event, { suggestion }) => {
-    // const { tableData } = this.state;
+    // const { products } = this.state;
     // const newProduct = {
     //   id: suggestion.id,
     //   name: suggestion.productName,
     //   quantity: 1,
     //   price: 0,
     // };
-    // const newTableData = [...tableData, newProduct];
-    // this.setState({ tableData: newTableData });
+    // const newproducts = [...products, newProduct];
+    // this.setState({ products: newproducts });
     // this.setState({ productValue: "" });
-    const { tableData } = this.state;
-    const existingProductIndex = tableData.findIndex(
+    const { products } = this.state;
+    const existingProductIndex = products.findIndex(
       (product) => product.id === suggestion.id
     );
 
     if (existingProductIndex !== -1) {
       // Sản phẩm đã tồn tại trong bảng
-      const updatedTableData = [...tableData];
-      updatedTableData[existingProductIndex].quantity++; // Tăng số lượng sản phẩm
-      this.setState({ tableData: updatedTableData });
+      const updatedProducts = [...products];
+      updatedProducts[existingProductIndex].quantity++; // Tăng số lượng sản phẩm
+      this.setState({ products: updatedProducts });
     } else {
       // Sản phẩm chưa tồn tại trong bảng
       const newProduct = {
@@ -119,52 +119,63 @@ class PurchaseNew extends Component {
         quantity: 1,
         price: 0,
       };
-      const newTableData = [...tableData, newProduct];
-      this.setState({ tableData: newTableData });
+      const newProducts = [...products, newProduct];
+      this.setState({ products: newProducts });
     }
   };
 
   onQuantityIncrease = (index) => {
-    const { tableData } = this.state;
-    const updatedTableData = [...tableData];
-    updatedTableData[index].quantity++;
-    this.setState({ tableData: updatedTableData });
+    const { products } = this.state;
+    const updatedproducts = [...products];
+    updatedproducts[index].quantity++;
+    this.setState({ products: updatedproducts });
   };
 
   onQuantityDecrease = (index) => {
-    const { tableData } = this.state;
-    const updatedTableData = [...tableData];
-    updatedTableData[index].quantity--;
-    this.setState({ tableData: updatedTableData });
+    const { products } = this.state;
+    const updatedproducts = [...products];
+    updatedproducts[index].quantity--;
+    this.setState({ products: updatedproducts });
+  };
+
+  onQuantityChange = (index, value) => {
+    const newQuantity = parseInt(value); // Chuyển đổi giá trị nhập vào thành số nguyên
+    if (!isNaN(newQuantity) && newQuantity >= 1) {
+      // Kiểm tra nếu giá trị là một số và lớn hơn hoặc bằng 1
+      // Update số lượng cho sản phẩm tại index
+      const updatedProducts = [...this.state.products];
+      updatedProducts[index].quantity = newQuantity;
+      this.setState({ products: updatedProducts });
+    }
   };
 
   onPriceChange = (index, newPrice) => {
-    const { tableData } = this.state;
-    const updatedTableData = [...tableData];
-    updatedTableData[index].price = newPrice;
-    this.setState({ tableData: updatedTableData });
+    const { products } = this.state;
+    const updatedproducts = [...products];
+    updatedproducts[index].price = newPrice;
+    this.setState({ products: updatedproducts });
   };
 
   onDeleteProduct = (index) => {
-    const { tableData } = this.state;
-    const updatedTableData = [...tableData];
-    updatedTableData.splice(index, 1);
-    this.setState({ tableData: updatedTableData });
+    const { products } = this.state;
+    const updatedproducts = [...products];
+    updatedproducts.splice(index, 1);
+    this.setState({ products: updatedproducts });
   };
 
   getTotalQuantity = () => {
-    const { tableData } = this.state;
+    const { products } = this.state;
     let totalQuantity = 0;
-    tableData.forEach((product) => {
+    products.forEach((product) => {
       totalQuantity += product.quantity;
     });
     return totalQuantity;
   };
 
   getTotalMoney = () => {
-    const { tableData } = this.state;
+    const { products } = this.state;
     let totalMoney = 0;
-    tableData.forEach((product) => {
+    products.forEach((product) => {
       totalMoney += product.quantity * product.price;
     });
     return totalMoney;
@@ -180,8 +191,8 @@ class PurchaseNew extends Component {
       supplierSuggestions,
       productValue,
       productSuggestions,
-      tableData,
-      updatedTableData,
+      products,
+      updatedproducts,
       selectedDate,
     } = this.state;
     // console.log("productSuggestions:", productSuggestions);
@@ -251,7 +262,7 @@ class PurchaseNew extends Component {
                 </tr>
               </thead>
               <tbody>
-                {tableData.map((product, index) => (
+                {products.map((product, index) => (
                   <tr key={index}>
                     <td>
                       <button
@@ -275,7 +286,17 @@ class PurchaseNew extends Component {
                       >
                         -
                       </button>
-                      <span className="quantity">{product.quantity}</span>
+                      {/* <span className="quantity">{product.quantity}</span> */}
+                      <input
+                        type="number"
+                        className="quantity-input"
+                        value={product.quantity}
+                        onChange={(e) =>
+                          this.onQuantityChange(index, e.target.value)
+                        }
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                      />
                       <button
                         className="quantity-btn"
                         onClick={() => this.onQuantityIncrease(index)}
@@ -290,6 +311,8 @@ class PurchaseNew extends Component {
                         onChange={(e) =>
                           this.onPriceChange(index, e.target.value)
                         }
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                       />
                     </td>
                     <td>{product.quantity * product.price}</td>

@@ -132,6 +132,22 @@ th {
   margin: 0 5px;
 }
 
+.quantity-input {
+  -moz-appearance: textfield;
+  appearance: textfield;
+  border: none;
+  background-color: transparent;
+  width: 50px;
+  color: #000;
+  text-align: center;
+}
+
+.quantity-input::-webkit-inner-spin-button,
+.quantity-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 .item-right {
   width: 30%;
   background-color: lightblue;
