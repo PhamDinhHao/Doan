@@ -12,8 +12,8 @@ import { reduce, template } from "lodash";
 import { emitter } from "../../../utils/emitter";
 import { getAllCategory } from "../../../services/categoryService";
 import Checkbox from "antd/es/checkbox/Checkbox";
-
-
+import CustomScrollbars from "../../../components/CustomScrollbars";
+import Lightbox from "react-image-lightbox";
 
 
 class ProductManage extends Component {
@@ -31,6 +31,10 @@ class ProductManage extends Component {
       selectedProduct: [],
 
       tempProduct: [],
+
+
+      arrCategorys: [],
+      selectedItemCheckbox: [],
       columns: [
         {
           title: 'Tên sản phẩm',
@@ -43,7 +47,8 @@ class ProductManage extends Component {
           render: (imageBase64) => {
             const imageBinary = Buffer.from(imageBase64, 'base64').toString('binary');
 
-            return <img src={imageBinary} alt="Product" style={{ width: 36, height: 38 }} />;
+            return <img src={imageBinary} alt="Product" style={{ width: 36, height: 38 }}
+              onClick={() => this.handleImageClick(imageBinary)} />;
           },
         },
         {
@@ -73,14 +78,19 @@ class ProductManage extends Component {
           ),
         },
       ],
-
-      arrCategorys: [],
+      isOpen: false,
+      previewImgUrl: ""
     };
 
 
   }
 
-
+  handleImageClick = (dataImage) => {
+    this.setState({
+      isOpen: true,
+      previewImgUrl: dataImage
+    })
+  }
   handleSelectionTypeChange = (e) => {
     this.setState({
       selectionType: e.target.value,
@@ -106,6 +116,11 @@ class ProductManage extends Component {
         listProduct: dataSelect
       });
     }
+    // if (prevState.selectedItemCheckbox !== this.state.selectedItemCheckbox) {
+    //   this.setState({
+    //     productRedux: this.state.selectedItemCheckbox
+    //   })
+    // }
 
 
 
@@ -113,12 +128,7 @@ class ProductManage extends Component {
   handleChangeSelect = async (selectedProduct) => {
     this.setState({ selectedProduct: selectedProduct });
   };
-  filterProducts = (products, selectedOption) => {
 
-    if (selectedOption === null) return products;
-    if (selectedOption.length === 0) return products; // If no option selected, return all products
-    return products.filter(product => product.id === selectedOption.value);
-  };
   buildDataInputSelect = (inputData) => {
     let result = [];
 
@@ -206,11 +216,53 @@ class ProductManage extends Component {
 
   }
 
+  filterProducts = (products, selectedOption) => {
+
+    if (selectedOption === null) return products;
+    if (selectedOption.length === 0) return products;
+    return products.filter(product => product.id === selectedOption.value);
+  };
+  handleSearchByCategory = (data) => {
+    const foundItems = this.state.productRedux.filter(item => item.categoryId === data.id);
 
 
+    if (foundItems.length > 0) {
+      const isAlreadySelected = foundItems.some(item => {
+        return this.state.selectedItemCheckbox.some(selectedItem => selectedItem.categoryId === item.categoryId);
+      });
+
+      if (isAlreadySelected) {
+
+        this.setState(prevState => ({
+          selectedItemCheckbox: prevState.selectedItemCheckbox.filter(item => item.categoryId !== data.id)
+        }));
+      } else {
+
+        this.setState(prevState => ({
+          selectedItemCheckbox: [...prevState.selectedItemCheckbox, ...foundItems]
+        }));
+      }
+    } else {
+      console.log("Không tìm thấy mục với id:", data.id);
+    }
+  }
+
+  searchByCheckBoxOrInputSearch = () => {
+    let tempList = [];
+
+    if (this.state.selectedItemCheckbox.length > 0) {
+      tempList = this.state.selectedItemCheckbox;
+    }
+    else {
+      tempList = this.filterProducts(this.state.productRedux, this.state.selectedProduct)
+    }
+
+    return tempList
+
+  }
   render() {
-    // return <div className="text-center">Manage products</div>;
-    const filteredProducts = this.filterProducts(this.state.productRedux, this.state.selectedProduct);
+
+    const filteredProducts = this.searchByCheckBoxOrInputSearch();
     let { checkedList, arrCategorys } = this.state;
 
 
@@ -218,34 +270,28 @@ class ProductManage extends Component {
 
 
     return (
-      <div className="product">
+
+      < div className="product" >
         <div className="product-content">
           <div className="main-left">
             <div className="heading-page">
               <span className="ng-binding">Hàng hóa</span>
             </div>
-            <div className="checkbox-fillList">
-              <label style={{ fontWeight: "600" }}>Loại hàng hóa</label>
-              {arrCategorys && arrCategorys.length > 0 &&
-                arrCategorys.map((item, index) => {
-                  return (
+            <CustomScrollbars style={{ height: '100vh', width: '100%' }}>
+              <div className="checkbox-fillList">
+                <label style={{ fontWeight: "600" }}>Loại hàng hóa</label>
+                {arrCategorys && arrCategorys.length > 0 &&
+                  arrCategorys.map((item, index) => {
+                    return (
+                      <Checkbox className="check-box" key={index} onClick={() => this.handleSearchByCategory(item)}>
+                        {item.categoryName}
+                      </Checkbox>
+                    )
+                  })
+                }
+              </div>
+            </CustomScrollbars>
 
-                    <Checkbox className="check-box" key={index}>
-                      {item.categoryName}
-                    </Checkbox>
-
-
-
-                  )
-                })
-              }
-
-
-
-
-
-
-            </div>
           </div>
           <div className="main-right">
             <div className="mainWrap">
@@ -292,7 +338,12 @@ class ProductManage extends Component {
 
                   <div>
                     <Table
-                      pagination={{ pageSize: 10 }} scroll={{ y: 240 }} columns={this.state.columns} dataSource={filteredProducts} onRow={(record, rowIndex) => {
+                      pagination={{ pageSize: 10 }} scroll={{ y: 700 }} columns={this.state.columns} dataSource={filteredProducts} onRow={(record, rowIndex) => {
+                        return {
+                          onClick: (event) => { console.log("check record", record) }, // click row
+
+                        };
+
 
 
                       }} />
@@ -302,8 +353,20 @@ class ProductManage extends Component {
               </div>
             </div>
           </div>
+
         </div>
-      </div>
+
+        {
+          this.state.isOpen === true && <Lightbox
+
+            mainSrc={this.state.previewImgUrl}
+            onCloseRequest={() => this.setState({ isOpen: false })}
+          />
+        }
+
+
+
+      </div >
 
 
     );
