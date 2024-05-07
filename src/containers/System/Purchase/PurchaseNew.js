@@ -21,7 +21,7 @@ class PurchaseNew extends Component {
     };
   }
 
-  componentDidMount() {}
+  componentDidMount() { }
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.supplierSuggestions !== this.props.supplierSuggestions) {
@@ -117,7 +117,7 @@ class PurchaseNew extends Component {
         id: suggestion.id,
         name: suggestion.productName,
         quantity: 1,
-        price: 0,
+        salePrice: suggestion.salePrice,
       };
       const newProducts = [...products, newProduct];
       this.setState({ products: newProducts });
@@ -152,7 +152,7 @@ class PurchaseNew extends Component {
   onPriceChange = (index, newPrice) => {
     const { products } = this.state;
     const updatedproducts = [...products];
-    updatedproducts[index].price = newPrice;
+    updatedproducts[index].salePrice = newPrice;
     this.setState({ products: updatedproducts });
   };
 
@@ -176,7 +176,7 @@ class PurchaseNew extends Component {
     const { products } = this.state;
     let totalMoney = 0;
     products.forEach((product) => {
-      totalMoney += product.quantity * product.price;
+      totalMoney += product.quantity * product.salePrice;
     });
     return totalMoney;
   };
@@ -195,7 +195,6 @@ class PurchaseNew extends Component {
       updatedproducts,
       selectedDate,
     } = this.state;
-    // console.log("productSuggestions:", productSuggestions);
 
     const supplierInputProps = {
       placeholder: "Search supplier",
@@ -307,7 +306,7 @@ class PurchaseNew extends Component {
                     <td>
                       <input
                         type="number"
-                        value={product.price}
+                        value={product.salePrice}
                         onChange={(e) =>
                           this.onPriceChange(index, e.target.value)
                         }
@@ -315,7 +314,7 @@ class PurchaseNew extends Component {
                         pattern="[0-9]*"
                       />
                     </td>
-                    <td>{product.quantity * product.price}</td>
+                    <td>{product.quantity * product.salePrice}</td>
                   </tr>
                 ))}
               </tbody>

@@ -29,6 +29,7 @@ const productReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         productSuggestions: action.payload,
+
       };
     case actionTypes.FETCH_PRODUCT_SUGGESTIONS_FAILURE:
       return {

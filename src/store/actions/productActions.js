@@ -127,13 +127,14 @@ export const editProductFailed = () => ({
 });
 
 export const fetchProductSuggestions = (value) => {
+
   return async (dispatch, getState) => {
     dispatch(fetchProductSuggestionsRequest());
     try {
       const response = await getProductSuggestionsService({ q: value });
-      // console.log("res", response);
+
       const data = response.suggestions;
-      // console.log("data", data);
+
       dispatch(fetchProductSuggestionsSuccess(data));
     } catch (error) {
       dispatch(fetchProductSuggestionsFailure(error.message));
