@@ -4,6 +4,7 @@ import {
   createNewProductService,
   deleteProductService,
   editProductService,
+  getProductSuggestionsService,
 } from "../../services/productService";
 
 export const fetchAllProductsStart = (inputId) => {
@@ -19,8 +20,7 @@ export const fetchAllProductsStart = (inputId) => {
           // toast.success("Fetch all Suppplier error")
           dispatch(fetchAllProductsFailed());
         }
-      }
-      else {
+      } else {
         let res = await getAllProducts(inputId);
         if (res && res.errCode === 0) {
           dispatch(fetchAllProductsSuccess(res.products.reverse())); ///reverse giup dao nguoc mang
@@ -29,7 +29,6 @@ export const fetchAllProductsStart = (inputId) => {
           dispatch(fetchAllProductsFailed());
         }
       }
-
     } catch (error) {
       // toast.success("Fetch all Suppplier error")
       dispatch(fetchAllProductsFailed());
@@ -125,4 +124,33 @@ export const editProductSuccess = () => ({
 });
 export const editProductFailed = () => ({
   type: actionTypes.EDIT_PRODUCT_FAILDED,
+});
+
+export const fetchProductSuggestions = (value) => {
+  return async (dispatch, getState) => {
+    dispatch(fetchProductSuggestionsRequest());
+    try {
+      const response = await getProductSuggestionsService({ q: value });
+      // console.log("res", response);
+      const data = response.suggestions;
+      // console.log("data", data);
+      dispatch(fetchProductSuggestionsSuccess(data));
+    } catch (error) {
+      dispatch(fetchProductSuggestionsFailure(error.message));
+    }
+  };
+};
+
+export const fetchProductSuggestionsRequest = () => ({
+  type: actionTypes.FETCH_PRODUCT_SUGGESTIONS_REQUEST,
+});
+
+export const fetchProductSuggestionsSuccess = (suggestions) => ({
+  type: actionTypes.FETCH_PRODUCT_SUGGESTIONS_SUCCESS,
+  payload: suggestions,
+});
+
+export const fetchProductSuggestionsFailure = (error) => ({
+  type: actionTypes.FETCH_PRODUCT_SUGGESTIONS_FAILURE,
+  payload: error,
 });

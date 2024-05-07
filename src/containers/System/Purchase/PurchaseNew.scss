@@ -37,6 +37,23 @@ button {
   border-radius: 5px;
   padding: 5px;
   width: 100%;
+  position: relative;
+}
+
+.item-left .react-autosuggest__container {
+  width: 670px;
+}
+
+.item-left .react-autosuggest__input {
+  width: 670px;
+}
+
+.item-right .react-autosuggest__container {
+  width: 250px;
+}
+
+.item-right .react-autosuggest__input {
+  width: 250px;
 }
 
 .search-bar input[type="text"] {
@@ -45,6 +62,38 @@ button {
   outline: none;
   padding: 5px;
   font-size: 16px;
+}
+
+/* Đảm bảo phần suggest không ảnh hưởng đến vị trí của các phần khác */
+.react-autosuggest__suggestions-container {
+  position: absolute;
+  width: 100%;
+  top: calc(70% + 4px); /* Hiển thị phía dưới input và có khoảng cách */
+  left: 0;
+  z-index: 999; /* Đảm bảo nó hiển thị trên các phần khác */
+  background-color: white;
+  // border: 1px solid #ccc;
+  // border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  // max-height: 200px; /* Giới hạn chiều cao của danh sách suggestion */
+  overflow-y: auto; /* Cho phép cuộn nếu danh sách quá dài */
+}
+
+/* Tùy chỉnh style cho mỗi suggestion */
+.react-autosuggest__suggestion {
+  padding: 8px 12px;
+  cursor: pointer;
+  background-color: #ffffff;
+}
+
+/* Style cho suggestion được chọn hoặc focus */
+.react-autosuggest__suggestion--highlighted {
+  background-color: #cceeff;
+}
+
+/* Khi di chuột qua suggestion, hiện background màu xanh */
+.react-autosuggest__suggestion:hover {
+  background-color: #cceeff; /* Màu xanh nhạt */
 }
 
 .item-table {
@@ -65,6 +114,38 @@ td {
 
 th {
   background-color: #f2f2f2;
+}
+
+.quantity-btn {
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.quantity-btn:hover,
+.quantity-btn:focus {
+  border-color: #999;
+}
+
+.quantity {
+  margin: 0 5px;
+}
+
+.quantity-input {
+  -moz-appearance: textfield;
+  appearance: textfield;
+  border: none;
+  background-color: transparent;
+  width: 50px;
+  color: #000;
+  text-align: center;
+}
+
+.quantity-input::-webkit-inner-spin-button,
+.quantity-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .item-right {
@@ -111,6 +192,16 @@ th {
 .quantity-box .total-quantity,
 .money-box .total-money {
   margin-left: 10px;
+}
+
+.total-quantity {
+  border: 1px solid black;
+  // border-radius: 5px;
+  padding: 5px;
+}
+
+.total-money {
+  font-weight: bold;
 }
 
 .wrap-button {
