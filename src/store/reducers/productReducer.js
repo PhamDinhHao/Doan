@@ -2,6 +2,9 @@ import actionTypes from "../actions/actionTypes";
 
 const initialState = {
   products: [],
+  loading: false,
+  error: null,
+  productSuggestions: [],
 };
 
 const productReducer = (state = initialState, action) => {
@@ -15,6 +18,24 @@ const productReducer = (state = initialState, action) => {
       state.products = [];
       return {
         ...state,
+      };
+    case actionTypes.FETCH_PRODUCT_SUGGESTIONS_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+    case actionTypes.FETCH_PRODUCT_SUGGESTIONS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        productSuggestions: action.payload,
+
+      };
+    case actionTypes.FETCH_PRODUCT_SUGGESTIONS_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
       };
     default:
       return state;

@@ -4,18 +4,30 @@ import {
   createNewProductService,
   deleteProductService,
   editProductService,
+  getProductSuggestionsService,
 } from "../../services/productService";
 
-export const fetchAllProductsStart = () => {
+export const fetchAllProductsStart = (inputId) => {
+
   return async (dispatch, getState) => {
     try {
-      let res = await getAllProducts("ALL");
+      if (!inputId) {
+        let res = await getAllProducts("ALL");
 
-      if (res && res.errCode === 0) {
-        dispatch(fetchAllProductsSuccess(res.products.reverse())); ///reverse giup dao nguoc mang
+        if (res && res.errCode === 0) {
+          dispatch(fetchAllProductsSuccess(res.products.reverse())); ///reverse giup dao nguoc mang
+        } else {
+          // toast.success("Fetch all Suppplier error")
+          dispatch(fetchAllProductsFailed());
+        }
       } else {
-        // toast.success("Fetch all Suppplier error")
-        dispatch(fetchAllProductsFailed());
+        let res = await getAllProducts(inputId);
+        if (res && res.errCode === 0) {
+          dispatch(fetchAllProductsSuccess(res.products.reverse())); ///reverse giup dao nguoc mang
+        } else {
+          // toast.success("Fetch all Suppplier error")
+          dispatch(fetchAllProductsFailed());
+        }
       }
     } catch (error) {
       // toast.success("Fetch all Suppplier error")
@@ -34,6 +46,7 @@ export const fetchAllProductsFailed = () => ({
 });
 
 export const createNewProduct = (data) => {
+
   return async (dispatch, getState) => {
     try {
       let res = await createNewProductService(data);
@@ -111,4 +124,34 @@ export const editProductSuccess = () => ({
 });
 export const editProductFailed = () => ({
   type: actionTypes.EDIT_PRODUCT_FAILDED,
+});
+
+export const fetchProductSuggestions = (value) => {
+
+  return async (dispatch, getState) => {
+    dispatch(fetchProductSuggestionsRequest());
+    try {
+      const response = await getProductSuggestionsService({ q: value });
+
+      const data = response.suggestions;
+
+      dispatch(fetchProductSuggestionsSuccess(data));
+    } catch (error) {
+      dispatch(fetchProductSuggestionsFailure(error.message));
+    }
+  };
+};
+
+export const fetchProductSuggestionsRequest = () => ({
+  type: actionTypes.FETCH_PRODUCT_SUGGESTIONS_REQUEST,
+});
+
+export const fetchProductSuggestionsSuccess = (suggestions) => ({
+  type: actionTypes.FETCH_PRODUCT_SUGGESTIONS_SUCCESS,
+  payload: suggestions,
+});
+
+export const fetchProductSuggestionsFailure = (error) => ({
+  type: actionTypes.FETCH_PRODUCT_SUGGESTIONS_FAILURE,
+  payload: error,
 });
