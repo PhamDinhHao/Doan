@@ -6,6 +6,9 @@ import Autosuggest from "react-autosuggest";
 import * as actions from "../../../store/actions";
 import DatePicker from "../../../components/Input/DatePicker";
 // import InputSuggest from "../../../components/Input/InputSuggest";
+import ModelNewProduct from "../../System/Product/ModelNewProduct";
+import ModelNewSupplier from "../../System/Supplier/ModelNewSupplier";
+import { emitter } from "../../../utils/emitter";
 
 class PurchaseNew extends Component {
   constructor(props) {
@@ -18,10 +21,12 @@ class PurchaseNew extends Component {
       products: [],
       updatedproducts: [],
       selectedDate: new Date(),
+      isOpenNewProduct: false,
+      isOpenNewSupplier: false,
     };
   }
 
-  componentDidMount() { }
+  componentDidMount() {}
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.supplierSuggestions !== this.props.supplierSuggestions) {
@@ -35,6 +40,64 @@ class PurchaseNew extends Component {
       this.setState({ productSuggestions: this.props.productSuggestions });
     }
   }
+
+  toggleProductModal = () => {
+    this.setState({
+      isOpenNewProduct: !this.state.isOpenNewProduct,
+    });
+  };
+
+  handleAddNewProduct = () => {
+    this.setState({
+      isOpenNewProduct: true,
+    });
+  };
+
+  createNewProduct = async (data) => {
+    try {
+      let response = await this.props.createNewProductRedux(data);
+
+      if (response && response.errCode !== 0) {
+        alert(response.errMessage);
+      } else {
+        this.setState({
+          isOpenNewProduct: false,
+        });
+        emitter.emit("EVENT_CLEAR_MODAL_DATA", { id: "your id" });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  toggleSupplierModal = () => {
+    this.setState({
+      isOpenNewSupplier: !this.state.isOpenNewSupplier,
+    });
+  };
+
+  handleAddNewSupplier = () => {
+    this.setState({
+      isOpenNewSupplier: true,
+    });
+  };
+
+  createNewSupplier = async (data) => {
+    try {
+      let response = await this.props.createNewSupplierRedux(data);
+      if (response && response.errCode !== 0) {
+        alert(response.errMessage);
+      } else {
+        this.setState({
+          isOpenNewSupplier: false,
+        });
+        emitter.emit("EVENT_CLEAR_MODAL_DATA", { id: "your id" });
+      }
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   getSupplierSuggestions = async (value) => {
     try {
@@ -110,6 +173,9 @@ class PurchaseNew extends Component {
       // Sản phẩm đã tồn tại trong bảng
       const updatedProducts = [...products];
       updatedProducts[existingProductIndex].quantity++; // Tăng số lượng sản phẩm
+      updatedProducts[existingProductIndex].total =
+        updatedProducts[existingProductIndex].quantity *
+        updatedProducts[existingProductIndex].costPrice;
       this.setState({ products: updatedProducts });
     } else {
       // Sản phẩm chưa tồn tại trong bảng
@@ -117,7 +183,8 @@ class PurchaseNew extends Component {
         id: suggestion.id,
         name: suggestion.productName,
         quantity: 1,
-        salePrice: suggestion.salePrice,
+        costPrice: suggestion.costPrice,
+        total: suggestion.costPrice,
       };
       const newProducts = [...products, newProduct];
       this.setState({ products: newProducts });
@@ -128,6 +195,8 @@ class PurchaseNew extends Component {
     const { products } = this.state;
     const updatedproducts = [...products];
     updatedproducts[index].quantity++;
+    updatedproducts[index].total =
+      updatedproducts[index].quantity * updatedproducts[index].costPrice;
     this.setState({ products: updatedproducts });
   };
 
@@ -135,6 +204,8 @@ class PurchaseNew extends Component {
     const { products } = this.state;
     const updatedproducts = [...products];
     updatedproducts[index].quantity--;
+    updatedproducts[index].total =
+      updatedproducts[index].quantity * updatedproducts[index].costPrice;
     this.setState({ products: updatedproducts });
   };
 
@@ -145,6 +216,8 @@ class PurchaseNew extends Component {
       // Update số lượng cho sản phẩm tại index
       const updatedProducts = [...this.state.products];
       updatedProducts[index].quantity = newQuantity;
+      updatedProducts[index].total =
+        newQuantity * updatedProducts[index].costPrice;
       this.setState({ products: updatedProducts });
     }
   };
@@ -152,7 +225,8 @@ class PurchaseNew extends Component {
   onPriceChange = (index, newPrice) => {
     const { products } = this.state;
     const updatedproducts = [...products];
-    updatedproducts[index].salePrice = newPrice;
+    updatedproducts[index].costPrice = newPrice;
+    updatedproducts[index].total = newPrice * updatedproducts[index].quantity;
     this.setState({ products: updatedproducts });
   };
 
@@ -176,13 +250,50 @@ class PurchaseNew extends Component {
     const { products } = this.state;
     let totalMoney = 0;
     products.forEach((product) => {
-      totalMoney += product.quantity * product.salePrice;
+      totalMoney += product.quantity * product.costPrice;
     });
     return totalMoney;
   };
 
   handleDateChange = (date) => {
     this.setState({ selectedDate: date });
+  };
+
+  savePurchaseAndDetails = async (selectedDate) => {
+    try {
+      // Dispatch action để tạo purchase mới
+      await this.props.createNewPurchaseRedux({
+        purchaseDate: selectedDate,
+      });
+
+      // Truy cập purchaseId từ props
+      const { purchaseId } = this.props;
+      console.log("id", purchaseId);
+
+      await Promise.all(
+        this.state.products.map(async (product) => {
+          const {
+            id: productId,
+            name: productName,
+            quantity,
+            costPrice,
+            total,
+          } = product;
+          await this.props.createPurchaseDetailRedux({
+            purchaseId: purchaseId,
+            productId: productId,
+            productName: productName,
+            quantity: quantity,
+            costPrice: costPrice,
+            total: total,
+          });
+        })
+      );
+
+      console.log("Purchase and details saved successfully!");
+    } catch (error) {
+      console.error("Error saving purchase and details:", error);
+    }
   };
 
   render() {
@@ -195,7 +306,7 @@ class PurchaseNew extends Component {
       updatedproducts,
       selectedDate,
     } = this.state;
-
+    console.log("products", products);
     const supplierInputProps = {
       placeholder: "Search supplier",
       value: supplierValue,
@@ -242,7 +353,7 @@ class PurchaseNew extends Component {
                   onSuggestionSelected={this.onProductTableSuggestionSelected}
                 />
               </div>
-              <button>
+              <button onClick={() => this.handleAddNewProduct()}>
                 <i class="fas fa-plus"></i>
               </button>
             </div>
@@ -306,7 +417,7 @@ class PurchaseNew extends Component {
                     <td>
                       <input
                         type="number"
-                        value={product.salePrice}
+                        value={product.costPrice}
                         onChange={(e) =>
                           this.onPriceChange(index, e.target.value)
                         }
@@ -314,11 +425,23 @@ class PurchaseNew extends Component {
                         pattern="[0-9]*"
                       />
                     </td>
-                    <td>{product.quantity * product.salePrice}</td>
+                    <td>{product.quantity * product.costPrice}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
+          <div className="product-list">
+            <ModelNewProduct
+              isOpen={this.state.isOpenNewProduct}
+              toggleFromParent={this.toggleProductModal}
+              createNewProduct={this.createNewProduct}
+            />
+            <ModelNewSupplier
+              isOpen={this.state.isOpenNewSupplier}
+              toggleFromParent={this.toggleSupplierModal}
+              createNewSupplier={this.createNewSupplier}
+            />
           </div>
         </div>
         <div class="item-right">
@@ -351,7 +474,7 @@ class PurchaseNew extends Component {
                   inputProps={supplierInputProps}
                 />
               </div>
-              <button>
+              <button onClick={() => this.handleAddNewSupplier()}>
                 <i class="fas fa-plus"></i>
               </button>
             </div>
@@ -365,7 +488,11 @@ class PurchaseNew extends Component {
             </div>
           </div>
           <div class="wrap-button">
-            <a class="btn btn-success btn-font--medium ng-binding ng-isolate-scope">
+            <a
+              href="#"
+              className="btn btn-success btn-font--medium"
+              onClick={() => this.savePurchaseAndDetails(selectedDate)}
+            >
               <i class="fas fa-check"></i>
             </a>
           </div>
@@ -379,6 +506,7 @@ const mapStateToProps = (state) => {
   return {
     supplierSuggestions: state.supplier.supplierSuggestions,
     productSuggestions: state.product.productSuggestions,
+    purchaseId: state.purchase.purchaseId,
   };
 };
 
@@ -388,6 +516,11 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(actions.fetchSupplierSuggestions(value)),
     fetchProductSuggestionsRedux: (value) =>
       dispatch(actions.fetchProductSuggestions(value)),
+    createNewPurchaseRedux: (data) => dispatch(actions.createNewPurchase(data)),
+    createPurchaseDetailRedux: (data) =>
+      dispatch(actions.createNewPurchaseDetail(data)),
+    createNewProductRedux: (data) => dispatch(actions.createNewProduct(data)),
+    createNewSupplierRedux: (data) => dispatch(actions.createNewSupplier(data)),
   };
 };
 
