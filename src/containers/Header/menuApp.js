@@ -90,3 +90,14 @@ export const adminMenu = [
         ]
     }
 ];
+export const adminMenuSale = [
+    { //hệ thống
+        name: 'Bán hàng', menus: [
+            {
+                name: 'Hóa đơn', link: '/system/sale'
+
+            }
+
+        ]
+    }
+];

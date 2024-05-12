@@ -5,7 +5,7 @@ import "./PurchaseNew.scss";
 import Autosuggest from "react-autosuggest";
 import * as actions from "../../../store/actions";
 import DatePicker from "../../../components/Input/DatePicker";
-// import InputSuggest from "../../../components/Input/InputSuggest";
+
 import ModelNewProduct from "../../System/Product/ModelNewProduct";
 import ModelNewSupplier from "../../System/Supplier/ModelNewSupplier";
 import { emitter } from "../../../utils/emitter";
@@ -26,7 +26,7 @@ class PurchaseNew extends Component {
     };
   }
 
-  componentDidMount() {}
+  componentDidMount() { }
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.supplierSuggestions !== this.props.supplierSuggestions) {
@@ -318,14 +318,7 @@ class PurchaseNew extends Component {
       value: productValue,
       onChange: this.onProductChange,
     };
-    // console.log("Autosuggest props:", {
-    //   suggestions: supplierSuggestions,
-    //   onSuggestionsFetchRequested: this.onSuggestionsFetchRequested,
-    //   onSuggestionsClearRequested: this.onSuggestionsClearRequested,
-    //   getSuggestionValue: this.getSuggestionValue,
-    //   renderSuggestion: this.renderSuggestion,
-    //   inputProps: supplierInputProps,
-    // });
+
     return (
       <div class="cover-div">
         <div class="item-left">
@@ -339,7 +332,7 @@ class PurchaseNew extends Component {
               <button>
                 <i class="fas fa-search icon"></i>
               </button>
-              {/* <input type="text" placeholder="Search product"></input> */}
+
               <div class="suggestion-container">
                 <Autosuggest
                   suggestions={productSuggestions}
@@ -396,7 +389,7 @@ class PurchaseNew extends Component {
                       >
                         -
                       </button>
-                      {/* <span className="quantity">{product.quantity}</span> */}
+
                       <input
                         type="number"
                         className="quantity-input"
@@ -461,7 +454,7 @@ class PurchaseNew extends Component {
               <button>
                 <i class="fas fa-search icon"></i>
               </button>
-              {/* <input type="text" placeholder="Search supplier"></input> */}
+
               <div class="suggestion-container">
                 <Autosuggest
                   suggestions={supplierSuggestions}

@@ -340,7 +340,7 @@ class ProductManage extends Component {
                     <Table
                       pagination={{ pageSize: 10 }} scroll={{ y: 700 }} columns={this.state.columns} dataSource={filteredProducts} onRow={(record, rowIndex) => {
                         return {
-                          onClick: (event) => { console.log("check record", record) }, // click row
+                          // onClick: (event) => { console.log("check record", record) }, // click row
 
                         };
 

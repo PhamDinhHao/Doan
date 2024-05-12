@@ -4,6 +4,7 @@ import {
   createNewCustomerService,
   deleteCustomerService,
   editCustomerService,
+  getCustomerSuggestionsService
 } from "../../services/customerService";
 
 export const fetchAllCustomersStart = () => {
@@ -69,11 +70,11 @@ export const deleteCustomer = (customerid) => {
         dispatch(deleteCustomerSuccess());
         dispatch(fetchAllCustomersStart());
       } else {
-        // toast.success("delete a new Supplier error")
+        // toast.success("delete a new Customer error")
         dispatch(deleteCustomerFailed());
       }
     } catch (error) {
-      // toast.success("delete a new Supplier error")
+      // toast.success("delete a new Customer error")
       dispatch(deleteCustomerFailed());
       console.log("error", error);
     }
@@ -111,4 +112,32 @@ export const editCustomerSuccess = () => ({
 });
 export const editCustomerFailed = () => ({
   type: actionTypes.EDIT_CUSTOMER_FAILDED,
+});
+export const fetchCustomerSuggestions = (value) => {
+  return async (dispatch, getState) => {
+    dispatch(fetchCustomerSuggestionsRequest());
+    try {
+      const response = await getCustomerSuggestionsService({ q: value });
+      // console.log("res", response);
+      const data = response.suggestions;
+      // console.log("data", data);
+      dispatch(fetchCustomerSuggestionsSuccess(data));
+    } catch (error) {
+      dispatch(fetchCustomerSuggestionsFailure(error.message));
+    }
+  };
+};
+
+export const fetchCustomerSuggestionsRequest = () => ({
+  type: actionTypes.FETCH_CUSTOMER_SUGGESTIONS_REQUEST,
+});
+
+export const fetchCustomerSuggestionsSuccess = (suggestions) => ({
+  type: actionTypes.FETCH_CUSTOMER__SUGGESTIONS_SUCCESS,
+  payload: suggestions,
+});
+
+export const fetchCustomerSuggestionsFailure = (error) => ({
+  type: actionTypes.FETCH_CUSTOMER__SUGGESTIONS_FAILURE,
+  payload: error,
 });

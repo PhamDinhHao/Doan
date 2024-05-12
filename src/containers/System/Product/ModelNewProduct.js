@@ -53,37 +53,49 @@ class ModelNewProduct extends Component {
     emitter.on("EVENT_CLEAR_MODAL_DATA", () => {
       this.setState({
         productName: "",
-        category: "",
-        cost: "",
-        sale: "",
+
         costPrice: "",
         salePrice: "",
         image: "",
         quantity: "",
         description: "",
+        previewImgUrl: "",
+
         supplierRedux: [],
+        listSupplierState: [],
+        selectedSupplier: [],
+
+        arrCategorys: [],
+        listCategoryState: [],
+        selectedCategory: [],
+
+
+        arrUnits: [],
+        listUnitState: [],
+        selectedUnit: [],
+
       });
     });
   }
 
-  getAllCategoryFromReact = async () => {
-
+  async getAllCategoryFromReact() {
     let response = await getAllCategory('ALL');
     let response1 = await getAllUnit('ALL');
-    if (response && response.errCode == 0) {
+    if (response && response.errCode === 0 && JSON.stringify(response.categorys) !== JSON.stringify(this.state.arrCategorys)) {
       this.setState({
         arrCategorys: response.categorys
-      })
+      });
     }
-    if (response1 && response1.errCode == 0) {
+    if (response1 && response1.errCode === 0 && JSON.stringify(response1.units) !== JSON.stringify(this.state.arrUnits)) {
       this.setState({
         arrUnits: response1.units
-      })
+      });
     }
   }
   async componentDidMount() {
     this.props.fetchSupplierRedux();
     await this.getAllCategoryFromReact();
+    console.log("chech log", this.state.arrUnits)
   }
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.listSuppliers !== this.props.listSuppliers) {
@@ -96,12 +108,23 @@ class ModelNewProduct extends Component {
 
     if (prevState.arrCategorys !== this.state.arrCategorys) {
       let dataSelectCategory = this.buildDataInputSelectCategory(this.state.arrCategorys)
-      let dataSelectUnit = this.buildDataInputSelectUnit(this.state.arrUnits)
-      this.getAllCategoryFromReact();
+
+
       this.setState({
         listCategoryState: dataSelectCategory,
+
+      })
+      this.getAllCategoryFromReact();
+    }
+    if (prevState.arrUnits !== this.state.arrUnits) {
+
+      let dataSelectUnit = this.buildDataInputSelectUnit(this.state.arrUnits)
+
+      this.setState({
+
         listUnitState: dataSelectUnit
       })
+      this.getAllCategoryFromReact();
     }
   }
 
