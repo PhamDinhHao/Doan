@@ -85,7 +85,7 @@ class PurchaseManage extends Component {
 
   handleUpdateProduct = (record) => {
     this.props.history.push({
-      pathname: "/system/purchase-new",
+      pathname: "/system/purchase-update",
       state: { record },
     });
   };

@@ -7,6 +7,7 @@ import CustomerManage from "../containers/System/Customer/CustomerManage";
 import SupplierManage from "../containers/System/Supplier/SupplierManage";
 import PurchaseManage from "../containers/System/Purchase/PurchaseManage";
 import PurchaseNew from "../containers/System/Purchase/PurchaseNew";
+import PurchaseUpdate from "../containers/System/Purchase/PurchaseUpdate";
 import SaleNew from "../containers/System/Sale/SaleNew";
 import RegisterPackageGroupOrAcc from "../containers/System/RegisterPackageGroupOrAcc";
 
@@ -23,13 +24,13 @@ class System extends Component {
             <Route path="/system/supplier" component={SupplierManage} />
             <Route path="/system/purchase" component={PurchaseManage} />
             <Route path="/system/purchase-new" component={PurchaseNew} />
+            <Route path="/system/purchase-update" component={PurchaseUpdate} />
             <Route path="/system/sale" component={SaleNew} />
 
             <Route
               path="/system/register-package-group-or-account"
               component={RegisterPackageGroupOrAcc}
             />
-
 
             <Route
               component={() => {

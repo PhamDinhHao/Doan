@@ -313,7 +313,7 @@ class ProductManage extends Component {
                     onClick={() => this.handleAddNewProduct()}
                   >
                     <i className="fas fa-plus"></i>
-                    <span>Them moi</span>
+                    <span>Thêm Mới</span>
                   </button>
                 </div>
               </div>

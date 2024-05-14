@@ -3,6 +3,7 @@ import {
   createNewPurchaseService,
   createNewPurchaseDetailService,
   getAllPurchases,
+  getPurchaseDetailService,
 } from "../../services/purchaseService";
 
 export const createNewPurchase = (data) => {
@@ -117,6 +118,36 @@ export const fetchAllPurchasesSuccess = (data) => ({
   type: actionTypes.FETCH_ALL_PURCHASES_SUCCESS,
   payload: { purchases: data },
 });
+
 export const fetchAllPurchasesFailed = () => ({
   type: actionTypes.FETCH_ALL_PURCHASES_FAILED,
 });
+
+// export const editPurchase = (data) => {
+//   return async (dispatch, getState) => {
+//     try {
+//       let res = await editProductService(data);
+
+//       if (res && res.errCode === 0) {
+//         // toast.success("update user success") //thu vien toastify
+//         dispatch(editProductSuccess());
+//         dispatch(fetchAllProductsStart());
+//       } else {
+//         // toast.success("Edit  user error")
+//         dispatch(editProductFailed());
+//       }
+//     } catch (error) {
+//       // toast.success("Edituser error")
+//       dispatch(editProductFailed());
+//       console.log("error", error);
+//     }
+//   };
+// };
+
+// export const editPurchaseSuccess = () => ({
+//   type: actionTypes.EDIT_PURCHASE_SUCCESS,
+// });
+
+// export const editPurchaseFailed = () => ({
+//   type: actionTypes.EDIT_PURCHASE_FAILDED,
+// });
