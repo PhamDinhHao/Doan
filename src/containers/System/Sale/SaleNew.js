@@ -23,17 +23,15 @@ class SaleNew extends Component {
             selectedDate: new Date(),
             isOpenNewProduct: false,
             isOpenNewCustomer: false,
+            selectedCustomerId: null
         };
     }
 
-    componentDidMount() { }
+    componentDidMount() {
+    }
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.customerSuggestions !== this.props.customerSuggestions) {
-            // console.log(
-            //   "Customer suggestions received:",
-            //   this.props.customerSuggestions
-            // );
             this.setState({ customerSuggestions: this.props.customerSuggestions });
         }
         if (prevProps.productSuggestions !== this.props.productSuggestions) {
@@ -101,14 +99,6 @@ class SaleNew extends Component {
 
     getcustomerSuggestions = async (value) => {
         try {
-            // const response = await fetch(`/api/get-Customer-suggestion?q=${value}`);
-            // const data = await response.json();
-
-            // if (data && data.length > 0) {
-            //   this.setState({ customerSuggestions: data });
-            // } else {
-            //   this.setState({ customerSuggestions: [] });
-            // }
             this.props.fetchCustomerSuggestionsRedux(value);
         } catch (error) {
             console.error("error fetching Customer suggestions", error);
@@ -128,9 +118,11 @@ class SaleNew extends Component {
     renderProductSuggestion = (suggestion) => <div>{suggestion.productName}</div>;
 
     onCustomerChange = (event, { newValue }) => {
+
         this.setState({
             CustomerValue: newValue,
         });
+
         this.getcustomerSuggestions(newValue);
     };
 
@@ -261,14 +253,11 @@ class SaleNew extends Component {
 
     saveSaleAndDetails = async (selectedDate) => {
         try {
-            // Dispatch action để tạo Sale mới
             await this.props.createNewSaleRedux({
                 saleDate: selectedDate,
+                customerId: this.state.selectedCustomerId
             });
-
-            // Truy cập SaleId từ props
             const { saleId } = this.props;
-            console.log("id", saleId);
 
             await Promise.all(
                 this.state.products.map(async (product) => {
@@ -284,7 +273,6 @@ class SaleNew extends Component {
                         productId: productId,
                         productName: productName,
                         quantity: quantity,
-
                         total: total,
                     });
                 })
@@ -295,7 +283,11 @@ class SaleNew extends Component {
             console.error("Error saving Sale and details:", error);
         }
     };
-
+    onSuggestionSelected = (event, { suggestion }) => {
+        this.setState({
+            selectedCustomerId: suggestion.id
+        });
+    };
     render() {
         const {
             CustomerValue,
@@ -306,7 +298,7 @@ class SaleNew extends Component {
             updatedproducts,
             selectedDate,
         } = this.state;
-        console.log("products", products);
+
         const CustomerInputProps = {
             placeholder: "Search Customer",
             value: CustomerValue,
@@ -318,14 +310,6 @@ class SaleNew extends Component {
             value: productValue,
             onChange: this.onProductChange,
         };
-        // console.log("Autosuggest props:", {
-        //   suggestions: customerSuggestions,
-        //   onSuggestionsFetchRequested: this.onSuggestionsFetchRequested,
-        //   onSuggestionsClearRequested: this.onSuggestionsClearRequested,
-        //   getSuggestionValue: this.getSuggestionValue,
-        //   renderSuggestion: this.renderSuggestion,
-        //   inputProps: CustomerInputProps,
-        // });
         return (
             <div class="cover-div">
                 <div class="item-left">
@@ -448,7 +432,7 @@ class SaleNew extends Component {
                     <div class="purchare-order">
                         <div class="user-box">
                             <div class="user-name">
-                                <span>user</span>
+                                <span>{this.props.userInfo.name}</span>
                             </div>
                             <div class="datetime-picker">
                                 <DatePicker
@@ -472,6 +456,8 @@ class SaleNew extends Component {
                                     getSuggestionValue={(suggestion) => suggestion.name}
                                     renderSuggestion={this.renderCustomerSuggestion}
                                     inputProps={CustomerInputProps}
+                                    onSuggestionSelected={this.onSuggestionSelected}
+
                                 />
                             </div>
                             <button onClick={() => this.handleAddNewCustomer()}>
@@ -507,6 +493,7 @@ const mapStateToProps = (state) => {
         customerSuggestions: state.customer.customerSuggestions,
         productSuggestions: state.product.productSuggestions,
         saleId: state.sale.saleId,
+        userInfo: state.user.userInfo,
     };
 };
 

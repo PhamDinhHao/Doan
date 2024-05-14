@@ -8,9 +8,9 @@ export const createNewSale = (data) => {
     return async (dispatch, getState) => {
         try {
             let res = await createNewSaleService(data);
-            // console.log("id", res.SaleId);
+
             if (res && res.errCode === 0) {
-                dispatch(saveSaleSuccess(res.SaleId));
+                dispatch(saveSaleSuccess(res.saleId));
             } else {
                 dispatch(saveSaleFailed());
             }
@@ -20,9 +20,9 @@ export const createNewSale = (data) => {
     };
 };
 
-export const saveSaleSuccess = (SaleId) => ({
+export const saveSaleSuccess = (saleId) => ({
     type: actionTypes.CREATE_SALE_SUCCESS,
-    payload: { SaleId },
+    payload: { saleId },
 });
 
 export const saveSaleFailed = (error) => ({

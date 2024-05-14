@@ -117,10 +117,8 @@ export const fetchCustomerSuggestions = (value) => {
   return async (dispatch, getState) => {
     dispatch(fetchCustomerSuggestionsRequest());
     try {
-      const response = await getCustomerSuggestionsService({ q: value });
-      // console.log("res", response);
+      const response = await getCustomerSuggestionsService(value);
       const data = response.suggestions;
-      // console.log("data", data);
       dispatch(fetchCustomerSuggestionsSuccess(data));
     } catch (error) {
       dispatch(fetchCustomerSuggestionsFailure(error.message));
@@ -133,11 +131,11 @@ export const fetchCustomerSuggestionsRequest = () => ({
 });
 
 export const fetchCustomerSuggestionsSuccess = (suggestions) => ({
-  type: actionTypes.FETCH_CUSTOMER__SUGGESTIONS_SUCCESS,
+  type: actionTypes.FETCH_CUSTOMER_SUGGESTIONS_SUCCESS,
   payload: suggestions,
 });
 
 export const fetchCustomerSuggestionsFailure = (error) => ({
-  type: actionTypes.FETCH_CUSTOMER__SUGGESTIONS_FAILURE,
+  type: actionTypes.FETCH_CUSTOMER_SUGGESTIONS_FAILURE,
   payload: error,
 });

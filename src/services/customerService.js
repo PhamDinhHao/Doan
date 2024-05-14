@@ -19,6 +19,7 @@ const editCustomerService = (inputdata) => {
   return axios.put("/api/edit-customer", inputdata);
 };
 const getCustomerSuggestionsService = (inputdata) => {
+  console.log("check customer", inputdata);
   return axios.get("/api/get-customer-suggestion", { params: inputdata });
 };
 export {

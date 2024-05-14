@@ -306,7 +306,7 @@ class PurchaseNew extends Component {
       updatedproducts,
       selectedDate,
     } = this.state;
-    console.log("products", products);
+    
     const supplierInputProps = {
       placeholder: "Search supplier",
       value: supplierValue,
