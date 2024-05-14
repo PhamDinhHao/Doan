@@ -8,4 +8,12 @@ const createNewPurchaseDetailService = (data) => {
   return axios.post("/api/create-new-purchase-detail", data);
 };
 
-export { createNewPurchaseService, createNewPurchaseDetailService };
+const getAllPurchases = (inputid) => {
+  return axios.get(`/api/get-all-purchase?id=${inputid}`);
+};
+
+export {
+  createNewPurchaseService,
+  createNewPurchaseDetailService,
+  getAllPurchases,
+};

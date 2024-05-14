@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { FormattedMessage } from "react-intl";
 import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
 import "./PurchaseNew.scss";
 import Autosuggest from "react-autosuggest";
 import * as actions from "../../../store/actions";
@@ -15,6 +16,7 @@ class PurchaseNew extends Component {
     super(props);
     this.state = {
       supplierValue: "",
+      supplierId: null,
       supplierSuggestions: [],
       productValue: "",
       productSuggestions: [],
@@ -23,10 +25,25 @@ class PurchaseNew extends Component {
       selectedDate: new Date(),
       isOpenNewProduct: false,
       isOpenNewSupplier: false,
+      total: null,
+      // record: null,
     };
   }
 
-  componentDidMount() { }
+  componentDidMount() {
+    // const { state } = this.props.location;
+    // if (state && state.record) {
+    //   const { record } = state;
+    //   this.setState({
+    //     record,
+    //     // Cập nhật state khác nếu cần thiết, ví dụ:
+    //     // supplierValue: record.supplierValue,
+    //     supplierId: record.supplierId,
+    //     products: record.products,
+    //     selectedDate: new Date(record.purchaseDate),
+    //   });
+    // }
+  }
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.supplierSuggestions !== this.props.supplierSuggestions) {
@@ -45,6 +62,10 @@ class PurchaseNew extends Component {
     this.setState({
       isOpenNewProduct: !this.state.isOpenNewProduct,
     });
+  };
+
+  handleReturnToPurchase = () => {
+    this.props.history.push("/system/purchase");
   };
 
   handleAddNewProduct = () => {
@@ -127,11 +148,21 @@ class PurchaseNew extends Component {
 
   renderProductSuggestion = (suggestion) => <div>{suggestion.productName}</div>;
 
-  onSupplierChange = (event, { newValue }) => {
-    this.setState({
-      supplierValue: newValue,
-    });
-    this.getSupplierSuggestions(newValue);
+  onSupplierChange = (event, { newValue, method }) => {
+    if (method === "type") {
+      this.setState({
+        supplierValue: newValue,
+      });
+      this.getSupplierSuggestions(newValue);
+    } else if (method === "click" || method === "enter") {
+      const selectedSupplier = this.state.supplierSuggestions.find(
+        (supplier) => supplier.name === newValue
+      );
+      this.setState({
+        supplierValue: newValue,
+        supplierId: selectedSupplier ? selectedSupplier.id : null,
+      });
+    }
   };
 
   onProductChange = (event, { newValue }) => {
@@ -149,8 +180,12 @@ class PurchaseNew extends Component {
     this.getProductSuggestions(value);
   };
 
-  onSuggestionsClearRequested = () => {
+  onSupplierSuggestionsClearRequested = () => {
     this.setState({ supplierSuggestions: [] });
+  };
+
+  onProductSuggestionsClearRequested = () => {
+    this.setState({ productSuggestions: [] });
   };
 
   onProductTableSuggestionSelected = (event, { suggestion }) => {
@@ -189,6 +224,7 @@ class PurchaseNew extends Component {
       const newProducts = [...products, newProduct];
       this.setState({ products: newProducts });
     }
+    this.setState({ productValue: "" });
   };
 
   onQuantityIncrease = (index) => {
@@ -252,6 +288,7 @@ class PurchaseNew extends Component {
     products.forEach((product) => {
       totalMoney += product.quantity * product.costPrice;
     });
+    this.state.total = totalMoney;
     return totalMoney;
   };
 
@@ -264,6 +301,8 @@ class PurchaseNew extends Component {
       // Dispatch action để tạo purchase mới
       await this.props.createNewPurchaseRedux({
         purchaseDate: selectedDate,
+        supplierId: this.state.supplierId,
+        total: this.state.total,
       });
 
       // Truy cập purchaseId từ props
@@ -291,6 +330,7 @@ class PurchaseNew extends Component {
       );
 
       console.log("Purchase and details saved successfully!");
+      this.props.history.push("/system/purchase");
     } catch (error) {
       console.error("Error saving purchase and details:", error);
     }
@@ -299,18 +339,28 @@ class PurchaseNew extends Component {
   render() {
     const {
       supplierValue,
+      supplierId,
       supplierSuggestions,
       productValue,
       productSuggestions,
-      products,
+      products = [],
       updatedproducts,
       selectedDate,
+      // record,
     } = this.state;
-    console.log("products", products);
+    console.log("supplierId", supplierId);
     const supplierInputProps = {
       placeholder: "Search supplier",
       value: supplierValue,
       onChange: this.onSupplierChange,
+      // onBlur: () => {
+      //   const selectedSupplier = this.state.supplierSuggestions.find(
+      //     (supplier) => supplier.name === this.state.supplierValue
+      //   );
+      //   this.setState({
+      //     supplierId: selectedSupplier ? selectedSupplier.id : null,
+      //   });
+      // },
     };
 
     const productInputProps = {
@@ -324,7 +374,7 @@ class PurchaseNew extends Component {
         <div class="item-left">
           <div class="search-box">
             <div class="back-arrow">
-              <button>
+              <button onClick={() => this.handleReturnToPurchase()}>
                 <i class="fas fa-arrow-left"></i>
               </button>
             </div>
@@ -339,7 +389,9 @@ class PurchaseNew extends Component {
                   onSuggestionsFetchRequested={
                     this.onProductSuggestionsFetchRequested
                   }
-                  onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+                  onSuggestionsClearRequested={
+                    this.onProductSuggestionsClearRequested
+                  }
                   getSuggestionValue={(suggestion) => suggestion.productName}
                   renderSuggestion={this.renderProductSuggestion}
                   inputProps={productInputProps}
@@ -461,7 +513,9 @@ class PurchaseNew extends Component {
                   onSuggestionsFetchRequested={
                     this.onSupplierSuggestionsFetchRequested
                   }
-                  onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+                  onSuggestionsClearRequested={
+                    this.onSupplierSuggestionsClearRequested
+                  }
                   getSuggestionValue={(suggestion) => suggestion.name}
                   renderSuggestion={this.renderSupplierSuggestion}
                   inputProps={supplierInputProps}
