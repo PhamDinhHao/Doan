@@ -3,7 +3,7 @@ import {
   createNewPurchaseService,
   createNewPurchaseDetailService,
   getAllPurchases,
-  getPurchaseDetailService,
+  editPurchaseAndDetailsService,
 } from "../../services/purchaseService";
 
 export const createNewPurchase = (data) => {
@@ -123,31 +123,38 @@ export const fetchAllPurchasesFailed = () => ({
   type: actionTypes.FETCH_ALL_PURCHASES_FAILED,
 });
 
-// export const editPurchase = (data) => {
-//   return async (dispatch, getState) => {
-//     try {
-//       let res = await editProductService(data);
+export const editPurchaseAndDetails = (purchase, purchaseDetails) => {
+  return async (dispatch, getState) => {
+    // console.log(
+    //   "editPurchaseAndDetails called with:",
+    //   purchase,
+    //   purchaseDetails
+    // );
+    try {
+      let res = await editPurchaseAndDetailsService({
+        purchase,
+        purchaseDetails,
+      });
+      // console.log("purdet", res);
+      if (res && res.errCode === 0) {
+        // toast.success("update user success") //thu vien toastify
+        dispatch(editPurchaseAndDetailsSuccess());
+      } else {
+        // toast.success("Edit  user error")
+        dispatch(editPurchaseAndDetailsFailed());
+      }
+    } catch (error) {
+      // toast.success("Edituser error")
+      dispatch(editPurchaseAndDetailsFailed());
+      console.log("error", error);
+    }
+  };
+};
 
-//       if (res && res.errCode === 0) {
-//         // toast.success("update user success") //thu vien toastify
-//         dispatch(editProductSuccess());
-//         dispatch(fetchAllProductsStart());
-//       } else {
-//         // toast.success("Edit  user error")
-//         dispatch(editProductFailed());
-//       }
-//     } catch (error) {
-//       // toast.success("Edituser error")
-//       dispatch(editProductFailed());
-//       console.log("error", error);
-//     }
-//   };
-// };
+export const editPurchaseAndDetailsSuccess = () => ({
+  type: actionTypes.EDIT_PURCHASE_AND_DETAILS_SUCCESS,
+});
 
-// export const editPurchaseSuccess = () => ({
-//   type: actionTypes.EDIT_PURCHASE_SUCCESS,
-// });
-
-// export const editPurchaseFailed = () => ({
-//   type: actionTypes.EDIT_PURCHASE_FAILDED,
-// });
+export const editPurchaseAndDetailsFailed = () => ({
+  type: actionTypes.EDIT_PURCHASE_AND_DETAILS_FAILDED,
+});

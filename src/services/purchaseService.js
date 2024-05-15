@@ -12,13 +12,14 @@ const getAllPurchases = (inputid) => {
   return axios.get(`/api/get-all-purchase?id=${inputid}`);
 };
 
-// const editProductService = (inputdata) => {
-//   console.log("check input", inputdata);
-//   return axios.put("/api/edit-product", inputdata);
-// };
+const editPurchaseAndDetailsService = (inputdata) => {
+  console.log("check input", inputdata);
+  return axios.put("/api/edit-purchase-and-details", inputdata);
+};
 
 export {
   createNewPurchaseService,
   createNewPurchaseDetailService,
   getAllPurchases,
+  editPurchaseAndDetailsService,
 };

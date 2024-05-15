@@ -57,17 +57,17 @@ class PurchaseUpdate extends Component {
     if (prevProps.productSuggestions !== this.props.productSuggestions) {
       this.setState({ productSuggestions: this.props.productSuggestions });
     }
-    if (
-      prevProps.listProductByPurchaseId !== this.props.listProductByPurchaseId
-    ) {
-      console.log("list product received:", this.props.listProductByPurchaseId);
-      const productData = this.props.listProductByPurchaseId.data;
-      if (Array.isArray(this.props.listProductByPurchaseId)) {
-        this.setState({
-          products: productData,
-        });
-      }
-    }
+    // if (
+    //   prevProps.listProductByPurchaseId !== this.props.listProductByPurchaseId
+    // ) {
+    //   console.log("list product received:", this.props.listProductByPurchaseId);
+    //   const productData = this.props.listProductByPurchaseId.data;
+    //   if (Array.isArray(this.props.listProductByPurchaseId)) {
+    //     this.setState({
+    //       products: productData,
+    //     });
+    //   }
+    // }
   }
 
   toggleProductModal = () => {
@@ -228,7 +228,7 @@ class PurchaseUpdate extends Component {
       // Sản phẩm chưa tồn tại trong bảng
       const newProduct = {
         id: suggestion.id,
-        name: suggestion.productName,
+        productName: suggestion.productName,
         quantity: 1,
         costPrice: suggestion.costPrice,
         total: suggestion.costPrice,
@@ -308,43 +308,43 @@ class PurchaseUpdate extends Component {
     this.setState({ selectedDate: date });
   };
 
-  savePurchaseAndDetails = async (selectedDate) => {
+  updatePurchaseAndDetails = async (selectedDate) => {
+    // console.log("updatePurchaseAndDetails called");
     try {
-      // Dispatch action để tạo purchase mới
-      await this.props.createNewPurchaseRedux({
-        purchaseDate: selectedDate,
+      const purchase = {
+        purchaseId: this.state.record.id,
         supplierId: this.state.supplierId,
         total: this.state.total,
+      };
+
+      const purchaseDetails = this.state.products.map((product) => {
+        const {
+          id: productId,
+          // name: productName,
+          quantity,
+          costPrice,
+          total,
+        } = product;
+        return {
+          purchaseId: this.state.record.id,
+          productId: productId,
+          // productName: productName,
+          quantity: quantity,
+          costPrice: costPrice,
+          total: total,
+        };
       });
+      // console.log(
+      //   "editPurchaseAndDetails called with:",
+      //   purchase,
+      //   purchaseDetails
+      // );
+      await this.props.editPurchaseAndDetailsRedux(purchase, purchaseDetails);
 
-      // Truy cập purchaseId từ props
-      const { purchaseId } = this.props;
-      console.log("id", purchaseId);
-
-      await Promise.all(
-        this.state.products.map(async (product) => {
-          const {
-            id: productId,
-            name: productName,
-            quantity,
-            costPrice,
-            total,
-          } = product;
-          await this.props.createPurchaseDetailRedux({
-            purchaseId: purchaseId,
-            productId: productId,
-            productName: productName,
-            quantity: quantity,
-            costPrice: costPrice,
-            total: total,
-          });
-        })
-      );
-
-      console.log("Purchase and details saved successfully!");
+      console.log("Purchase and details updated successfully!");
       this.props.history.push("/system/purchase");
     } catch (error) {
-      console.error("Error saving purchase and details:", error);
+      console.error("Error updating purchase and details:", error);
     }
   };
 
@@ -360,7 +360,7 @@ class PurchaseUpdate extends Component {
       selectedDate,
       record,
     } = this.state;
-    console.log("record", record);
+    // console.log("products", products);
     const supplierInputProps = {
       placeholder: "Search supplier",
       value: supplierValue,
@@ -444,7 +444,7 @@ class PurchaseUpdate extends Component {
                     </td>
                     <td>{index + 1}</td>
                     <td>{product.id}</td>
-                    <td>{product.name}</td>
+                    <td>{product.productName}</td>
                     <td>
                       <button
                         className="quantity-btn"
@@ -547,13 +547,13 @@ class PurchaseUpdate extends Component {
             </div>
           </div>
           <div class="wrap-button">
-            <a
-              href="#"
+            <button
+              // href="#"
               className="btn btn-success btn-font--medium"
-              onClick={() => this.savePurchaseAndDetails(selectedDate)}
+              onClick={() => this.updatePurchaseAndDetails(selectedDate)}
             >
               <i class="fas fa-check"></i>
-            </a>
+            </button>
           </div>
         </div>
       </div>
@@ -583,6 +583,8 @@ const mapDispatchToProps = (dispatch) => {
     createNewSupplierRedux: (data) => dispatch(actions.createNewSupplier(data)),
     fetchProductByPurchaseIdRedux: (data) =>
       dispatch(actions.fetchProductByPurchaseIdRedux(data)),
+    editPurchaseAndDetailsRedux: (purchase, purchaseDetails) =>
+      dispatch(actions.editPurchaseAndDetails(purchase, purchaseDetails)),
   };
 };
 
