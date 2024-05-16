@@ -40,7 +40,7 @@ class PurchaseUpdate extends Component {
         // Cập nhật state khác nếu cần thiết, ví dụ:
         supplierValue: record.Supplier.name,
         supplierId: record.supplierId,
-        products: this.props.listProductByPurchaseId.data,
+        // products: this.props.listProductByPurchaseId.data,
         selectedDate: new Date(record.purchaseDate),
       });
     }
@@ -57,17 +57,15 @@ class PurchaseUpdate extends Component {
     if (prevProps.productSuggestions !== this.props.productSuggestions) {
       this.setState({ productSuggestions: this.props.productSuggestions });
     }
-    // if (
-    //   prevProps.listProductByPurchaseId !== this.props.listProductByPurchaseId
-    // ) {
-    //   console.log("list product received:", this.props.listProductByPurchaseId);
-    //   const productData = this.props.listProductByPurchaseId.data;
-    //   if (Array.isArray(this.props.listProductByPurchaseId)) {
-    //     this.setState({
-    //       products: productData,
-    //     });
-    //   }
-    // }
+    if (
+      prevProps.listProductByPurchaseId !== this.props.listProductByPurchaseId
+    ) {
+      if (Array.isArray(this.props.listProductByPurchaseId.data)) {
+        this.setState({
+          products: this.props.listProductByPurchaseId.data,
+        });
+      }
+    }
   }
 
   toggleProductModal = () => {
