@@ -30,18 +30,19 @@ class PurchaseUpdate extends Component {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
+    console.log("chek props", this.props.location)
     const { state } = this.props.location;
     if (state && state.record) {
       const { record } = state;
-      this.props.fetchProductByPurchaseIdRedux(record.id);
+      await this.props.fetchProductByPurchaseIdRedux(record.id);
       this.setState({
         record,
         // Cập nhật state khác nếu cần thiết, ví dụ:
-        supplierValue: record.Supplier.name,
+        supplierValue: record.Supplier,
         supplierId: record.supplierId,
         products: this.props.listProductByPurchaseId.data,
-        selectedDate: new Date(record.purchaseDate),
+        selectedDate: record.purchaseDate,
       });
     }
   }

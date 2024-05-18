@@ -26,6 +26,7 @@ class PurchaseNew extends Component {
       isOpenNewProduct: false,
       isOpenNewSupplier: false,
       total: null,
+      selectedSupplierrId: null
       // record: null,
     };
   }
@@ -301,7 +302,8 @@ class PurchaseNew extends Component {
       // Dispatch action để tạo purchase mới
       await this.props.createNewPurchaseRedux({
         purchaseDate: selectedDate,
-        supplierId: this.state.supplierId,
+
+        supplierId: this.state.selectedSupplierrId,
         total: this.state.total,
       });
 
@@ -335,7 +337,11 @@ class PurchaseNew extends Component {
       console.error("Error saving purchase and details:", error);
     }
   };
-
+  onSuggestionSelected = (event, { suggestion }) => {
+    this.setState({
+      selectedSupplierrId: suggestion.id
+    });
+  };
   render() {
     const {
       supplierValue,
@@ -520,6 +526,7 @@ class PurchaseNew extends Component {
                   getSuggestionValue={(suggestion) => suggestion.name}
                   renderSuggestion={this.renderSupplierSuggestion}
                   inputProps={supplierInputProps}
+                  onSuggestionSelected={this.onSuggestionSelected}
                 />
               </div>
               <button onClick={() => this.handleAddNewSupplier()}>

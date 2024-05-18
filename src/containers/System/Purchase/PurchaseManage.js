@@ -33,7 +33,17 @@ class PurchaseManage extends Component {
         },
         {
           title: "Nhà cung cấp",
-          dataIndex: ["Supplier", "name"],
+          dataIndex: "Supplier",
+
+          render: (Supplier) => (
+
+            < div >
+
+              < span > {Supplier.name}</span>
+            </div>
+
+          )
+
         },
         {
           title: "Tổng Tiền",
@@ -66,6 +76,7 @@ class PurchaseManage extends Component {
   }
 
   componentDidMount() {
+    console.log("this.props.fetchPurchaseRedux()", this.props.purchases)
     this.props.fetchPurchaseRedux();
   }
 
@@ -83,8 +94,9 @@ class PurchaseManage extends Component {
     this.props.history.push("/system/purchase-new");
   };
 
-  handleUpdateProduct = (record) => {
-    this.props.history.push({
+  handleUpdateProduct = async (record) => {
+    console.log("log", record)
+    await this.props.history.push({
       pathname: "/system/purchase-update",
       state: { record },
     });
