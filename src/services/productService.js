@@ -25,10 +25,15 @@ const getProductSuggestionsService = (inputdata) => {
   return axios.get("api/get-product-suggestion", { params: inputdata });
 };
 
+const getProductByPurchaseIdService = (purchaseId) => {
+  return axios.get(`/api/get-product-by-purchaseid?purchaseId=${purchaseId}`);
+};
+
 export {
   getAllProducts,
   createNewProductService,
   deleteProductService,
   editProductService,
   getProductSuggestionsService,
+  getProductByPurchaseIdService,
 };

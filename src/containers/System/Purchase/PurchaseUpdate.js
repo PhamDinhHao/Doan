@@ -11,7 +11,7 @@ import ModelNewProduct from "../../System/Product/ModelNewProduct";
 import ModelNewSupplier from "../../System/Supplier/ModelNewSupplier";
 import { emitter } from "../../../utils/emitter";
 
-class PurchaseNew extends Component {
+class PurchaseUpdate extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -26,23 +26,24 @@ class PurchaseNew extends Component {
       isOpenNewProduct: false,
       isOpenNewSupplier: false,
       total: null,
-      // record: null,
+      record: null,
     };
   }
 
   componentDidMount() {
-    // const { state } = this.props.location;
-    // if (state && state.record) {
-    //   const { record } = state;
-    //   this.setState({
-    //     record,
-    //     // Cập nhật state khác nếu cần thiết, ví dụ:
-    //     // supplierValue: record.supplierValue,
-    //     supplierId: record.supplierId,
-    //     products: record.products,
-    //     selectedDate: new Date(record.purchaseDate),
-    //   });
-    // }
+    const { state } = this.props.location;
+    if (state && state.record) {
+      const { record } = state;
+      this.props.fetchProductByPurchaseIdRedux(record.id);
+      this.setState({
+        record,
+        // Cập nhật state khác nếu cần thiết, ví dụ:
+        supplierValue: record.Supplier.name,
+        supplierId: record.supplierId,
+        products: this.props.listProductByPurchaseId.data,
+        selectedDate: new Date(record.purchaseDate),
+      });
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -56,6 +57,17 @@ class PurchaseNew extends Component {
     if (prevProps.productSuggestions !== this.props.productSuggestions) {
       this.setState({ productSuggestions: this.props.productSuggestions });
     }
+    // if (
+    //   prevProps.listProductByPurchaseId !== this.props.listProductByPurchaseId
+    // ) {
+    //   console.log("list product received:", this.props.listProductByPurchaseId);
+    //   const productData = this.props.listProductByPurchaseId.data;
+    //   if (Array.isArray(this.props.listProductByPurchaseId)) {
+    //     this.setState({
+    //       products: productData,
+    //     });
+    //   }
+    // }
   }
 
   toggleProductModal = () => {
@@ -216,7 +228,7 @@ class PurchaseNew extends Component {
       // Sản phẩm chưa tồn tại trong bảng
       const newProduct = {
         id: suggestion.id,
-        name: suggestion.productName,
+        productName: suggestion.productName,
         quantity: 1,
         costPrice: suggestion.costPrice,
         total: suggestion.costPrice,
@@ -296,43 +308,43 @@ class PurchaseNew extends Component {
     this.setState({ selectedDate: date });
   };
 
-  savePurchaseAndDetails = async (selectedDate) => {
+  updatePurchaseAndDetails = async (selectedDate) => {
+    // console.log("updatePurchaseAndDetails called");
     try {
-      // Dispatch action để tạo purchase mới
-      await this.props.createNewPurchaseRedux({
-        purchaseDate: selectedDate,
+      const purchase = {
+        purchaseId: this.state.record.id,
         supplierId: this.state.supplierId,
         total: this.state.total,
+      };
+
+      const purchaseDetails = this.state.products.map((product) => {
+        const {
+          id: productId,
+          // name: productName,
+          quantity,
+          costPrice,
+          total,
+        } = product;
+        return {
+          purchaseId: this.state.record.id,
+          productId: productId,
+          // productName: productName,
+          quantity: quantity,
+          costPrice: costPrice,
+          total: total,
+        };
       });
+      // console.log(
+      //   "editPurchaseAndDetails called with:",
+      //   purchase,
+      //   purchaseDetails
+      // );
+      await this.props.editPurchaseAndDetailsRedux(purchase, purchaseDetails);
 
-      // Truy cập purchaseId từ props
-      const { purchaseId } = this.props;
-      console.log("id", purchaseId);
-
-      await Promise.all(
-        this.state.products.map(async (product) => {
-          const {
-            id: productId,
-            name: productName,
-            quantity,
-            costPrice,
-            total,
-          } = product;
-          await this.props.createPurchaseDetailRedux({
-            purchaseId: purchaseId,
-            productId: productId,
-            productName: productName,
-            quantity: quantity,
-            costPrice: costPrice,
-            total: total,
-          });
-        })
-      );
-
-      console.log("Purchase and details saved successfully!");
+      console.log("Purchase and details updated successfully!");
       this.props.history.push("/system/purchase");
     } catch (error) {
-      console.error("Error saving purchase and details:", error);
+      console.error("Error updating purchase and details:", error);
     }
   };
 
@@ -346,10 +358,9 @@ class PurchaseNew extends Component {
       products = [],
       updatedproducts,
       selectedDate,
-      // record,
+      record,
     } = this.state;
-
-
+    // console.log("products", products);
     const supplierInputProps = {
       placeholder: "Search supplier",
       value: supplierValue,
@@ -433,7 +444,7 @@ class PurchaseNew extends Component {
                     </td>
                     <td>{index + 1}</td>
                     <td>{product.id}</td>
-                    <td>{product.name}</td>
+                    <td>{product.productName}</td>
                     <td>
                       <button
                         className="quantity-btn"
@@ -536,13 +547,13 @@ class PurchaseNew extends Component {
             </div>
           </div>
           <div class="wrap-button">
-            <a
-              href="#"
+            <button
+              // href="#"
               className="btn btn-success btn-font--medium"
-              onClick={() => this.savePurchaseAndDetails(selectedDate)}
+              onClick={() => this.updatePurchaseAndDetails(selectedDate)}
             >
               <i class="fas fa-check"></i>
-            </a>
+            </button>
           </div>
         </div>
       </div>
@@ -555,6 +566,7 @@ const mapStateToProps = (state) => {
     supplierSuggestions: state.supplier.supplierSuggestions,
     productSuggestions: state.product.productSuggestions,
     purchaseId: state.purchase.purchaseId,
+    listProductByPurchaseId: state.product.listProductByPurchaseId,
   };
 };
 
@@ -569,7 +581,11 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(actions.createNewPurchaseDetail(data)),
     createNewProductRedux: (data) => dispatch(actions.createNewProduct(data)),
     createNewSupplierRedux: (data) => dispatch(actions.createNewSupplier(data)),
+    fetchProductByPurchaseIdRedux: (data) =>
+      dispatch(actions.fetchProductByPurchaseIdRedux(data)),
+    editPurchaseAndDetailsRedux: (purchase, purchaseDetails) =>
+      dispatch(actions.editPurchaseAndDetails(purchase, purchaseDetails)),
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(PurchaseNew);
+export default connect(mapStateToProps, mapDispatchToProps)(PurchaseUpdate);

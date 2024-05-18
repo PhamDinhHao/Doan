@@ -5,10 +5,10 @@ import {
   deleteProductService,
   editProductService,
   getProductSuggestionsService,
+  getProductByPurchaseIdService,
 } from "../../services/productService";
 
 export const fetchAllProductsStart = (inputId) => {
-
   return async (dispatch, getState) => {
     try {
       if (!inputId) {
@@ -46,7 +46,6 @@ export const fetchAllProductsFailed = () => ({
 });
 
 export const createNewProduct = (data) => {
-
   return async (dispatch, getState) => {
     try {
       let res = await createNewProductService(data);
@@ -127,7 +126,6 @@ export const editProductFailed = () => ({
 });
 
 export const fetchProductSuggestions = (value) => {
-
   return async (dispatch, getState) => {
     dispatch(fetchProductSuggestionsRequest());
     try {
@@ -154,4 +152,30 @@ export const fetchProductSuggestionsSuccess = (suggestions) => ({
 export const fetchProductSuggestionsFailure = (error) => ({
   type: actionTypes.FETCH_PRODUCT_SUGGESTIONS_FAILURE,
   payload: error,
+});
+
+export const fetchProductByPurchaseIdRedux = (purchaseId) => {
+  return async (dispatch, getState) => {
+    try {
+      let res = await getProductByPurchaseIdService(purchaseId);
+      // console.log("products by purchaseId", res);
+      if (res && res.errCode === 0) {
+        dispatch(fetchProductByPurchaseIdSuccess(res.data));
+      } else {
+        dispatch(fetchProductByPurchaseIdFailed());
+      }
+    } catch (error) {
+      console.log("Error fetching purchase detail:", error);
+      dispatch(fetchProductByPurchaseIdFailed());
+    }
+  };
+};
+
+export const fetchProductByPurchaseIdSuccess = (data) => ({
+  type: actionTypes.FETCH_PRODUCT_BY_PURCHASEID_SUCCESS,
+  payload: { listProductByPurchaseId: data },
+});
+
+export const fetchProductByPurchaseIdFailed = () => ({
+  type: actionTypes.FETCH_PRODUCT_BY_PURCHASEID_FAILED,
 });
