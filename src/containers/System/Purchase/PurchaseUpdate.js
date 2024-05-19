@@ -39,7 +39,7 @@ class PurchaseUpdate extends Component {
       this.setState({
         record,
         // Cập nhật state khác nếu cần thiết, ví dụ:
-        supplierValue: record.Supplier,
+        supplierValue: record.Supplier.name,
         supplierId: record.supplierId,
         // products: this.props.listProductByPurchaseId.data,
         selectedDate: new Date(record.purchaseDate),

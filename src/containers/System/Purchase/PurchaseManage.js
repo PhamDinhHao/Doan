@@ -87,7 +87,7 @@ class PurchaseManage extends Component {
   };
 
   handleUpdateProduct = async (record) => {
-    console.log("log", record)
+
     await this.props.history.push({
       pathname: "/system/purchase-update",
       state: { record },
