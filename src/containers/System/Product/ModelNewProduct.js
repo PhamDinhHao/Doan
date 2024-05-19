@@ -29,6 +29,7 @@ class ModelNewProduct extends Component {
       image: "",
       quantity: "",
       description: "",
+      waitTime: "",
       previewImgUrl: "",
 
       supplierRedux: [],
@@ -479,7 +480,14 @@ class ModelNewProduct extends Component {
                 ></input>
               </div>
               <div className="input-container">
-
+                <label>Thời gian đặt hàng</label>
+                <input
+                  type="number"
+                  onChange={(event) =>
+                    this.handleOnChangeInput(event, "waitTime")
+                  }
+                  value={this.state.waitTime}
+                ></input>
               </div>
               <div className="input-container max-width-input">
                 <label>Mô tả</label>

@@ -11,6 +11,7 @@ import CustomScrollbars from "../../../components/CustomScrollbars";
 import Lightbox from "react-image-lightbox";
 import { withRouter } from "react-router-dom";
 
+
 class PurchaseManage extends Component {
   constructor(props) {
     super(props);
@@ -33,16 +34,7 @@ class PurchaseManage extends Component {
         },
         {
           title: "Nhà cung cấp",
-          dataIndex: "Supplier",
-
-          render: (Supplier) => (
-
-            < div >
-
-              < span > {Supplier.name}</span>
-            </div>
-
-          )
+          dataIndex: ["Supplier", "name"]
 
         },
         {
@@ -76,8 +68,8 @@ class PurchaseManage extends Component {
   }
 
   componentDidMount() {
-    console.log("this.props.fetchPurchaseRedux()", this.props.purchases)
     this.props.fetchPurchaseRedux();
+
   }
 
   componentDidUpdate(prevProps) {

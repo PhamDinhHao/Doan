@@ -7,7 +7,7 @@ import ModelUpdateProduct from "./ModelUpdateProduct";
 import "./ProductManage.scss";
 import Select from "react-select";
 import { Divider, Radio, Table } from "antd";
-import { getAllProducts } from "../../../services/productService";
+import { getProductDoneSale } from "../../../services/productService";
 import { reduce, template } from "lodash";
 import { emitter } from "../../../utils/emitter";
 import { getAllCategory } from "../../../services/categoryService";
@@ -114,6 +114,9 @@ class ProductManage extends Component {
   async componentDidMount() {
     this.props.fetchProductRedux();
     await this.getAllCategoryFromReact();
+    console.log("checkasdsadasd", await getProductDoneSale())
+
+
   }
 
   async componentDidUpdate(prevProps, prevState, snapshot) {
