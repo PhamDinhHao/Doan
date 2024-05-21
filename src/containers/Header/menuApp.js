@@ -2,12 +2,7 @@ export const adminMenu = [
     { //hệ thống
         name: 'Tổng quan', menus: [
             {
-                name: 'menu.system.system-administrator.header', link: '/system/aaaaaa'
-                // subMenus: [
-                //     { name: 'menu.system.system-administrator.user-manage', link: '/system/user-manage' },
-                //     { name: 'menu.system.system-administrator.product-manage', link: '/system/product-manage' },
-                //     { name: 'menu.system.system-administrator.register-package-group-or-account', link: '/system/register-package-group-or-account' },
-                // ]
+                name: 'menu.system.system-administrator.header', link: '/system/colum'
             },
             {
                 name: 'menu.system.system-administrator.user-manage', link: '/system/aaaa'

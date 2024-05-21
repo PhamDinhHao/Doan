@@ -23,7 +23,8 @@ class SaleNew extends Component {
             selectedDate: new Date(),
             isOpenNewProduct: false,
             isOpenNewCustomer: false,
-            selectedCustomerId: null
+            selectedCustomerId: null,
+            total: ""
         };
     }
 
@@ -244,6 +245,7 @@ class SaleNew extends Component {
         products.forEach((product) => {
             totalMoney += product.quantity * product.costPrice;
         });
+        this.state.total = totalMoney;
         return totalMoney;
     };
 
@@ -255,7 +257,8 @@ class SaleNew extends Component {
         try {
             await this.props.createNewSaleRedux({
                 saleDate: selectedDate,
-                customerId: this.state.selectedCustomerId
+                customerId: this.state.selectedCustomerId,
+                total: this.state.total,
             });
             const { saleId } = this.props;
 
