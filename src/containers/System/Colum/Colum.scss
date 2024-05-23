@@ -6,3 +6,24 @@
     margin-top: 20px;
     padding: 20px;
 }
+h3{
+    margin-top: 50px;
+    display: flex;
+    justify-content: center;
+}
+.main-colum{
+    display: flex;
+    width: 100%;
+    .main-radio-colum{
+        width: 10%;
+        .radio-colum{
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+    }
+    
+    .content-colum{
+        width: 90%;
+    }
+}

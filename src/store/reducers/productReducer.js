@@ -3,6 +3,7 @@ import actionTypes from "../actions/actionTypes";
 const initialState = {
   products: [],
   listProductByPurchaseId: [],
+  listProductBySaleId: [],
   loading: false,
   error: null,
   productSuggestions: [],
@@ -49,6 +50,19 @@ const productReducer = (state = initialState, action) => {
         ...state,
         isLoading: false,
         error: "Failed to fetch products by purchase ID",
+      };
+    case actionTypes.FETCH_PRODUCT_BY_SALEID_SUCCESS:
+      return {
+        ...state,
+        listProductBySaleId: action.payload.listProductBySaleId,
+        isLoading: false,
+        error: null,
+      };
+    case actionTypes.FETCH_PRODUCT_BY_SALEID_FAILED:
+      return {
+        ...state,
+        isLoading: false,
+        error: "Failed to fetch products by sale ID",
       };
     default:
       return state;

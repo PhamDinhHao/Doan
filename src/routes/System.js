@@ -9,6 +9,8 @@ import PurchaseManage from "../containers/System/Purchase/PurchaseManage";
 import PurchaseNew from "../containers/System/Purchase/PurchaseNew";
 import PurchaseUpdate from "../containers/System/Purchase/PurchaseUpdate";
 import SaleNew from "../containers/System/Sale/SaleNew";
+import SaleManage from "../containers/System/Sale/SaleManage";
+import SaleUpdate from "../containers/System/Sale/SaleUpdate";
 import Colum from "../containers/System/Colum/Colum";
 import RegisterPackageGroupOrAcc from "../containers/System/RegisterPackageGroupOrAcc";
 
@@ -26,7 +28,9 @@ class System extends Component {
             <Route path="/system/purchase" component={PurchaseManage} />
             <Route path="/system/purchase-new" component={PurchaseNew} />
             <Route path="/system/purchase-update" component={PurchaseUpdate} />
-            <Route path="/system/sale" component={SaleNew} />
+            <Route path="/system/sale-new" component={SaleNew} />
+            <Route path="/system/sale" component={SaleManage} />
+            <Route path="/system/sale-update" component={SaleUpdate} />
             <Route path="/system/colum" component={Colum} />
 
 

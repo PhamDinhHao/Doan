@@ -34,7 +34,7 @@ export const adminMenu = [
 
             },
             {
-                name: 'Hóa đơn', link: '/system/receipt'
+                name: 'Hóa đơn', link: '/system/sale'
             }
             ,
             {
@@ -89,7 +89,7 @@ export const adminMenuSale = [
     { //hệ thống
         name: 'Bán hàng', menus: [
             {
-                name: 'Hóa đơn', link: '/system/sale'
+                name: 'Hóa đơn', link: '/system/sale-new'
 
             }
 

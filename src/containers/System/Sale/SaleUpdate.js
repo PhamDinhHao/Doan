@@ -1,21 +1,23 @@
 import React, { Component } from "react";
 import { FormattedMessage } from "react-intl";
 import { connect } from "react-redux";
-
+import { withRouter } from "react-router-dom";
+import "../Purchase/PurchaseNew.scss";
 import Autosuggest from "react-autosuggest";
 import * as actions from "../../../store/actions";
 import DatePicker from "../../../components/Input/DatePicker";
-// import InputSuggest from "../../../components/Input/InputSuggest";
+
 import ModelNewProduct from "../../System/Product/ModelNewProduct";
 import ModelNewCustomer from "../../System/Customer/ModelNewCustomer";
 import { emitter } from "../../../utils/emitter";
 
-class SaleNew extends Component {
+class SaleUpdate extends Component {
     constructor(props) {
         super(props);
         this.state = {
             CustomerValue: "",
-            customerSuggestions: [],
+            CustomerId: null,
+            CustomerSuggestions: [],
             productValue: "",
             productSuggestions: [],
             products: [],
@@ -23,20 +25,48 @@ class SaleNew extends Component {
             selectedDate: new Date(),
             isOpenNewProduct: false,
             isOpenNewCustomer: false,
-            selectedCustomerId: null,
-            total: ""
+            total: null,
+            record: null,
         };
     }
 
-    componentDidMount() {
+    async componentDidMount() {
+
+        const { state } = this.props.location;
+        if (state && state.record) {
+            const { record } = state;
+            await this.props.fetchProductBySaleIdRedux(record.id);
+            this.setState({
+                record,
+                // Cập nhật state khác nếu cần thiết, ví dụ:
+                CustomerValue: record.Customer.name,
+                CustomerId: record.CustomerId,
+                // products: this.props.listProductBySaleId.data,
+                selectedDate: new Date(record.SaleDate),
+            });
+        }
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.customerSuggestions !== this.props.customerSuggestions) {
-            this.setState({ customerSuggestions: this.props.customerSuggestions });
+        if (prevProps.CustomerSuggestions !== this.props.CustomerSuggestions) {
+            // console.log(
+            //   "Customer suggestions received:",
+            //   this.props.CustomerSuggestions
+            // );
+            this.setState({ CustomerSuggestions: this.props.CustomerSuggestions });
         }
         if (prevProps.productSuggestions !== this.props.productSuggestions) {
             this.setState({ productSuggestions: this.props.productSuggestions });
+        }
+        if (
+            prevProps.listProductBySaleId !== this.props.listProductBySaleId
+        ) {
+            if (Array.isArray(this.props.listProductBySaleId.data)) {
+                console.log("chek props", this.props.listProductBySaleId.data)
+                this.setState({
+                    products: this.props.listProductBySaleId.data,
+                });
+            }
         }
     }
 
@@ -44,6 +74,10 @@ class SaleNew extends Component {
         this.setState({
             isOpenNewProduct: !this.state.isOpenNewProduct,
         });
+    };
+
+    handleReturnToSale = () => {
+        this.props.history.push("/system/Sale");
     };
 
     handleAddNewProduct = () => {
@@ -98,8 +132,16 @@ class SaleNew extends Component {
         }
     };
 
-    getcustomerSuggestions = async (value) => {
+    getCustomerSuggestions = async (value) => {
         try {
+            // const response = await fetch(`/api/get-Customer-suggestion?q=${value}`);
+            // const data = await response.json();
+
+            // if (data && data.length > 0) {
+            //   this.setState({ CustomerSuggestions: data });
+            // } else {
+            //   this.setState({ CustomerSuggestions: [] });
+            // }
             this.props.fetchCustomerSuggestionsRedux(value);
         } catch (error) {
             console.error("error fetching Customer suggestions", error);
@@ -118,13 +160,21 @@ class SaleNew extends Component {
 
     renderProductSuggestion = (suggestion) => <div>{suggestion.productName}</div>;
 
-    onCustomerChange = (event, { newValue }) => {
-
-        this.setState({
-            CustomerValue: newValue,
-        });
-
-        this.getcustomerSuggestions(newValue);
+    onCustomerChange = (event, { newValue, method }) => {
+        if (method === "type") {
+            this.setState({
+                CustomerValue: newValue,
+            });
+            this.getCustomerSuggestions(newValue);
+        } else if (method === "click" || method === "enter") {
+            const selectedCustomer = this.state.CustomerSuggestions.find(
+                (Customer) => Customer.name === newValue
+            );
+            this.setState({
+                CustomerValue: newValue,
+                CustomerId: selectedCustomer ? selectedCustomer.id : null,
+            });
+        }
     };
 
     onProductChange = (event, { newValue }) => {
@@ -134,16 +184,20 @@ class SaleNew extends Component {
         this.getProductSuggestions(newValue);
     };
 
-    oncustomerSuggestionsFetchRequested = ({ value }) => {
-        this.getcustomerSuggestions(value);
+    onCustomerSuggestionsFetchRequested = ({ value }) => {
+        this.getCustomerSuggestions(value);
     };
 
     onProductSuggestionsFetchRequested = ({ value }) => {
         this.getProductSuggestions(value);
     };
 
-    onSuggestionsClearRequested = () => {
-        this.setState({ customerSuggestions: [] });
+    onCustomerSuggestionsClearRequested = () => {
+        this.setState({ CustomerSuggestions: [] });
+    };
+
+    onProductSuggestionsClearRequested = () => {
+        this.setState({ productSuggestions: [] });
     };
 
     onProductTableSuggestionSelected = (event, { suggestion }) => {
@@ -174,7 +228,7 @@ class SaleNew extends Component {
             // Sản phẩm chưa tồn tại trong bảng
             const newProduct = {
                 id: suggestion.id,
-                name: suggestion.productName,
+                productName: suggestion.productName,
                 quantity: 1,
                 costPrice: suggestion.costPrice,
                 total: suggestion.costPrice,
@@ -182,6 +236,7 @@ class SaleNew extends Component {
             const newProducts = [...products, newProduct];
             this.setState({ products: newProducts });
         }
+        this.setState({ productValue: "" });
     };
 
     onQuantityIncrease = (index) => {
@@ -253,60 +308,71 @@ class SaleNew extends Component {
         this.setState({ selectedDate: date });
     };
 
-    saveSaleAndDetails = async (selectedDate) => {
+    updateSaleAndDetails = async (selectedDate) => {
+        // console.log("updateSaleAndDetails called");
         try {
-            await this.props.createNewSaleRedux({
-                saleDate: selectedDate,
-                customerId: this.state.selectedCustomerId,
+            const Sale = {
+                SaleId: this.state.record.id,
+                CustomerId: this.state.CustomerId,
                 total: this.state.total,
+            };
+
+            const SaleDetails = this.state.products.map((product) => {
+                const {
+                    id: productId,
+                    // name: productName,
+                    quantity,
+                    costPrice,
+                    total,
+                } = product;
+                return {
+                    SaleId: this.state.record.id,
+                    productId: productId,
+                    // productName: productName,
+                    quantity: quantity,
+                    costPrice: costPrice,
+                    total: total,
+                };
             });
-            const { saleId } = this.props;
+            // console.log(
+            //   "editSaleAndDetails called with:",
+            //   Sale,
+            //   SaleDetails
+            // );
+            await this.props.editSaleAndDetailsRedux(Sale, SaleDetails);
 
-            await Promise.all(
-                this.state.products.map(async (product) => {
-                    const {
-                        id: productId,
-                        name: productName,
-                        quantity,
-                        costPrice,
-                        total,
-                    } = product;
-                    await this.props.createSaleDetailRedux({
-                        saleId: saleId,
-                        productId: productId,
-                        productName: productName,
-                        quantity: quantity,
-                        total: total,
-                    });
-                })
-            );
-
-            console.log("Sale and details saved successfully!");
-            this.props.history.push("/system/sale");
+            console.log("Sale and details updated successfully!");
+            this.props.history.push("/system/Sale");
         } catch (error) {
-            console.error("Error saving Sale and details:", error);
+            console.error("Error updating Sale and details:", error);
         }
     };
-    onSuggestionSelected = (event, { suggestion }) => {
-        this.setState({
-            selectedCustomerId: suggestion.id
-        });
-    };
+
     render() {
         const {
             CustomerValue,
-            customerSuggestions,
+            CustomerId,
+            CustomerSuggestions,
             productValue,
             productSuggestions,
-            products,
+            products = [],
             updatedproducts,
             selectedDate,
+            record,
         } = this.state;
-
+        // console.log("products", products);
         const CustomerInputProps = {
             placeholder: "Search Customer",
             value: CustomerValue,
             onChange: this.onCustomerChange,
+            // onBlur: () => {
+            //   const selectedCustomer = this.state.CustomerSuggestions.find(
+            //     (Customer) => Customer.name === this.state.CustomerValue
+            //   );
+            //   this.setState({
+            //     CustomerId: selectedCustomer ? selectedCustomer.id : null,
+            //   });
+            // },
         };
 
         const productInputProps = {
@@ -314,12 +380,13 @@ class SaleNew extends Component {
             value: productValue,
             onChange: this.onProductChange,
         };
+
         return (
             <div class="cover-div">
                 <div class="item-left">
                     <div class="search-box">
                         <div class="back-arrow">
-                            <button>
+                            <button onClick={() => this.handleReturnToSale()}>
                                 <i class="fas fa-arrow-left"></i>
                             </button>
                         </div>
@@ -327,14 +394,16 @@ class SaleNew extends Component {
                             <button>
                                 <i class="fas fa-search icon"></i>
                             </button>
-                            {/* <input type="text" placeholder="Search product"></input> */}
+
                             <div class="suggestion-container">
                                 <Autosuggest
                                     suggestions={productSuggestions}
                                     onSuggestionsFetchRequested={
                                         this.onProductSuggestionsFetchRequested
                                     }
-                                    onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+                                    onSuggestionsClearRequested={
+                                        this.onProductSuggestionsClearRequested
+                                    }
                                     getSuggestionValue={(suggestion) => suggestion.productName}
                                     renderSuggestion={this.renderProductSuggestion}
                                     inputProps={productInputProps}
@@ -375,7 +444,7 @@ class SaleNew extends Component {
                                         </td>
                                         <td>{index + 1}</td>
                                         <td>{product.id}</td>
-                                        <td>{product.name}</td>
+                                        <td>{product.productName}</td>
                                         <td>
                                             <button
                                                 className="quantity-btn"
@@ -384,7 +453,7 @@ class SaleNew extends Component {
                                             >
                                                 -
                                             </button>
-                                            {/* <span className="quantity">{product.quantity}</span> */}
+
                                             <input
                                                 type="number"
                                                 className="quantity-input"
@@ -436,7 +505,7 @@ class SaleNew extends Component {
                     <div class="purchare-order">
                         <div class="user-box">
                             <div class="user-name">
-                                <span>{this.props.userInfo.name}</span>
+                                <span>user</span>
                             </div>
                             <div class="datetime-picker">
                                 <DatePicker
@@ -449,19 +518,19 @@ class SaleNew extends Component {
                             <button>
                                 <i class="fas fa-search icon"></i>
                             </button>
-                            {/* <input type="text" placeholder="Search Customer"></input> */}
+
                             <div class="suggestion-container">
                                 <Autosuggest
-                                    suggestions={customerSuggestions}
+                                    suggestions={CustomerSuggestions}
                                     onSuggestionsFetchRequested={
-                                        this.oncustomerSuggestionsFetchRequested
+                                        this.onCustomerSuggestionsFetchRequested
                                     }
-                                    onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+                                    onSuggestionsClearRequested={
+                                        this.onCustomerSuggestionsClearRequested
+                                    }
                                     getSuggestionValue={(suggestion) => suggestion.name}
                                     renderSuggestion={this.renderCustomerSuggestion}
                                     inputProps={CustomerInputProps}
-                                    onSuggestionSelected={this.onSuggestionSelected}
-
                                 />
                             </div>
                             <button onClick={() => this.handleAddNewCustomer()}>
@@ -478,13 +547,13 @@ class SaleNew extends Component {
                         </div>
                     </div>
                     <div class="wrap-button">
-                        <a
-                            href="#"
+                        <button
+                            // href="#"
                             className="btn btn-success btn-font--medium"
-                            onClick={() => this.saveSaleAndDetails(selectedDate)}
+                            onClick={() => this.updateSaleAndDetails(selectedDate)}
                         >
                             <i class="fas fa-check"></i>
-                        </a>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -494,10 +563,10 @@ class SaleNew extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        customerSuggestions: state.customer.customerSuggestions,
+        CustomerSuggestions: state.customer.customerSuggestions,
         productSuggestions: state.product.productSuggestions,
-        saleId: state.sale.saleId,
-        userInfo: state.user.userInfo,
+        SaleId: state.sale.saleId,
+        listProductBySaleId: state.product.listProductBySaleId,
     };
 };
 
@@ -512,7 +581,11 @@ const mapDispatchToProps = (dispatch) => {
             dispatch(actions.createNewSaleDetail(data)),
         createNewProductRedux: (data) => dispatch(actions.createNewProduct(data)),
         createNewCustomerRedux: (data) => dispatch(actions.createNewCustomer(data)),
+        fetchProductBySaleIdRedux: (data) =>
+            dispatch(actions.fetchProductBySaleIdRedux(data)),
+        editSaleAndDetailsRedux: (Sale, SaleDetails) =>
+            dispatch(actions.editSaleAndDetails(Sale, SaleDetails)),
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(SaleNew);
+export default connect(mapStateToProps, mapDispatchToProps)(SaleUpdate);

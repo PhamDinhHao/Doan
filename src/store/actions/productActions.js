@@ -6,6 +6,7 @@ import {
   editProductService,
   getProductSuggestionsService,
   getProductByPurchaseIdService,
+  getProductBySaleIdService,
 } from "../../services/productService";
 
 export const fetchAllProductsStart = (inputId) => {
@@ -178,4 +179,30 @@ export const fetchProductByPurchaseIdSuccess = (data) => ({
 
 export const fetchProductByPurchaseIdFailed = () => ({
   type: actionTypes.FETCH_PRODUCT_BY_PURCHASEID_FAILED,
+});
+
+export const fetchProductBySaleIdRedux = (saleId) => {
+  return async (dispatch, getState) => {
+    try {
+      let res = await getProductBySaleIdService(saleId);
+      // console.log("products by purchaseId", res);
+      if (res && res.errCode === 0) {
+        dispatch(fetchProductBySaleIdSuccess(res.data));
+      } else {
+        dispatch(fetchProductBySaleIdFailed());
+      }
+    } catch (error) {
+      console.log("Error fetching Sale detail:", error);
+      dispatch(fetchProductBySaleIdFailed());
+    }
+  };
+};
+
+export const fetchProductBySaleIdSuccess = (data) => ({
+  type: actionTypes.FETCH_PRODUCT_BY_SALEID_SUCCESS,
+  payload: { listProductBySaleId: data },
+});
+
+export const fetchProductBySaleIdFailed = () => ({
+  type: actionTypes.FETCH_PRODUCT_BY_SALEID_FAILED,
 });
