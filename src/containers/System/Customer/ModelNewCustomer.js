@@ -121,11 +121,13 @@ class ModelNewCustomer extends Component {
             </div>
             <div className="input-container">
               <label>Giới Tính</label>
-              <input
-                type="text"
-                onChange={(event) => this.handleOnChangeInput(event, "gender")}
+              <select
                 value={this.state.gender}
-              ></input>
+                onChange={(event) => this.handleOnChangeInput(event, "gender")}
+              >
+                <option value="Nam">Nam</option>
+                <option value="Nữ">Nữ</option>
+              </select>
             </div>
             <div className="input-container">
               <label>Ngày Sinh</label>
