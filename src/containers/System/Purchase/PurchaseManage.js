@@ -35,8 +35,7 @@ class PurchaseManage extends Component {
         },
         {
           title: "Nhà cung cấp",
-          dataIndex: ["Supplier", "name"]
-
+          dataIndex: ["Supplier", "name"],
         },
         {
           title: "Tổng Tiền",
@@ -71,7 +70,6 @@ class PurchaseManage extends Component {
 
   componentDidMount() {
     this.props.fetchPurchaseRedux();
-
   }
 
   componentDidUpdate(prevProps) {
@@ -89,7 +87,6 @@ class PurchaseManage extends Component {
   };
 
   handleUpdateProduct = async (record) => {
-
     await this.props.history.push({
       pathname: "/system/purchase-update",
       state: { record },
