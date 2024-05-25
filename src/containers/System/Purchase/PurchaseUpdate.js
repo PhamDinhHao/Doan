@@ -333,14 +333,7 @@ class PurchaseUpdate extends Component {
           total: total,
         };
       });
-      // console.log(
-      //   "editPurchaseAndDetails called with:",
-      //   purchase,
-      //   purchaseDetails
-      // );
       await this.props.editPurchaseAndDetailsRedux(purchase, purchaseDetails);
-
-      console.log("Purchase and details updated successfully!");
       this.props.history.push("/system/purchase");
     } catch (error) {
       console.error("Error updating purchase and details:", error);

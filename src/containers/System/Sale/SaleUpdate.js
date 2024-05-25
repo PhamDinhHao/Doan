@@ -42,7 +42,7 @@ class SaleUpdate extends Component {
                 CustomerValue: record.Customer.name,
                 CustomerId: record.CustomerId,
                 // products: this.props.listProductBySaleId.data,
-                selectedDate: new Date(record.SaleDate),
+                selectedDate: new Date(record.saleDate),
             });
         }
     }
@@ -222,7 +222,7 @@ class SaleUpdate extends Component {
             updatedProducts[existingProductIndex].quantity++; // Tăng số lượng sản phẩm
             updatedProducts[existingProductIndex].total =
                 updatedProducts[existingProductIndex].quantity *
-                updatedProducts[existingProductIndex].costPrice;
+                updatedProducts[existingProductIndex].salePrice;
             this.setState({ products: updatedProducts });
         } else {
             // Sản phẩm chưa tồn tại trong bảng
@@ -230,8 +230,8 @@ class SaleUpdate extends Component {
                 id: suggestion.id,
                 productName: suggestion.productName,
                 quantity: 1,
-                costPrice: suggestion.costPrice,
-                total: suggestion.costPrice,
+                salePrice: suggestion.salePrice,
+                total: suggestion.salePrice,
             };
             const newProducts = [...products, newProduct];
             this.setState({ products: newProducts });
@@ -244,7 +244,7 @@ class SaleUpdate extends Component {
         const updatedproducts = [...products];
         updatedproducts[index].quantity++;
         updatedproducts[index].total =
-            updatedproducts[index].quantity * updatedproducts[index].costPrice;
+            updatedproducts[index].quantity * updatedproducts[index].salePrice;
         this.setState({ products: updatedproducts });
     };
 
@@ -253,7 +253,7 @@ class SaleUpdate extends Component {
         const updatedproducts = [...products];
         updatedproducts[index].quantity--;
         updatedproducts[index].total =
-            updatedproducts[index].quantity * updatedproducts[index].costPrice;
+            updatedproducts[index].quantity * updatedproducts[index].salePrice;
         this.setState({ products: updatedproducts });
     };
 
@@ -265,7 +265,7 @@ class SaleUpdate extends Component {
             const updatedProducts = [...this.state.products];
             updatedProducts[index].quantity = newQuantity;
             updatedProducts[index].total =
-                newQuantity * updatedProducts[index].costPrice;
+                newQuantity * updatedProducts[index].salePrice;
             this.setState({ products: updatedProducts });
         }
     };
@@ -273,7 +273,7 @@ class SaleUpdate extends Component {
     onPriceChange = (index, newPrice) => {
         const { products } = this.state;
         const updatedproducts = [...products];
-        updatedproducts[index].costPrice = newPrice;
+        updatedproducts[index].salePrice = newPrice;
         updatedproducts[index].total = newPrice * updatedproducts[index].quantity;
         this.setState({ products: updatedproducts });
     };
@@ -298,7 +298,7 @@ class SaleUpdate extends Component {
         const { products } = this.state;
         let totalMoney = 0;
         products.forEach((product) => {
-            totalMoney += product.quantity * product.costPrice;
+            totalMoney += product.quantity * product.salePrice;
         });
         this.state.total = totalMoney;
         return totalMoney;
@@ -322,7 +322,7 @@ class SaleUpdate extends Component {
                     id: productId,
                     // name: productName,
                     quantity,
-                    costPrice,
+                    salePrice,
                     total,
                 } = product;
                 return {
@@ -330,7 +330,7 @@ class SaleUpdate extends Component {
                     productId: productId,
                     // productName: productName,
                     quantity: quantity,
-                    costPrice: costPrice,
+                    salePrice: salePrice,
                     total: total,
                 };
             });
@@ -474,7 +474,7 @@ class SaleUpdate extends Component {
                                         <td>
                                             <input
                                                 type="number"
-                                                value={product.costPrice}
+                                                value={product.salePrice}
                                                 onChange={(e) =>
                                                     this.onPriceChange(index, e.target.value)
                                                 }
@@ -482,7 +482,7 @@ class SaleUpdate extends Component {
                                                 pattern="[0-9]*"
                                             />
                                         </td>
-                                        <td>{product.quantity * product.costPrice}</td>
+                                        <td>{product.quantity * product.salePrice}</td>
                                     </tr>
                                 ))}
                             </tbody>
