@@ -21,7 +21,7 @@ import System from '../routes/System';
 
 import { CustomToastCloseButton } from '../components/CustomToast';
 import ConfirmModal from '../components/ConfirmModal';
-
+import ForgotPassword from "../containers/Auth/ForgotPassword";
 class App extends Component {
 
     handlePersistorState = () => {
@@ -57,6 +57,7 @@ class App extends Component {
                                 <Route path={path.SYSTEM} component={userIsAuthenticated(System)} />
 
                             </Switch>
+                            <Route path="/forgot" component={ForgotPassword} />
                         </span>
 
                         <ToastContainer

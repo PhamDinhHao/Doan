@@ -63,6 +63,9 @@ class Login extends Component {
     });
   };
 
+  handleForgotPassword = () => {
+    this.props.history.push("/forgot");
+  }
   render() {
     //JSX
     return (
@@ -119,7 +122,7 @@ class Login extends Component {
             </div>
 
             <div className="col-12">
-              <span className="forgot-password">Forgot your password?</span>
+              <span className="forgot-password" onClick={() => this.handleForgotPassword()}>Forgot your password?</span>
             </div>
             <div className="col-12 text-center mt-3">
               <span className="text-other-login">Or Login With:</span>

@@ -14,6 +14,7 @@ import SaleUpdate from "../containers/System/Sale/SaleUpdate";
 import Colum from "../containers/System/Colum/Colum";
 import RegisterPackageGroupOrAcc from "../containers/System/RegisterPackageGroupOrAcc";
 
+
 class System extends Component {
   render() {
     const { systemMenuPath } = this.props;
@@ -32,6 +33,7 @@ class System extends Component {
             <Route path="/system/sale" component={SaleManage} />
             <Route path="/system/sale-update" component={SaleUpdate} />
             <Route path="/system/colum" component={Colum} />
+
 
 
             <Route
