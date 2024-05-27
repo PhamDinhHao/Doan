@@ -26,7 +26,7 @@ class PurchaseNew extends Component {
       isOpenNewProduct: false,
       isOpenNewSupplier: false,
       total: null,
-      selectedSupplierrId: null
+      selectedSupplierrId: null,
       // record: null,
     };
   }
@@ -299,47 +299,52 @@ class PurchaseNew extends Component {
 
   savePurchaseAndDetails = async (selectedDate) => {
     try {
-      // Dispatch action để tạo purchase mới
-      await this.props.createNewPurchaseRedux({
-        purchaseDate: selectedDate,
+      const { products, selectedSupplierrId } = this.state;
+      if (products.length > 0 && selectedSupplierrId) {
+        // Dispatch action để tạo purchase mới
+        await this.props.createNewPurchaseRedux({
+          purchaseDate: selectedDate,
 
-        supplierId: this.state.selectedSupplierrId,
-        total: this.state.total,
-      });
+          supplierId: this.state.selectedSupplierrId,
+          total: this.state.total,
+        });
 
-      // Truy cập purchaseId từ props
-      const { purchaseId } = this.props;
-      console.log("id", purchaseId);
+        // Truy cập purchaseId từ props
+        const { purchaseId } = this.props;
+        console.log("id", purchaseId);
 
-      await Promise.all(
-        this.state.products.map(async (product) => {
-          const {
-            id: productId,
-            name: productName,
-            quantity,
-            costPrice,
-            total,
-          } = product;
-          await this.props.createPurchaseDetailRedux({
-            purchaseId: purchaseId,
-            productId: productId,
-            productName: productName,
-            quantity: quantity,
-            costPrice: costPrice,
-            total: total,
-          });
-        })
-      );
+        await Promise.all(
+          this.state.products.map(async (product) => {
+            const {
+              id: productId,
+              name: productName,
+              quantity,
+              costPrice,
+              total,
+            } = product;
+            await this.props.createPurchaseDetailRedux({
+              purchaseId: purchaseId,
+              productId: productId,
+              productName: productName,
+              quantity: quantity,
+              costPrice: costPrice,
+              total: total,
+            });
+          })
+        );
 
-      console.log("Purchase and details saved successfully!");
-      this.props.history.push("/system/purchase");
+        console.log("Purchase and details saved successfully!");
+        this.props.history.push("/system/purchase");
+      } else {
+        alert("Thiếu thông tin nhà cung cấp hoặc chưa có sản phẩm");
+      }
     } catch (error) {
       console.error("Error saving purchase and details:", error);
     }
   };
   onSuggestionSelected = (event, { suggestion }) => {
     this.setState({
-      selectedSupplierrId: suggestion.id
+      selectedSupplierrId: suggestion.id,
     });
   };
   render() {
@@ -355,9 +360,8 @@ class PurchaseNew extends Component {
       // record,
     } = this.state;
 
-
     const supplierInputProps = {
-      placeholder: "Search supplier",
+      placeholder: "Tìm nhà cung cấp",
       value: supplierValue,
       onChange: this.onSupplierChange,
       // onBlur: () => {
@@ -371,7 +375,7 @@ class PurchaseNew extends Component {
     };
 
     const productInputProps = {
-      placeholder: "Search product",
+      placeholder: "Tìm sản phẩm",
       value: productValue,
       onChange: this.onProductChange,
     };
@@ -417,10 +421,10 @@ class PurchaseNew extends Component {
                   <th></th>
                   <th>STT</th>
                   <th>Id</th>
-                  <th>Name</th>
-                  <th>Quantity</th>
-                  <th>Price</th>
-                  <th>Total</th>
+                  <th>Tên</th>
+                  <th>Số Lượng</th>
+                  <th>Giá Nhập</th>
+                  <th>Tổng</th>
                 </tr>
               </thead>
               <tbody>
@@ -500,7 +504,7 @@ class PurchaseNew extends Component {
           <div class="purchare-order">
             <div class="user-box">
               <div class="user-name">
-                <span>user</span>
+                <span></span>
               </div>
               <div class="datetime-picker">
                 <DatePicker
@@ -534,11 +538,11 @@ class PurchaseNew extends Component {
               </button>
             </div>
             <div class="quantity-box">
-              <span>quantity:</span>
+              <span>Tổng số lượng:</span>
               <span class="total-quantity">{this.getTotalQuantity()}</span>
             </div>
             <div class="money-box">
-              <span>total:</span>
+              <span>Tổng Tiền:</span>
               <span class="total-money">{this.getTotalMoney()}</span>
             </div>
           </div>

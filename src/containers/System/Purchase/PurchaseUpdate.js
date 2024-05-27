@@ -31,7 +31,7 @@ class PurchaseUpdate extends Component {
   }
 
   async componentDidMount() {
-    console.log("chek props", this.props.location)
+    console.log("chek props", this.props.location);
     const { state } = this.props.location;
     if (state && state.record) {
       const { record } = state;
@@ -310,38 +310,45 @@ class PurchaseUpdate extends Component {
   updatePurchaseAndDetails = async (selectedDate) => {
     // console.log("updatePurchaseAndDetails called");
     try {
-      const purchase = {
-        purchaseId: this.state.record.id,
-        supplierId: this.state.supplierId,
-        total: this.state.total,
-      };
-
-      const purchaseDetails = this.state.products.map((product) => {
-        const {
-          id: productId,
-          // name: productName,
-          quantity,
-          costPrice,
-          total,
-        } = product;
-        return {
+      const { products, supplierId } = this.state;
+      console.log(products);
+      console.log(supplierId);
+      if (products.length > 0 && supplierId != null) {
+        const purchase = {
           purchaseId: this.state.record.id,
-          productId: productId,
-          // productName: productName,
-          quantity: quantity,
-          costPrice: costPrice,
-          total: total,
+          supplierId: this.state.supplierId,
+          total: this.state.total,
         };
-      });
-      // console.log(
-      //   "editPurchaseAndDetails called with:",
-      //   purchase,
-      //   purchaseDetails
-      // );
-      await this.props.editPurchaseAndDetailsRedux(purchase, purchaseDetails);
 
-      console.log("Purchase and details updated successfully!");
-      this.props.history.push("/system/purchase");
+        const purchaseDetails = this.state.products.map((product) => {
+          const {
+            id: productId,
+            // name: productName,
+            quantity,
+            costPrice,
+            total,
+          } = product;
+          return {
+            purchaseId: this.state.record.id,
+            productId: productId,
+            // productName: productName,
+            quantity: quantity,
+            costPrice: costPrice,
+            total: total,
+          };
+        });
+        // console.log(
+        //   "editPurchaseAndDetails called with:",
+        //   purchase,
+        //   purchaseDetails
+        // );
+        await this.props.editPurchaseAndDetailsRedux(purchase, purchaseDetails);
+
+        console.log("Purchase and details updated successfully!");
+        this.props.history.push("/system/purchase");
+      } else {
+        alert("Thiếu thông tin nhà cung cấp hoặc chưa có sản phẩm");
+      }
     } catch (error) {
       console.error("Error updating purchase and details:", error);
     }
@@ -361,7 +368,7 @@ class PurchaseUpdate extends Component {
     } = this.state;
     // console.log("products", products);
     const supplierInputProps = {
-      placeholder: "Search supplier",
+      placeholder: "Tìm nhà cung cấp",
       value: supplierValue,
       onChange: this.onSupplierChange,
       // onBlur: () => {
@@ -375,7 +382,7 @@ class PurchaseUpdate extends Component {
     };
 
     const productInputProps = {
-      placeholder: "Search product",
+      placeholder: "Tìm sản phẩm",
       value: productValue,
       onChange: this.onProductChange,
     };
@@ -421,10 +428,10 @@ class PurchaseUpdate extends Component {
                   <th></th>
                   <th>STT</th>
                   <th>Id</th>
-                  <th>Name</th>
-                  <th>Quantity</th>
-                  <th>Price</th>
-                  <th>Total</th>
+                  <th>Tên</th>
+                  <th>Số Lượng</th>
+                  <th>Giá Nhập</th>
+                  <th>Tổng</th>
                 </tr>
               </thead>
               <tbody>
@@ -504,7 +511,7 @@ class PurchaseUpdate extends Component {
           <div class="purchare-order">
             <div class="user-box">
               <div class="user-name">
-                <span>user</span>
+                <span></span>
               </div>
               <div class="datetime-picker">
                 <DatePicker
@@ -537,11 +544,11 @@ class PurchaseUpdate extends Component {
               </button>
             </div>
             <div class="quantity-box">
-              <span>quantity:</span>
+              <span>Tổng số lượng:</span>
               <span class="total-quantity">{this.getTotalQuantity()}</span>
             </div>
             <div class="money-box">
-              <span>total:</span>
+              <span>Tổng Tiền:</span>
               <span class="total-money">{this.getTotalMoney()}</span>
             </div>
           </div>

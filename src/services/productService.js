@@ -28,6 +28,9 @@ const getProductSuggestionsService = (inputdata) => {
 const getProductByPurchaseIdService = (purchaseId) => {
   return axios.get(`/api/get-product-by-purchaseid?purchaseId=${purchaseId}`);
 };
+const getProductBySaleIdService = (saleId) => {
+  return axios.get(`/api/get-product-by-saleId?saleId=${saleId}`);
+};
 const getProductDoneSale = () => {
   return axios.get("/api/get-product-done-sale");
 }
@@ -39,5 +42,6 @@ export {
   editProductService,
   getProductSuggestionsService,
   getProductByPurchaseIdService,
-  getProductDoneSale
+  getProductDoneSale,
+  getProductBySaleIdService
 };
