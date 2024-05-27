@@ -12,13 +12,13 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-import { getTop10CustomersByRevenue } from "../../../services/reportService";
+import { getTop10SuppliersByRevenue } from "../../../services/reportService";
 
-class CustomerReport extends Component {
+class SupplierReport extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      dataCustomers: [],
+      dataSuppliers: [],
       filterType: "month",
       selectedDate: moment(),
       customRange: {
@@ -29,12 +29,12 @@ class CustomerReport extends Component {
   }
 
   async componentDidMount() {
-    await this.fetchTopCustomers();
+    await this.fetchTopSuppliers();
   }
 
-  fetchTopCustomers = async () => {
+  fetchTopSuppliers = async () => {
     const { filterType, selectedDate, customRange } = this.state;
-    let dataCustomers;
+    let dataSuppliers;
 
     console.log("Fetching data with filterType:", filterType);
 
@@ -43,28 +43,28 @@ class CustomerReport extends Component {
       if (!startDate || !endDate) {
         return; // Không fetch dữ liệu nếu chưa chọn đầy đủ ngày
       }
-      dataCustomers = await getTop10CustomersByRevenue(
+      dataSuppliers = await getTop10SuppliersByRevenue(
         filterType,
         selectedDate.toISOString(),
         startDate.toISOString(),
         endDate.toISOString()
       );
     } else {
-      dataCustomers = await getTop10CustomersByRevenue(
+      dataSuppliers = await getTop10SuppliersByRevenue(
         filterType,
         selectedDate.toISOString()
       );
     }
 
-    this.setState({ dataCustomers });
+    this.setState({ dataSuppliers });
   };
 
   onChangeFilterType = (e) => {
-    this.setState({ filterType: e.target.value }, this.fetchTopCustomers);
+    this.setState({ filterType: e.target.value }, this.fetchTopSuppliers);
   };
 
   onDateChange = (date) => {
-    this.setState({ selectedDate: date }, this.fetchTopCustomers);
+    this.setState({ selectedDate: date }, this.fetchTopSuppliers);
   };
 
   onCustomRangeChange = (dates) => {
@@ -75,12 +75,12 @@ class CustomerReport extends Component {
           endDate: dates ? dates[1] : null,
         },
       },
-      this.fetchTopCustomers
+      this.fetchTopSuppliers
     );
   };
 
   render() {
-    const { dataCustomers, filterType, selectedDate, customRange } = this.state;
+    const { dataSuppliers, filterType, selectedDate, customRange } = this.state;
 
     return (
       <div className="container">
@@ -107,20 +107,20 @@ class CustomerReport extends Component {
         </div>
 
         <div className="right-items">
-          <h3>Top 10 Khách Hàng Mua Nhiều Nhất</h3>
+          <h3>Top 10 Nhà Cung Cấp Nhiều Hàng Nhất</h3>
           <div className="chart-content">
             <ResponsiveContainer width="100%" height={500}>
               <BarChart
-                data={dataCustomers}
+                data={dataSuppliers}
                 layout="vertical"
                 margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" />
-                <YAxis dataKey="customerName" type="category" />
+                <YAxis dataKey="supplierName" type="category" />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="totalRevenue" fill="#0071ba" name="Doanh thu" />
+                <Bar dataKey="totalQuantity" fill="#0071ba" name="Doanh thu" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -138,4 +138,4 @@ const mapDispatchToProps = (dispatch) => {
   return {};
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(CustomerReport);
+export default connect(mapStateToProps, mapDispatchToProps)(SupplierReport);

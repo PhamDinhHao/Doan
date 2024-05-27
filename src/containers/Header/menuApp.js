@@ -85,7 +85,7 @@ export const adminMenu = [
       },
       {
         name: "Nhà cung cấp",
-        link: "/system/aaaa",
+        link: "/system/supplier-report",
       },
     ],
   },
