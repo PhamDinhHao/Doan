@@ -1,15 +1,10 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
-
 import * as actions from "../../store/actions";
-
 import "./Login.scss";
-import { FormattedMessage } from "react-intl";
-import { divide } from "lodash";
 import { handleLoginAPI } from "../../services/userService";
-
-import { userLoginSuccess } from "../../store/actions/userActions";
+import { GoogleLogin } from '@react-oauth/google';
 
 class Login extends Component {
   constructor(props) {
@@ -21,16 +16,19 @@ class Login extends Component {
       errMessage: "",
     };
   }
+
   handleOnChangeUsername = (event) => {
     this.setState({
       username: event.target.value,
     });
   };
+
   handleOnChangePassword = (event) => {
     this.setState({
       password: event.target.value,
     });
   };
+
   handleLogin = async () => {
     this.setState({
       errMessage: "",
@@ -45,18 +43,21 @@ class Login extends Component {
       }
       if (data && data.errCode === 0) {
         this.props.userLoginSuccess(data.user);
-        console.log("login succeds");
+        console.log("login succeeds");
       }
     } catch (error) {
-      if (error.response) {
-        if (error.response.data) {
-          this.setState({
-            errMessage: error.response.data.message,
-          });
-        }
+      if (error.response && error.response.data) {
+        this.setState({
+          errMessage: error.response.data.message,
+        });
+      } else {
+        this.setState({
+          errMessage: "An error occurred. Please try again.",
+        });
       }
     }
   };
+
   handleShowHidePassword = () => {
     this.setState({
       isShowPassword: !this.state.isShowPassword,
@@ -66,8 +67,39 @@ class Login extends Component {
   handleForgotPassword = () => {
     this.props.history.push("/forgot");
   }
+
+  handleGoogleLoginSuccess = async (response) => {
+    console.log("Google login success:", response);
+    if (response.credential) {
+      try {
+        let data = await handleLoginAPI(response.credential);
+
+        if (data && data.errCode !== 0) {
+          this.setState({
+            errMessage: data.message,
+          });
+        }
+        if (data && data.errCode === 0) {
+          this.props.userLoginSuccess(data.user);
+          console.log("Google login succeeds");
+        }
+      } catch (error) {
+        console.error("Error during Google login:", error);
+        this.setState({
+          errMessage: "An error occurred during Google login. Please try again.",
+        });
+      }
+    }
+  };
+
+  handleGoogleLoginFailure = (response) => {
+    console.error("Google login failed:", response);
+    this.setState({
+      errMessage: "Google login failed. Please try again."
+    });
+  };
+
   render() {
-    //JSX
     return (
       <div className="login-background">
         <div className="login-container">
@@ -80,23 +112,21 @@ class Login extends Component {
                 className="form-control"
                 placeholder="Enter your username"
                 value={this.state.username}
-                onChange={(event) => this.handleOnChangeUsername(event)}
+                onChange={this.handleOnChangeUsername}
+                autoComplete="off"
               />
             </div>
             <div className="col-12 form-group login-input">
-              <label>Passwork</label>
+              <label>Password</label>
               <div className="custom-input-password">
                 <input
                   type={this.state.isShowPassword ? "text" : "password"}
                   className="form-control"
-                  placeholder="Enter your passwork"
-                  onChange={(event) => this.handleOnChangePassword(event)}
+                  placeholder="Enter your password"
+                  onChange={this.handleOnChangePassword}
+                  autoComplete="off"
                 />
-                <span
-                  onClick={() => {
-                    this.handleShowHidePassword();
-                  }}
-                >
+                <span onClick={this.handleShowHidePassword}>
                   <i
                     className={
                       this.state.isShowPassword
@@ -111,24 +141,29 @@ class Login extends Component {
               {this.state.errMessage}
             </div>
             <div>
-              <button
-                className="btn-login"
-                onClick={() => {
-                  this.handleLogin();
-                }}
-              >
+              <button className="btn-login" onClick={this.handleLogin}>
                 Login
               </button>
             </div>
-
             <div className="col-12">
-              <span className="forgot-password" onClick={() => this.handleForgotPassword()}>Forgot your password?</span>
+              <span className="forgot-password" onClick={this.handleForgotPassword}>
+                Forgot your password?
+              </span>
             </div>
             <div className="col-12 text-center mt-3">
               <span className="text-other-login">Or Login With:</span>
             </div>
             <div className="col-12 social-login">
-              <i className="fab fa-google-plus-g google"></i>
+              <GoogleLogin
+                onSuccess={this.handleGoogleLoginSuccess}
+                onFailure={this.handleGoogleLoginFailure}
+                render={(renderProps) => (
+                  <i
+                    className="fab fa-google-plus-g google"
+                    onClick={renderProps.onClick}
+                  ></i>
+                )}
+              />
               <i className="fab fa-facebook-f facebook"></i>
             </div>
           </div>
@@ -147,10 +182,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     navigate: (path) => dispatch(push(path)),
-
-    // userLoginFail: () => dispatch(actions.adminLoginFail()),
-    userLoginSuccess: (userInfo) =>
-      dispatch(actions.userLoginSuccess(userInfo)),
+    userLoginSuccess: (userInfo) => dispatch(actions.userLoginSuccess(userInfo)),
   };
 };
 
