@@ -125,6 +125,7 @@ class ModelNewCustomer extends Component {
                 value={this.state.gender}
                 onChange={(event) => this.handleOnChangeInput(event, "gender")}
               >
+                <option value="Nam">Chọn giới tính</option>
                 <option value="Nam">Nam</option>
                 <option value="Nữ">Nữ</option>
               </select>

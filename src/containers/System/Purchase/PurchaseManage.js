@@ -10,8 +10,23 @@ import Checkbox from "antd/es/checkbox/Checkbox";
 import CustomScrollbars from "../../../components/CustomScrollbars";
 import Lightbox from "react-image-lightbox";
 import { withRouter } from "react-router-dom";
+<<<<<<<< < Temporary merge branch 1
 
 
+=========
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  Bar,
+  BarChart,
+} from "recharts";
+>>>>>>>>> Temporary merge branch 2
 
 class PurchaseManage extends Component {
   constructor(props) {
@@ -181,7 +196,6 @@ class PurchaseManage extends Component {
 
     return (
       <div className="product">
-
         <div className="product-content">
           <div className="main-left">
             <div className="heading-page">

@@ -12,6 +12,9 @@ import SaleNew from "../containers/System/Sale/SaleNew";
 import SaleManage from "../containers/System/Sale/SaleManage";
 import SaleUpdate from "../containers/System/Sale/SaleUpdate";
 import Colum from "../containers/System/Colum/Colum";
+import ProductReport from "../containers/System/Report/ProductReport";
+import CustomerReport from "../containers/System/Report/CustomerReport";
+import SupplierReport from "../containers/System/Report/SupplierReport";
 import RegisterPackageGroupOrAcc from "../containers/System/RegisterPackageGroupOrAcc";
 
 
@@ -33,7 +36,9 @@ class System extends Component {
             <Route path="/system/sale" component={SaleManage} />
             <Route path="/system/sale-update" component={SaleUpdate} />
             <Route path="/system/colum" component={Colum} />
-
+            <Route path="/system/product-report" component={ProductReport} />
+            <Route path="/system/customer-report" component={CustomerReport} />
+            <Route path="/system/supplier-report" component={SupplierReport} />
 
 
             <Route
