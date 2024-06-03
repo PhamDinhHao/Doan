@@ -5,7 +5,7 @@ import {
     getAllSales,
     editSaleAndDetailsService,
 } from "../../services/saleService";
-
+import { toast } from 'react-toastify';
 export const createNewSale = (data) => {
     return async (dispatch, getState) => {
         try {
@@ -39,6 +39,7 @@ export const createNewSaleDetail = (data) => {
             if (res && res.errCode === 0) {
                 dispatch(saveSaleDetailSuccess());
             } else {
+                toast.error("Số lượng không đủ")
                 dispatch(saveSaleDetailFailed());
             }
         } catch (error) {

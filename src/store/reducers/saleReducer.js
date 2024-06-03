@@ -5,6 +5,7 @@ const initialState = {
     saleId: null,
     loading: false,
     error: null,
+    isSaleDetail: false
 };
 
 const saleReducer = (state = initialState, action) => {
@@ -23,7 +24,6 @@ const saleReducer = (state = initialState, action) => {
                 error: action.payload.error,
             };
         case actionTypes.FETCH_ALL_SALES_SUCCESS:
-            console.log("check aaasdasdas", action)
             return {
                 ...state,
                 sales: action.payload.Sales,
@@ -35,6 +35,13 @@ const saleReducer = (state = initialState, action) => {
                 ...state,
                 sales: [],
                 loading: false,
+                error: action.payload.error,
+            };
+        case actionTypes.CREATE_SALE_DETAIL_FAILED:
+            return {
+                ...state,
+                sales: [],
+                isSaleDetail: true,
                 error: action.payload.error,
             };
         default:

@@ -18,11 +18,9 @@ class ModelNewSupplier extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            name: "",
-            phoneNumber: "",
-            address: "",
-            debtSupplier: "",
-            email: "",
+            locationName: "",
+            maxWeightCapacity: ""
+
 
 
         }
@@ -32,11 +30,9 @@ class ModelNewSupplier extends Component {
     listenToEmitter() {
         emitter.on('EVENT_CLEAR_MODAL_DATA', () => {
             this.setState({
-                name: "",
-                phoneNumber: "",
-                address: "",
-                debtSupplier: "",
-                email: "",
+                locationName: "",
+                maxWeightCapacity: ""
+
             })
         })
     }
@@ -56,7 +52,7 @@ class ModelNewSupplier extends Component {
     }
     checkValideInput = () => {
         let isValid = true;
-        let arrInput = ['name', 'phoneNumber', 'debtSupplier', 'email', 'address'];
+        let arrInput = ['locationName', 'maxWeightCapacity'];
         for (let i = 0; i < arrInput.length; i++) {
             if (!this.state[arrInput[i]]) {
                 isValid = false;
@@ -70,14 +66,7 @@ class ModelNewSupplier extends Component {
         let isValid = this.checkValideInput();
         if (isValid == true) {
             //call apicreat modal
-            this.props.createNewSupplier(this.state);
-            this.setState({
-                name: "",
-                phoneNumber: "",
-                address: "",
-                debtSupplier: "",
-                email: "",
-            })
+            this.props.createNewLocation(this.state);
 
         }
     }
@@ -95,40 +84,23 @@ class ModelNewSupplier extends Component {
                 size='lg'
                 centered>
                 <ModalHeader toggle={() => { this.toggle() }} >
-                    Create a new user
+                    Xếp kho hàng
                 </ModalHeader>
                 <ModalBody>
                     <div className='modal-supplier-body'>
                         <div className='input-container'>
-                            <label>Tên nhà cung cấp</label>
+                            <label>Tên loại kho</label>
                             <input type='text'
-                                onChange={(event) => this.handleOnChangeInput(event, "name")}
-                                value={this.state.name}></input>
+                                onChange={(event) => this.handleOnChangeInput(event, "locationName")}
+                                value={this.state.locationName}></input>
                         </div>
                         <div className='input-container'>
-                            <label>Số điện thoại</label>
+                            <label>Trọng lượng tối đa</label>
                             <input type='text'
-                                onChange={(event) => this.handleOnChangeInput(event, "phoneNumber")}
-                                value={this.state.phoneNumber}></input>
+                                onChange={(event) => this.handleOnChangeInput(event, "maxWeightCapacity")}
+                                value={this.state.maxWeightCapacity}></input>
                         </div>
-                        <div className='input-container'>
-                            <label>Số nợ</label>
-                            <input type='text'
-                                onChange={(event) => this.handleOnChangeInput(event, "debtSupplier")}
-                                value={this.state.debtSupplier}></input>
-                        </div>
-                        <div className='input-container'>
-                            <label>Email</label>
-                            <input type='text'
-                                onChange={(event) => this.handleOnChangeInput(event, "email")}
-                                value={this.state.email}></input>
-                        </div>
-                        <div className='input-container max-width-input'>
-                            <label>Địa chỉ</label>
-                            <input type='text'
-                                onChange={(event) => this.handleOnChangeInput(event, "address")}
-                                value={this.state.address}></input>
-                        </div>
+
                     </div>
 
                 </ModalBody>

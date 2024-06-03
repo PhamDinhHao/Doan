@@ -14,8 +14,9 @@ import Select from 'react-select';
 import ModelNewSupplier from "../Supplier/ModelNewSupplier";
 import ModelNewCategory from "./ModelNewCategory";
 import ModelNewUnit from "./ModelNewUnit";
-import { getAllCategory, createNewCategoryrService } from "../../../services/categoryService";
+import { getAllCategory, createNewCategoryrService, getAllLocation, createNewLocationrService } from "../../../services/categoryService";
 import { getAllUnit, createNewUnitService } from "../../../services/unitService";
+import ModelNewLocation from "./ModelNewLocation";
 class ModelNewProduct extends Component {
   constructor(props) {
     super(props);
@@ -47,6 +48,11 @@ class ModelNewProduct extends Component {
       selectedUnit: [],
       isOpenNewUnit: false,
 
+      arrLocations: [],
+      listLocationState: [],
+      selectedLocation: [],
+      isOpenNewLocation: false,
+
     };
     this.listenToEmitter();
   }
@@ -75,6 +81,10 @@ class ModelNewProduct extends Component {
         listUnitState: [],
         selectedUnit: [],
 
+        arrLocations: [],
+        listLocationState: [],
+        selectedLocation: [],
+
       });
     });
   }
@@ -82,6 +92,8 @@ class ModelNewProduct extends Component {
   async getAllCategoryFromReact() {
     let response = await getAllCategory('ALL');
     let response1 = await getAllUnit('ALL');
+    let response2 = await getAllLocation('ALL');
+    console.log("res", response2)
     if (response && response.errCode === 0 && JSON.stringify(response.categorys) !== JSON.stringify(this.state.arrCategorys)) {
       this.setState({
         arrCategorys: response.categorys
@@ -92,11 +104,14 @@ class ModelNewProduct extends Component {
         arrUnits: response1.units
       });
     }
+    if (response2 && response2.errCode === 0 && JSON.stringify(response2.lacations) !== JSON.stringify(this.state.arrLocations)) {
+      this.setState({
+        arrLocations: response2.lacations
+      });
+    }
   }
   async componentDidMount() {
-    this.props.fetchSupplierRedux();
     await this.getAllCategoryFromReact();
-    console.log("chech log", this.state.arrUnits)
   }
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.listSuppliers !== this.props.listSuppliers) {
@@ -127,10 +142,20 @@ class ModelNewProduct extends Component {
       })
       this.getAllCategoryFromReact();
     }
+    if (prevState.arrLocations !== this.state.arrLocations) {
+
+      let dataSelectLocation = this.buildDataInputSelectLocation(this.state.arrLocations)
+
+      this.setState({
+
+        listLocationState: dataSelectLocation
+      })
+      this.getAllCategoryFromReact();
+    }
   }
 
-  handleChangeSelectSupplier = (selectedSupplier) => {
-    this.setState({ selectedSupplier: selectedSupplier });
+  handleChangeSelectLocation = (selectedLocation) => {
+    this.setState({ selectedLocation: selectedLocation });
 
   };
   handleChangeSelectCategory = (selectedCategory) => {
@@ -175,7 +200,7 @@ class ModelNewProduct extends Component {
   checkValideInputSelect = () => {
     let isValid = true;
     let arrInput = [
-      "selectedSupplier",
+
       "selectedCategory",
       "selectedUnit",
     ];
@@ -217,6 +242,20 @@ class ModelNewProduct extends Component {
 
 
   }
+  buildDataInputSelectLocation = (inputData) => {
+    let result = [];
+
+    if (inputData && inputData.length > 0) {
+      inputData.map((item, index) => {
+        let object = {};
+        object.label = item.locationName;
+        object.value = item.id;
+        result.push(object);
+      })
+
+    }
+    return result
+  }
   buildDataInputSelectCategory = (inputData) => {
     let result = [];
 
@@ -251,7 +290,7 @@ class ModelNewProduct extends Component {
     if (inputData && inputData.length > 0) {
       inputData.map((item, index) => {
         let object = {};
-        object.label = item.name;
+        object.label = item.locationName;
         object.value = item.id;
         result.push(object);
       })
@@ -260,9 +299,9 @@ class ModelNewProduct extends Component {
     return result
   }
 
-  toggleSupplierModal = () => {
+  toggleLocationModal = () => {
     this.setState({
-      isOpenNewSupplier: !this.state.isOpenNewSupplier,
+      isOpenNewLocation: !this.state.isOpenNewLocation,
     })
   }
   toggleCategoryModal = () => {
@@ -275,9 +314,9 @@ class ModelNewProduct extends Component {
       isOpenNewUnit: !this.state.isOpenNewUnit,
     })
   }
-  handleAddNewSupplier = () => {
+  handleAddNewLocation = () => {
     this.setState({
-      isOpenNewSupplier: true
+      isOpenNewLocation: true
     })
 
   }
@@ -293,21 +332,21 @@ class ModelNewProduct extends Component {
     })
 
   }
-  createNewSupplier = async (data) => {
+  createNewLocation = async (data) => {
     try {
-      let response = await this.props.createNewSupplierRedux(data);
+      let response = await createNewLocationrService(data);
       if (response && response.errCode !== 0) {
         alert(response.errMessage)
       }
       else {
         this.setState({
-          isOpenNewSupplier: false
+          isOpenNewLocation: false
 
         })
         emitter.emit('EVENT_CLEAR_MODAL_DATA', { 'id': 'your id' })
 
       }
-
+      console.log(response);
     } catch (error) {
       console.log(error);
     }
@@ -360,10 +399,10 @@ class ModelNewProduct extends Component {
 
     return (
       <div>
-        <ModelNewSupplier
-          isOpen={this.state.isOpenNewSupplier}
-          toggleFromParent={this.toggleSupplierModal}
-          createNewSupplier={this.createNewSupplier}
+        <ModelNewLocation
+          isOpen={this.state.isOpenNewLocation}
+          toggleFromParent={this.toggleLocationModal}
+          createNewLocation={this.createNewLocation}
         />
         <ModelNewCategory
           isOpen={this.state.isOpenNewCategory}
@@ -431,15 +470,15 @@ class ModelNewProduct extends Component {
               </div>
               <div className="input-container">
                 <label >
-                  Nhà cung cấp
-                  <i className="fas fa-plus" style={{ marginLeft: "10px" }} onClick={() => this.handleAddNewSupplier()}></i>
+                  Kho
+                  <i className="fas fa-plus" style={{ marginLeft: "10px" }} onClick={() => this.handleAddNewLocation()}></i>
                 </label>
 
                 <Select
-                  onChange={this.handleChangeSelectSupplier}
+                  onChange={this.handleChangeSelectLocation}
 
-                  value={this.state.selectedSupplier}
-                  options={this.state.listSupplierState}
+                  value={this.state.selectedLocation}
+                  options={this.state.listLocationState}
                 >
 
 

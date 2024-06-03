@@ -11,9 +11,9 @@ import { emitter } from "../../../utils/emitter";
 import _, { isEmpty } from "lodash";
 import Select from 'react-select';
 import { CommonUtils } from '../../../utils';
-import { getAllCategory, createNewCategoryrService } from "../../../services/categoryService";
+import { getAllCategory, createNewCategoryrService, getAllLocation, createNewLocationrService } from "../../../services/categoryService";
 import { getAllUnit, createNewUnitService } from "../../../services/unitService";
-import ModelNewSupplier from "../Supplier/ModelNewSupplier";
+import ModelNewLocation from "./ModelNewLocation";
 class ModelUpdateProduct extends Component {
   constructor(props) {
     super(props);
@@ -41,6 +41,11 @@ class ModelUpdateProduct extends Component {
       listUnitState: [],
       selectedUnit: [],
       isOpenNewUnit: false,
+
+      arrLocations: [],
+      listLocationState: [],
+      selectedLocation: [],
+      isOpenNewLocation: false,
     };
     this.listenToEmitter();
   }
@@ -61,30 +66,31 @@ class ModelUpdateProduct extends Component {
   async componentDidMount() {
     this.props.fetchSupplierRedux();
     await this.getAllCategoryFromReact();
-    let product = this.props.currentProduct;
-    let resultChooseSupplier = [];
-    let resultChooseCategory = [];
-    let resultChooseUnit = [];
-    let object = {};
-    object.label = product.Supplier.name;
-    object.value = product.Supplier.id;
-    resultChooseSupplier.push(object);
+    this.setProductState(this.props.currentProduct);
+  }
 
-    object = {};
-    object.label = product.Category.categoryName;
-    object.value = product.Category.id;
-    resultChooseCategory.push(object);
-
-    object = {};
-    object.label = product.Unit.unitName;
-    object.value = product.Unit.id;
-    resultChooseUnit.push(object);
-
-    let imageBase64 = '';
-    if (product.image) {
-      imageBase64 = Buffer.from(product.image, 'base64').toString('binary');
-    }
+  setProductState = (product) => {
     if (product && !isEmpty(product)) {
+
+      let resultChooseLocation = [{
+        label: product.Location.locationName,
+        value: product.Location.id,
+      }];
+      let resultChooseCategory = [{
+        label: product.Category.categoryName,
+        value: product.Category.id,
+      }];
+
+      let resultChooseUnit = [{
+        label: product.Unit.unitName,
+        value: product.Unit.id,
+      }];
+
+      let imageBase64 = '';
+      if (product.image) {
+        imageBase64 = Buffer.from(product.image, 'base64').toString('binary');
+      }
+
       this.setState({
         id: product.id,
         productName: product.productName,
@@ -94,15 +100,11 @@ class ModelUpdateProduct extends Component {
         description: product.description,
         previewImgUrl: imageBase64,
         image: imageBase64,
-        selectedSupplier: resultChooseSupplier,
+        selectedLocation: resultChooseLocation,
         selectedCategory: resultChooseCategory,
-        selectedUnit: resultChooseUnit
-
-
-
+        selectedUnit: resultChooseUnit,
       });
     }
-
   }
   handleChangeSelectSupplier = (selectedSupplier) => {
     this.setState({ selectedSupplier: selectedSupplier });
@@ -120,15 +122,21 @@ class ModelUpdateProduct extends Component {
 
     let response = await getAllCategory('ALL');
     let response1 = await getAllUnit('ALL');
-    if (response && response.errCode == 0) {
+    let response2 = await getAllLocation('ALL');
+    if (response && response.errCode === 0 && JSON.stringify(response.categorys) !== JSON.stringify(this.state.arrCategorys)) {
       this.setState({
         arrCategorys: response.categorys
-      })
+      });
     }
-    if (response1 && response1.errCode == 0) {
+    if (response1 && response1.errCode === 0 && JSON.stringify(response1.units) !== JSON.stringify(this.state.arrUnits)) {
       this.setState({
         arrUnits: response1.units
-      })
+      });
+    }
+    if (response2 && response2.errCode === 0 && JSON.stringify(response2.lacations) !== JSON.stringify(this.state.arrLocations)) {
+      this.setState({
+        arrLocations: response2.lacations
+      });
     }
   }
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -141,12 +149,33 @@ class ModelUpdateProduct extends Component {
     }
     if (prevState.arrCategorys !== this.state.arrCategorys) {
       let dataSelectCategory = this.buildDataInputSelectCategory(this.state.arrCategorys)
-      let dataSelectUnit = this.buildDataInputSelectUnit(this.state.arrUnits)
-      this.getAllCategoryFromReact();
+
+
       this.setState({
         listCategoryState: dataSelectCategory,
+
+      })
+      this.getAllCategoryFromReact();
+    }
+    if (prevState.arrUnits !== this.state.arrUnits) {
+
+      let dataSelectUnit = this.buildDataInputSelectUnit(this.state.arrUnits)
+
+      this.setState({
+
         listUnitState: dataSelectUnit
       })
+      this.getAllCategoryFromReact();
+    }
+    if (prevState.arrLocations !== this.state.arrLocations) {
+
+      let dataSelectLocation = this.buildDataInputSelectLocation(this.state.arrLocations)
+
+      this.setState({
+
+        listLocationState: dataSelectLocation
+      })
+      this.getAllCategoryFromReact();
     }
   }
   handleOnchangeImage = async (event) => {
@@ -196,6 +225,20 @@ class ModelUpdateProduct extends Component {
     }
     return isValid;
   }
+  buildDataInputSelectLocation = (inputData) => {
+    let result = [];
+
+    if (inputData && inputData.length > 0) {
+      inputData.map((item, index) => {
+        let object = {};
+        object.label = item.locationName;
+        object.value = item.id;
+        result.push(object);
+      })
+
+    }
+    return result
+  }
   buildDataInputSelectCategory = (inputData) => {
     let result = [];
 
@@ -239,9 +282,9 @@ class ModelUpdateProduct extends Component {
     return result
   }
 
-  toggleSupplierModal = () => {
+  toggleLocationModal = () => {
     this.setState({
-      isOpenNewSupplier: !this.state.isOpenNewSupplier,
+      isOpenNewLocation: !this.state.isOpenNewLocation,
     })
   }
   toggleCategoryModal = () => {
@@ -367,14 +410,39 @@ class ModelUpdateProduct extends Component {
     this.setState({ selectedCategory: selectedCategory });
 
   };
+  handleAddNewLocation = () => {
+    this.setState({
+      isOpenNewLocation: true
+    })
 
+  }
+  createNewLocation = async (data) => {
+    try {
+      let response = await createNewLocationrService(data);
+      if (response && response.errCode !== 0) {
+        alert(response.errMessage)
+      }
+      else {
+        this.setState({
+          isOpenNewLocation: false
+
+        })
+        emitter.emit('EVENT_CLEAR_MODAL_DATA', { 'id': 'your id' })
+
+      }
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+
+  }
   render() {
     return (
       <div>
-        <ModelNewSupplier
-          isOpen={this.state.isOpenNewSupplier}
-          toggleFromParent={this.toggleSupplierModal}
-          createNewSupplier={this.createNewSupplier}
+        <ModelNewLocation
+          isOpen={this.state.isOpenNewLocation}
+          toggleFromParent={this.toggleLocationModal}
+          createNewLocation={this.createNewLocation}
         />
         <ModelNewCategory
           isOpen={this.state.isOpenNewCategory}
@@ -442,16 +510,17 @@ class ModelUpdateProduct extends Component {
               </div>
               <div className="input-container">
                 <label >
-                  Nhà cung cấp
-                  <i className="fas fa-plus" style={{ marginLeft: "10px" }} onClick={() => this.handleAddNewSupplier()}></i>
+                  Kho
+                  <i className="fas fa-plus" style={{ marginLeft: "10px" }} onClick={() => this.handleAddNewLocation()}></i>
                 </label>
 
                 <Select
-                  onChange={this.handleChangeSelectSupplier}
+                  onChange={this.handleChangeSelectLocation}
 
-                  value={this.state.selectedSupplier}
-                  options={this.state.listSupplierState}
+                  value={this.state.selectedLocation}
+                  options={this.state.listLocationState}
                 >
+
 
 
                 </Select>

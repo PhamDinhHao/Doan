@@ -33,7 +33,7 @@ class ModelNewCustomer extends Component {
       });
     });
   }
-  componentDidMount() {}
+  componentDidMount() { }
   toggle = () => {
     this.props.toggleFromParent();
   };
@@ -68,6 +68,14 @@ class ModelNewCustomer extends Component {
     if (isValid == true) {
       //call apicreat modal
       this.props.createNewCustomer(this.state);
+      this.setState({
+        name: "",
+        phoneNumber: "",
+        address: "",
+        gender: "",
+        birthday: "",
+        debtCustomer: "",
+      });
     }
   };
 
@@ -125,7 +133,7 @@ class ModelNewCustomer extends Component {
                 value={this.state.gender}
                 onChange={(event) => this.handleOnChangeInput(event, "gender")}
               >
-                <option value="Nam">Chọn giới tính</option>
+                <option value="">Chọn giới tính</option>
                 <option value="Nam">Nam</option>
                 <option value="Nữ">Nữ</option>
               </select>

@@ -271,7 +271,7 @@ class SaleNew extends Component {
                         salePrice,
                         total,
                     } = product;
-                    await this.props.createSaleDetailRedux({
+                    const res = await this.props.createSaleDetailRedux({
                         saleId: saleId,
                         productId: productId,
                         productName: productName,
@@ -279,11 +279,14 @@ class SaleNew extends Component {
                         total: total,
                         salePrice: salePrice,
                     });
+                    if (this.props.isSaleDetail == false) {
+                        this.props.history.push("/system/sale");
+                    }
                 })
             );
+            console.log("Sale and details saved successfully!", this.props.isSaleDetail);
 
-            console.log("Sale and details saved successfully!");
-            this.props.history.push("/system/sale");
+
         } catch (error) {
             console.error("Error saving Sale and details:", error);
         }
@@ -499,6 +502,7 @@ const mapStateToProps = (state) => {
         productSuggestions: state.product.productSuggestions,
         saleId: state.sale.saleId,
         userInfo: state.user.userInfo,
+        isSaleDetail: state.sale.isSaleDetail,
     };
 };
 

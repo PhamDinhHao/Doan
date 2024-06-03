@@ -25,6 +25,7 @@ class System extends Component {
       <div className="system-container">
         <div className="system-list">
           <Switch>
+            <Route path="/system/colum" component={Colum} />
             <Route path="/system/user-manage" component={UserManage} />
             <Route path="/system/product" component={ProductManage} />
             <Route path="/system/customer" component={CustomerManage} />
@@ -35,7 +36,6 @@ class System extends Component {
             <Route path="/system/sale-new" component={SaleNew} />
             <Route path="/system/sale" component={SaleManage} />
             <Route path="/system/sale-update" component={SaleUpdate} />
-            <Route path="/system/colum" component={Colum} />
             <Route path="/system/product-report" component={ProductReport} />
             <Route path="/system/customer-report" component={CustomerReport} />
             <Route path="/system/supplier-report" component={SupplierReport} />

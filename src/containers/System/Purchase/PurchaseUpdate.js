@@ -309,279 +309,278 @@ class PurchaseUpdate extends Component {
 
   updatePurchaseAndDetails = async (selectedDate) => {
     // console.log("updatePurchaseAndDetails called");
-    try {
-      const { products, supplierId } = this.state;
-      console.log(products);
-      console.log(supplierId);
-      if (products.length > 0 && supplierId != null) {
-        const purchase = {
-          purchaseId: this.state.record.id,
-          supplierId: this.state.supplierId,
-          total: this.state.total,
-        };
 
-        const purchaseDetails = this.state.products.map((product) => {
-          const {
-            id: productId,
-            // name: productName,
-            quantity,
-            costPrice,
-            total,
-          } = product;
-          return {
-            purchaseId: this.state.record.id,
-            productId: productId,
-            // productName: productName,
-            quantity: quantity,
-            costPrice: costPrice,
-            total: total,
-          };
-        });
-        await this.props.editPurchaseAndDetailsRedux(purchase, purchaseDetails);
-        this.props.history.push("/system/purchase");
-      } catch (error) {
-        console.error("Error updating purchase and details:", error);
-      }
+    const { products, supplierId } = this.state;
+    console.log(products);
+    console.log(supplierId);
+    if (products.length > 0 && supplierId != null) {
+      const purchase = {
+        purchaseId: this.state.record.id,
+        supplierId: this.state.supplierId,
+        total: this.state.total,
+      };
+
+      const purchaseDetails = this.state.products.map((product) => {
+        const {
+          id: productId,
+          // name: productName,
+          quantity,
+          costPrice,
+          total,
+        } = product;
+        return {
+          purchaseId: this.state.record.id,
+          productId: productId,
+          // productName: productName,
+          quantity: quantity,
+          costPrice: costPrice,
+          total: total,
+        };
+      });
+      await this.props.editPurchaseAndDetailsRedux(purchase, purchaseDetails);
+      this.props.history.push("/system/purchase");
+    }
+
+  }
+
+  render() {
+    const {
+      supplierValue,
+      supplierId,
+      supplierSuggestions,
+      productValue,
+      productSuggestions,
+      products = [],
+      updatedproducts,
+      selectedDate,
+      record,
+    } = this.state;
+    // console.log("products", products);
+    const supplierInputProps = {
+      placeholder: "Search supplier",
+      value: supplierValue,
+      onChange: this.onSupplierChange,
+      // onBlur: () => {
+      //   const selectedSupplier = this.state.supplierSuggestions.find(
+      //     (supplier) => supplier.name === this.state.supplierValue
+      //   );
+      //   this.setState({
+      //     supplierId: selectedSupplier ? selectedSupplier.id : null,
+      //   });
+      // },
     };
 
-    render() {
-      const {
-        supplierValue,
-        supplierId,
-        supplierSuggestions,
-        productValue,
-        productSuggestions,
-        products = [],
-        updatedproducts,
-        selectedDate,
-        record,
-      } = this.state;
-      // console.log("products", products);
-      const supplierInputProps = {
-        placeholder: "Search supplier",
-        value: supplierValue,
-        onChange: this.onSupplierChange,
-        // onBlur: () => {
-        //   const selectedSupplier = this.state.supplierSuggestions.find(
-        //     (supplier) => supplier.name === this.state.supplierValue
-        //   );
-        //   this.setState({
-        //     supplierId: selectedSupplier ? selectedSupplier.id : null,
-        //   });
-        // },
-      };
+    const productInputProps = {
+      placeholder: "Search product",
+      value: productValue,
+      onChange: this.onProductChange,
+    };
 
-      const productInputProps = {
-        placeholder: "Search product",
-        value: productValue,
-        onChange: this.onProductChange,
-      };
-
-      return (
-        <div class="cover-div">
-          <div class="item-left">
-            <div class="search-box">
-              <div class="back-arrow">
-                <button onClick={() => this.handleReturnToPurchase()}>
-                  <i class="fas fa-arrow-left"></i>
-                </button>
-              </div>
-              <div class="search-bar">
-                <button>
-                  <i class="fas fa-search icon"></i>
-                </button>
-
-                <div class="suggestion-container">
-                  <Autosuggest
-                    suggestions={productSuggestions}
-                    onSuggestionsFetchRequested={
-                      this.onProductSuggestionsFetchRequested
-                    }
-                    onSuggestionsClearRequested={
-                      this.onProductSuggestionsClearRequested
-                    }
-                    getSuggestionValue={(suggestion) => suggestion.productName}
-                    renderSuggestion={this.renderProductSuggestion}
-                    inputProps={productInputProps}
-                    onSuggestionSelected={this.onProductTableSuggestionSelected}
-                  />
-                </div>
-                <button onClick={() => this.handleAddNewProduct()}>
-                  <i class="fas fa-plus"></i>
-                </button>
-              </div>
+    return (
+      <div class="cover-div">
+        <div class="item-left">
+          <div class="search-box">
+            <div class="back-arrow">
+              <button onClick={() => this.handleReturnToPurchase()}>
+                <i class="fas fa-arrow-left"></i>
+              </button>
             </div>
-            <div class="item-table">
-              <table>
-                <thead>
-                  <tr>
-                    <th></th>
-                    <th>STT</th>
-                    <th>Id</th>
-                    <th>Name</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {products.map((product, index) => (
-                    <tr key={index}>
-                      <td>
-                        <button
-                          className="delete-btn"
-                          onClick={() => this.onDeleteProduct(index)}
-                        >
-                          <i
-                            className="fas fa-trash"
-                            style={{ color: "#B22222" }}
-                          ></i>
-                        </button>
-                      </td>
-                      <td>{index + 1}</td>
-                      <td>{product.id}</td>
-                      <td>{product.productName}</td>
-                      <td>
-                        <button
-                          className="quantity-btn"
-                          onClick={() => this.onQuantityDecrease(index)}
-                          disabled={product.quantity <= 1}
-                        >
-                          -
-                        </button>
+            <div class="search-bar">
+              <button>
+                <i class="fas fa-search icon"></i>
+              </button>
 
-                        <input
-                          type="number"
-                          className="quantity-input"
-                          value={product.quantity}
-                          onChange={(e) =>
-                            this.onQuantityChange(index, e.target.value)
-                          }
-                          inputMode="numeric"
-                          pattern="[0-9]*"
-                        />
-                        <button
-                          className="quantity-btn"
-                          onClick={() => this.onQuantityIncrease(index)}
-                        >
-                          +
-                        </button>
-                      </td>
-                      <td>
-                        <input
-                          type="number"
-                          value={product.costPrice}
-                          onChange={(e) =>
-                            this.onPriceChange(index, e.target.value)
-                          }
-                          inputMode="numeric"
-                          pattern="[0-9]*"
-                        />
-                      </td>
-                      <td>{product.quantity * product.costPrice}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="product-list">
-              <ModelNewProduct
-                isOpen={this.state.isOpenNewProduct}
-                toggleFromParent={this.toggleProductModal}
-                createNewProduct={this.createNewProduct}
-              />
-              <ModelNewSupplier
-                isOpen={this.state.isOpenNewSupplier}
-                toggleFromParent={this.toggleSupplierModal}
-                createNewSupplier={this.createNewSupplier}
-              />
-            </div>
-          </div>
-          <div class="item-right">
-            <div class="purchare-order">
-              <div class="user-box">
-                <div class="user-name">
-                  <span>user</span>
-                </div>
-                <div class="datetime-picker">
-                  <DatePicker
-                    value={selectedDate}
-                    onChange={this.handleDateChange}
-                  />
-                </div>
+              <div class="suggestion-container">
+                <Autosuggest
+                  suggestions={productSuggestions}
+                  onSuggestionsFetchRequested={
+                    this.onProductSuggestionsFetchRequested
+                  }
+                  onSuggestionsClearRequested={
+                    this.onProductSuggestionsClearRequested
+                  }
+                  getSuggestionValue={(suggestion) => suggestion.productName}
+                  renderSuggestion={this.renderProductSuggestion}
+                  inputProps={productInputProps}
+                  onSuggestionSelected={this.onProductTableSuggestionSelected}
+                />
               </div>
-              <div class="search-bar">
-                <button>
-                  <i class="fas fa-search icon"></i>
-                </button>
-
-                <div class="suggestion-container">
-                  <Autosuggest
-                    suggestions={supplierSuggestions}
-                    onSuggestionsFetchRequested={
-                      this.onSupplierSuggestionsFetchRequested
-                    }
-                    onSuggestionsClearRequested={
-                      this.onSupplierSuggestionsClearRequested
-                    }
-                    getSuggestionValue={(suggestion) => suggestion.name}
-                    renderSuggestion={this.renderSupplierSuggestion}
-                    inputProps={supplierInputProps}
-                  />
-                </div>
-                <button onClick={() => this.handleAddNewSupplier()}>
-                  <i class="fas fa-plus"></i>
-                </button>
-              </div>
-              <div class="quantity-box">
-                <span>quantity:</span>
-                <span class="total-quantity">{this.getTotalQuantity()}</span>
-              </div>
-              <div class="money-box">
-                <span>total:</span>
-                <span class="total-money">{this.getTotalMoney()}</span>
-              </div>
-            </div>
-            <div class="wrap-button">
-              <button
-                // href="#"
-                className="btn btn-success btn-font--medium"
-                onClick={() => this.updatePurchaseAndDetails(selectedDate)}
-              >
-                <i class="fas fa-check"></i>
+              <button onClick={() => this.handleAddNewProduct()}>
+                <i class="fas fa-plus"></i>
               </button>
             </div>
           </div>
+          <div class="item-table">
+            <table>
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>STT</th>
+                  <th>Id</th>
+                  <th>Tên</th>
+                  <th>Số Lượng</th>
+                  <th>Giá Nhập</th>
+                  <th>Tổng</th>
+                </tr>
+              </thead>
+              <tbody>
+                {products.map((product, index) => (
+                  <tr key={index}>
+                    <td>
+                      <button
+                        className="delete-btn"
+                        onClick={() => this.onDeleteProduct(index)}
+                      >
+                        <i
+                          className="fas fa-trash"
+                          style={{ color: "#B22222" }}
+                        ></i>
+                      </button>
+                    </td>
+                    <td>{index + 1}</td>
+                    <td>{product.id}</td>
+                    <td>{product.productName}</td>
+                    <td>
+                      <button
+                        className="quantity-btn"
+                        onClick={() => this.onQuantityDecrease(index)}
+                        disabled={product.quantity <= 1}
+                      >
+                        -
+                      </button>
+
+                      <input
+                        type="number"
+                        className="quantity-input"
+                        value={product.quantity}
+                        onChange={(e) =>
+                          this.onQuantityChange(index, e.target.value)
+                        }
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                      />
+                      <button
+                        className="quantity-btn"
+                        onClick={() => this.onQuantityIncrease(index)}
+                      >
+                        +
+                      </button>
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        value={product.costPrice}
+                        onChange={(e) =>
+                          this.onPriceChange(index, e.target.value)
+                        }
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                      />
+                    </td>
+                    <td>{product.quantity * product.costPrice}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="product-list">
+            <ModelNewProduct
+              isOpen={this.state.isOpenNewProduct}
+              toggleFromParent={this.toggleProductModal}
+              createNewProduct={this.createNewProduct}
+            />
+            <ModelNewSupplier
+              isOpen={this.state.isOpenNewSupplier}
+              toggleFromParent={this.toggleSupplierModal}
+              createNewSupplier={this.createNewSupplier}
+            />
+          </div>
         </div>
-      );
-    }
+        <div class="item-right">
+          <div class="purchare-order">
+            <div class="user-box">
+              <div class="user-name">
+                <span>user</span>
+              </div>
+              <div class="datetime-picker">
+                <DatePicker
+                  value={selectedDate}
+                  onChange={this.handleDateChange}
+                />
+              </div>
+            </div>
+            <div class="search-bar">
+              <button>
+                <i class="fas fa-search icon"></i>
+              </button>
+
+              <div class="suggestion-container">
+                <Autosuggest
+                  suggestions={supplierSuggestions}
+                  onSuggestionsFetchRequested={
+                    this.onSupplierSuggestionsFetchRequested
+                  }
+                  onSuggestionsClearRequested={
+                    this.onSupplierSuggestionsClearRequested
+                  }
+                  getSuggestionValue={(suggestion) => suggestion.name}
+                  renderSuggestion={this.renderSupplierSuggestion}
+                  inputProps={supplierInputProps}
+                />
+              </div>
+              <button onClick={() => this.handleAddNewSupplier()}>
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+            <div class="quantity-box">
+              <span>quantity:</span>
+              <span class="total-quantity">{this.getTotalQuantity()}</span>
+            </div>
+            <div class="money-box">
+              <span>total:</span>
+              <span class="total-money">{this.getTotalMoney()}</span>
+            </div>
+          </div>
+          <div class="wrap-button">
+            <button
+              // href="#"
+              className="btn btn-success btn-font--medium"
+              onClick={() => this.updatePurchaseAndDetails(selectedDate)}
+            >
+              <i class="fas fa-check"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
+}
 
-  const mapStateToProps = (state) => {
-    return {
-      supplierSuggestions: state.supplier.supplierSuggestions,
-      productSuggestions: state.product.productSuggestions,
-      purchaseId: state.purchase.purchaseId,
-      listProductByPurchaseId: state.product.listProductByPurchaseId,
-    };
+const mapStateToProps = (state) => {
+  return {
+    supplierSuggestions: state.supplier.supplierSuggestions,
+    productSuggestions: state.product.productSuggestions,
+    purchaseId: state.purchase.purchaseId,
+    listProductByPurchaseId: state.product.listProductByPurchaseId,
   };
+};
 
-  const mapDispatchToProps = (dispatch) => {
-    return {
-      fetchSupplierSuggestionsRedux: (value) =>
-        dispatch(actions.fetchSupplierSuggestions(value)),
-      fetchProductSuggestionsRedux: (value) =>
-        dispatch(actions.fetchProductSuggestions(value)),
-      createNewPurchaseRedux: (data) => dispatch(actions.createNewPurchase(data)),
-      createPurchaseDetailRedux: (data) =>
-        dispatch(actions.createNewPurchaseDetail(data)),
-      createNewProductRedux: (data) => dispatch(actions.createNewProduct(data)),
-      createNewSupplierRedux: (data) => dispatch(actions.createNewSupplier(data)),
-      fetchProductByPurchaseIdRedux: (data) =>
-        dispatch(actions.fetchProductByPurchaseIdRedux(data)),
-      editPurchaseAndDetailsRedux: (purchase, purchaseDetails) =>
-        dispatch(actions.editPurchaseAndDetails(purchase, purchaseDetails)),
-    };
+const mapDispatchToProps = (dispatch) => {
+  return {
+    fetchSupplierSuggestionsRedux: (value) =>
+      dispatch(actions.fetchSupplierSuggestions(value)),
+    fetchProductSuggestionsRedux: (value) =>
+      dispatch(actions.fetchProductSuggestions(value)),
+    createNewPurchaseRedux: (data) => dispatch(actions.createNewPurchase(data)),
+    createPurchaseDetailRedux: (data) =>
+      dispatch(actions.createNewPurchaseDetail(data)),
+    createNewProductRedux: (data) => dispatch(actions.createNewProduct(data)),
+    createNewSupplierRedux: (data) => dispatch(actions.createNewSupplier(data)),
+    fetchProductByPurchaseIdRedux: (data) =>
+      dispatch(actions.fetchProductByPurchaseIdRedux(data)),
+    editPurchaseAndDetailsRedux: (purchase, purchaseDetails) =>
+      dispatch(actions.editPurchaseAndDetails(purchase, purchaseDetails)),
   };
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(PurchaseUpdate);
