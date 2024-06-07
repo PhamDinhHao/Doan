@@ -1,7 +1,15 @@
+import {
+  FaHome,
+  FaBoxOpen,
+  FaHandshake,
+  FaFileInvoice,
+  FaChartBar,
+} from "react-icons/fa";
+
 export const adminMenu = [
   {
-    //hệ thống
     name: "Tổng quan",
+    icon: <FaHome />,
     menus: [
       {
         name: "menu.system.system-administrator.header",
@@ -11,6 +19,7 @@ export const adminMenu = [
   },
   {
     name: "Hàng hóa",
+    icon: <FaBoxOpen />,
     menus: [
       {
         name: "Danh mục",
@@ -20,6 +29,7 @@ export const adminMenu = [
   },
   {
     name: "Giao dịch",
+    icon: <FaFileInvoice />,
     menus: [
       {
         name: "Hóa đơn",
@@ -33,6 +43,7 @@ export const adminMenu = [
   },
   {
     name: "Đối tác",
+    icon: <FaHandshake />,
     menus: [
       {
         name: "Khách hàng",
@@ -46,6 +57,7 @@ export const adminMenu = [
   },
   {
     name: "Báo cáo",
+    icon: <FaChartBar />,
     menus: [
       {
         name: "Hàng hóa",
@@ -62,10 +74,11 @@ export const adminMenu = [
     ],
   },
 ];
+
 export const adminMenuSale = [
   {
-    //hệ thống
     name: "Bán hàng",
+    icon: <FaFileInvoice />,
     menus: [
       {
         name: "Hóa đơn",

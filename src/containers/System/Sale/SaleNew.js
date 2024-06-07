@@ -180,6 +180,7 @@ class SaleNew extends Component {
       const newProducts = [...products, newProduct];
       this.setState({ products: newProducts });
     }
+    this.setState({ productValue: "" });
   };
 
   onQuantityIncrease = (index) => {
