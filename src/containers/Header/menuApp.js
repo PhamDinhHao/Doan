@@ -7,7 +7,6 @@ export const adminMenu = [
         name: "menu.system.system-administrator.header",
         link: "/system/colum",
       },
-
     ],
   },
   {
@@ -17,7 +16,6 @@ export const adminMenu = [
         name: "Danh mục",
         link: "/system/product",
       },
-
     ],
   },
   {

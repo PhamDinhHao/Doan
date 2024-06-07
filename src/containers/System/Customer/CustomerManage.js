@@ -79,8 +79,23 @@ class CustomerManage extends Component {
     }
   }
 
-  handleChangeSelect = async (selectedCustomer) => {
+  handleChangeSelect = (selectedCustomer) => {
     this.setState({ selectedCustomer: selectedCustomer });
+    if (selectedCustomer === null) {
+      this.setState({ customerRedux: this.props.listcustomers });
+    } else {
+      this.filterCustomersBySelection(selectedCustomer);
+    }
+  };
+
+  filterCustomersBySelection = (selectedCustomer) => {
+    let filteredCustomers = this.props.listcustomers;
+    if (selectedCustomer) {
+      filteredCustomers = this.props.listcustomers.filter(
+        (customer) => customer.id === selectedCustomer.value
+      );
+    }
+    this.setState({ customerRedux: filteredCustomers });
   };
 
   buildDataInputSelect = (inputData) => {
