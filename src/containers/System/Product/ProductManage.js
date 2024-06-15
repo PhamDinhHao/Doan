@@ -59,14 +59,17 @@ class ProductManage extends Component {
         {
           title: "Số lượng",
           dataIndex: "quantity",
+          render: (text) => this.formatNumberWithCommas(text),
         },
         {
           title: "Giá nhập",
           dataIndex: "costPrice",
+          render: (text) => this.formatNumberWithCommas(text),
         },
         {
           title: "Giá bán",
           dataIndex: "salePrice",
+          render: (text) => this.formatNumberWithCommas(text),
         },
         {
           title: "Hoạt động",
@@ -114,9 +117,7 @@ class ProductManage extends Component {
   async componentDidMount() {
     this.props.fetchProductRedux();
     await this.getAllCategoryFromReact();
-    console.log("checkasdsadasd", await getProductDoneSale())
-
-
+    console.log("checkasdsadasd", await getProductDoneSale());
   }
 
   async componentDidUpdate(prevProps, prevState, snapshot) {
@@ -267,6 +268,11 @@ class ProductManage extends Component {
 
     return tempList;
   };
+
+  formatNumberWithCommas(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
   render() {
     const filteredProducts = this.searchByCheckBoxOrInputSearch();
     let { checkedList, arrCategorys } = this.state;

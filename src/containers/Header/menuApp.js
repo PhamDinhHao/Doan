@@ -25,6 +25,10 @@ export const adminMenu = [
         name: "Danh mục",
         link: "/system/product",
       },
+      {
+        name: "Kiểm kho",
+        link: "/system/stock-check",
+      },
     ],
   },
   {

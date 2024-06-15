@@ -63,113 +63,115 @@ class Colum extends Component {
     const totalPurchse = value === 2 ? dataPurchaseMonth : dataPurchase;
 
     return (
-      <div class="wrapper-div">
-        <div class="dashboard-container">
-          <div class="dashboard">
-            <div class="header">
-              <div class="header-item">
-                <i class="fa fa-dollar-sign dollar-icon"></i>
-                <h3>Doanh thu hôm nay</h3>
-                <p>22,200,000</p>
+      <div className="body-wrap">
+        <div class="wrapper-div">
+          <div class="dashboard-container">
+            <div class="dashboard">
+              <div class="header">
+                <div class="header-item">
+                  <i class="fa fa-dollar-sign dollar-icon"></i>
+                  <h3>Doanh thu hôm nay</h3>
+                  <p>22,200,000</p>
+                </div>
+                <div class="header-item">
+                  <i class="fa fa-undo undo-icon"></i>
+                  <h3>Trả hàng</h3>
+                  <p>0</p>
+                </div>
+                <div class="header-item">
+                  <i class="fa fa-arrow-down arrow-down-icon"></i>
+                  <h3>So với hôm qua</h3>
+                  <p>-86.58%</p>
+                </div>
+                <div class="header-item">
+                  <i class="fa fa-calendar calendar-icon"></i>
+                  <h3>So với cùng kỳ tháng trước</h3>
+                  <p>-25.34%</p>
+                </div>
               </div>
-              <div class="header-item">
-                <i class="fa fa-undo undo-icon"></i>
-                <h3>Trả hàng</h3>
-                <p>0</p>
-              </div>
-              <div class="header-item">
-                <i class="fa fa-arrow-down arrow-down-icon"></i>
-                <h3>So với hôm qua</h3>
-                <p>-86.58%</p>
-              </div>
-              <div class="header-item">
-                <i class="fa fa-calendar calendar-icon"></i>
-                <h3>So với cùng kỳ tháng trước</h3>
-                <p>-25.34%</p>
-              </div>
-            </div>
 
-            <div class="main">
-              <div class="left-column">
-                <h3>Tổng thu chi</h3>
-                <div class="main-colum">
-                  <div class="main-radio-colum">
-                    <div class="radio-colum">
-                      <Radio.Group onChange={this.onChange} value={value}>
-                        <Radio value={1}>Theo ngày</Radio>
-                        <Radio value={2}>Theo tháng</Radio>
-                      </Radio.Group>
+              <div class="main">
+                <div class="left-column">
+                  <h3>Tổng thu chi</h3>
+                  <div class="main-colum">
+                    <div class="main-radio-colum">
+                      <div class="radio-colum">
+                        <Radio.Group onChange={this.onChange} value={value}>
+                          <Radio value={1}>Theo ngày</Radio>
+                          <Radio value={2}>Theo tháng</Radio>
+                        </Radio.Group>
+                      </div>
                     </div>
-                  </div>
-                  <div class="content-colum">
-                    <div class="top-content">
-                      <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={totalSale}>
-                          <CartesianGrid strokeDasharray="1 1" />
-                          <XAxis dataKey="date" />
-                          <YAxis />
-                          <Tooltip />
-                          <Legend />
-                          <Bar
-                            dataKey="totalSales"
-                            fill="#8884d8"
-                            name="Tổng thu"
-                          />
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </div>
-                    <div class="bot-content">
-                      <ResponsiveContainer width="100%" height={300}>
-                        <BarChart data={totalPurchse}>
-                          <CartesianGrid strokeDasharray="1 1" />
-                          <XAxis dataKey="date" />
-                          <YAxis />
-                          <Tooltip />
-                          <Legend />
-                          <Bar
-                            dataKey="totalPurchases"
-                            fill="#8884d8"
-                            name="Tổng chi"
-                          />
-                        </BarChart>
-                      </ResponsiveContainer>
+                    <div class="content-colum">
+                      <div class="top-content">
+                        <ResponsiveContainer width="100%" height={300}>
+                          <BarChart data={totalSale}>
+                            <CartesianGrid strokeDasharray="1 1" />
+                            <XAxis dataKey="date" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Bar
+                              dataKey="totalSales"
+                              fill="#8884d8"
+                              name="Tổng thu"
+                            />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                      <div class="bot-content">
+                        <ResponsiveContainer width="100%" height={300}>
+                          <BarChart data={totalPurchse}>
+                            <CartesianGrid strokeDasharray="1 1" />
+                            <XAxis dataKey="date" />
+                            <YAxis />
+                            <Tooltip />
+                            <Legend />
+                            <Bar
+                              dataKey="totalPurchases"
+                              fill="#8884d8"
+                              name="Tổng chi"
+                            />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div class="right-column">
-                <div class="notifications">
-                  <h4>Thông báo</h4>
-                  <p>
-                    <i class="fas fa-exclamation-circle"></i> Có 1 hoạt động
-                    đăng nhập khác thường cần kiểm tra.
-                  </p>
-                </div>
-                {/* <hr></hr> */}
-                <div class="activity-log">
-                  <h4>Các hoạt động gần đây</h4>
-                  <ul>
-                    <li>
-                      <i class="fas fa-shopping-cart"></i> Nguyễn Lê Hùng Cường
-                      vừa bán đơn hàng với giá trị 22,200,000
-                    </li>
-                    <li>
-                      <i class="fas fa-arrow-down"></i> Nguyễn Lê Hùng Cường vừa
-                      nhập hàng với giá trị 0
-                    </li>
-                    <li>
-                      <i class="fas fa-shopping-cart"></i> Hoàng Nam Quang vừa
-                      bán đơn hàng với giá trị 165,450,000
-                    </li>
-                    <li>
-                      <i class="fas fa-arrow-down"></i> Hoàng Nam Quang vừa nhập
-                      hàng với giá trị 0
-                    </li>
-                    <li>
-                      <i class="fas fa-shopping-cart"></i> Hoàng Nam Quang vừa
-                      bán đơn hàng với giá trị 59,250,000
-                    </li>
-                  </ul>
+                <div class="right-column">
+                  <div class="notifications">
+                    <h4>Thông báo</h4>
+                    <p>
+                      <i class="fas fa-exclamation-circle"></i> Có 1 hoạt động
+                      đăng nhập khác thường cần kiểm tra.
+                    </p>
+                  </div>
+                  {/* <hr></hr> */}
+                  <div class="activity-log">
+                    <h4>Các hoạt động gần đây</h4>
+                    <ul>
+                      <li>
+                        <i class="fas fa-shopping-cart"></i> vừa bán đơn hàng
+                        với giá trị 22,200,000
+                      </li>
+                      <li>
+                        <i class="fas fa-arrow-down"></i> vừa nhập hàng với giá
+                        trị 0
+                      </li>
+                      <li>
+                        <i class="fas fa-shopping-cart"></i> vừa bán đơn hàng
+                        với giá trị 165,450,000
+                      </li>
+                      <li>
+                        <i class="fas fa-arrow-down"></i> vừa nhập hàng với giá
+                        trị 0
+                      </li>
+                      <li>
+                        <i class="fas fa-shopping-cart"></i> vừa bán đơn hàng
+                        với giá trị 59,250,000
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>

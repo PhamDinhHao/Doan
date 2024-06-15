@@ -1,43 +1,45 @@
 import React, { Component } from "react";
-import { FormattedMessage } from "react-intl";
-import * as actions from "../../../store/actions";
 import { connect } from "react-redux";
 import Select from "react-select";
-import "../../System/Product/ProductManage.scss";
-import { Divider, Radio, Table } from "antd";
-import { emitter } from "../../../utils/emitter";
-import Checkbox from "antd/es/checkbox/Checkbox";
+import { Table, Radio } from "antd";
 import CustomScrollbars from "../../../components/CustomScrollbars";
 import Lightbox from "react-image-lightbox";
 import { withRouter } from "react-router-dom";
+import * as actions from "../../../store/actions";
+import "../../System/Product/ProductManage.scss";
 
-class SaleManage extends Component {
+class StockCheck extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      SaleRedux: [],
-      arrCategorys: [],
-      selectedItemCheckbox: [],
-      listSale: [],
-      selectedSale: null,
+      stockCheckRedux: [],
+      listStockCheck: [],
+      selectedStockCheck: null,
       selectedDateFilter: null,
+      selectedItemCheckbox: [], // Khởi tạo selectedItemCheckbox
       columns: [
         {
-          title: "Mã đơn hàng",
+          title: "Mã kiểm kho",
           dataIndex: "id",
         },
         {
           title: "Thời gian",
-          dataIndex: "saleDate",
+          dataIndex: "checkDate",
           render: (text) => <span>{this.formatDate(text)}</span>,
         },
         {
-          title: "Khách hàng",
-          dataIndex: ["Customer", "name"],
+          title: "SL thực tế",
+          dataIndex: "totalActualQuantity",
+          render: (text) => this.formatNumberWithCommas(text),
         },
         {
-          title: "Tổng Tiền",
-          dataIndex: "total",
+          title: "Tổng thực tế",
+          dataIndex: "totalActualMoney",
+          render: (text) => this.formatNumberWithCommas(text),
+        },
+        {
+          title: "Tổng chênh lệch",
+          dataIndex: "totalMoneyDifference",
           render: (text) => this.formatNumberWithCommas(text),
         },
         {
@@ -47,13 +49,13 @@ class SaleManage extends Component {
             <div>
               <button
                 className="btn-edit"
-                onClick={() => this.handleUpdateProduct(record)}
+                onClick={() => this.handleUpdateStockCheck(record)}
               >
                 <i className="fas fa-pencil-alt"></i>
               </button>
               <button
                 className="btn-delete"
-                onClick={() => this.handleDeleteProduct(record)}
+                onClick={() => this.handleDeleteStockCheck(record)}
               >
                 <i className="fas fa-trash"></i>
               </button>
@@ -66,34 +68,34 @@ class SaleManage extends Component {
     };
   }
 
-  async componentDidMount() {
-    await this.props.fetchSaleRedux();
+  componentDidMount() {
+    this.props.fetchStockCheckRedux();
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.Sales !== this.props.Sales) {
-      let dataSelect = this.buildDataInputSelect(this.props.Sales);
+    if (prevProps.stockChecks !== this.props.stockChecks) {
+      // console.log("Stock checks updated:", this.props.stockChecks);
+      let dataSelect = this.buildDataInputSelect(this.props.stockChecks);
       this.setState({
-        SaleRedux: this.props.Sales,
-        listSale: dataSelect,
+        stockCheckRedux: this.props.stockChecks,
+        listStockCheck: dataSelect,
       });
     }
   }
 
-  handleAddNewSale = () => {
-    this.props.history.push("/system/sale-new");
+  handleAddNewStockCheck = () => {
+    this.props.history.push("/system/stock-check-add");
   };
 
-  handleUpdateProduct = async (record) => {
-    console.log("chcek creoce", record);
+  handleUpdateStockCheck = async (record) => {
     await this.props.history.push({
-      pathname: "/system/sale-update",
+      pathname: "/system/stock-check-update",
       state: { record },
     });
   };
 
-  handleChangeSelect = (selectedSale) => {
-    this.setState({ selectedSale });
+  handleChangeSelect = (selectedStockCheck) => {
+    this.setState({ selectedStockCheck });
   };
 
   buildDataInputSelect = (inputData) => {
@@ -111,9 +113,11 @@ class SaleManage extends Component {
     return result;
   };
 
-  filterProducts = (Sales, selectedOption) => {
-    if (selectedOption === null) return Sales;
-    return Sales.filter((Sale) => Sale.id === selectedOption.value);
+  filterStockChecks = (stockChecks, selectedOption) => {
+    if (selectedOption === null) return stockChecks;
+    return stockChecks.filter(
+      (stockCheck) => stockCheck.id === selectedOption.value
+    );
   };
 
   formatDate = (isoDate) => {
@@ -125,18 +129,18 @@ class SaleManage extends Component {
   };
 
   handleSearchByDate = (value) => {
-    const { Sales } = this.props;
+    const { stockChecks } = this.props;
     let filteredData = [];
 
     const currentDate = new Date();
 
     switch (value) {
       case "thisMonth":
-        filteredData = Sales.filter((item) => {
-          const SaleDate = new Date(item.saleDate);
+        filteredData = stockChecks.filter((item) => {
+          const checkDate = new Date(item.checkDate);
           return (
-            SaleDate.getMonth() === currentDate.getMonth() &&
-            SaleDate.getFullYear() === currentDate.getFullYear()
+            checkDate.getMonth() === currentDate.getMonth() &&
+            checkDate.getFullYear() === currentDate.getFullYear()
           );
         });
         break;
@@ -144,18 +148,17 @@ class SaleManage extends Component {
       case "yesterday":
         const yesterday = new Date();
         yesterday.setDate(currentDate.getDate() - 1);
-        filteredData = Sales.filter((item) => {
-          const SaleDate = new Date(item.saleDate);
-          return SaleDate.toDateString() === yesterday.toDateString();
+        filteredData = stockChecks.filter((item) => {
+          const checkDate = new Date(item.checkDate);
+          return checkDate.toDateString() === yesterday.toDateString();
         });
         break;
 
       default:
-        filteredData = Sales;
+        filteredData = stockChecks;
         break;
     }
-    // console.log("Filtered Data: ", filteredData);
-    this.setState({ SaleRedux: filteredData, selectedDateFilter: value });
+    this.setState({ stockCheckRedux: filteredData, selectedDateFilter: value });
   };
 
   searchByRadioGroupOrInputSearch = () => {
@@ -164,9 +167,9 @@ class SaleManage extends Component {
     if (this.state.selectedItemCheckbox.length > 0) {
       tempList = this.state.selectedItemCheckbox;
     } else {
-      tempList = this.filterProducts(
-        this.state.SaleRedux,
-        this.state.selectedSale
+      tempList = this.filterStockChecks(
+        this.state.stockCheckRedux,
+        this.state.selectedStockCheck
       );
     }
 
@@ -178,15 +181,21 @@ class SaleManage extends Component {
   }
 
   render() {
-    const { selectedSale, columns, listSale, selectedDateFilter } = this.state;
-    const filteredSales = this.searchByRadioGroupOrInputSearch();
-
+    const {
+      selectedStockCheck,
+      columns,
+      listStockCheck,
+      selectedDateFilter,
+      stockCheckRedux,
+    } = this.state;
+    const filteredStockChecks = this.searchByRadioGroupOrInputSearch();
+    // console.log("StockCheckRedux in render:", stockCheckRedux);
     return (
       <div className="product">
         <div className="product-content">
           <div className="main-left">
             <div className="heading-page">
-              <span className="ng-binding">Phiếu Bán Hàng</span>
+              <span className="ng-binding">Kiểm kho</span>
             </div>
             <CustomScrollbars style={{ height: "100vh", width: "100%" }}>
               <div className="checkbox-fillList">
@@ -213,15 +222,15 @@ class SaleManage extends Component {
                     classNamePrefix="select"
                     placeholder={"Search"}
                     isClearable
-                    value={selectedSale}
+                    value={selectedStockCheck}
                     onChange={this.handleChangeSelect}
-                    options={listSale}
+                    options={listStockCheck}
                   />
                 </div>
                 <div className="header-filter-buttons">
                   <button
                     className="btn btn-success"
-                    onClick={this.handleAddNewSale}
+                    onClick={this.handleAddNewStockCheck}
                   >
                     <i className="fas fa-plus"></i>
                     <span>Thêm Mới</span>
@@ -235,7 +244,7 @@ class SaleManage extends Component {
                       pagination={{ pageSize: 10 }}
                       scroll={{ y: 700 }}
                       columns={columns}
-                      dataSource={filteredSales}
+                      dataSource={filteredStockChecks}
                       rowKey="id"
                       onRow={(record, rowIndex) => {
                         return {
@@ -265,15 +274,14 @@ class SaleManage extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    Sales: state.sale.sales,
+    stockChecks: state.stock.stockChecks,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    fetchSaleRedux: () => dispatch(actions.fetchAllSalesStart()),
-    // editSaleRedux: (data) => dispatch(actions.editSale(data)),
+    fetchStockCheckRedux: () => dispatch(actions.fetchAllStockChecksStart()),
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(SaleManage);
+export default connect(mapStateToProps, mapDispatchToProps)(StockCheck);

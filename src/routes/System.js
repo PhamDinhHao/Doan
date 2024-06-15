@@ -15,8 +15,10 @@ import Colum from "../containers/System/Colum/Colum";
 import ProductReport from "../containers/System/Report/ProductReport";
 import CustomerReport from "../containers/System/Report/CustomerReport";
 import SupplierReport from "../containers/System/Report/SupplierReport";
+import StockCheck from "../containers/System/Stock/StockCheck";
+import StockCheckAdd from "../containers/System/Stock/StockCheckAdd";
+import StockCheckUpdate from "../containers/System/Stock/StockCheckUpdate";
 import RegisterPackageGroupOrAcc from "../containers/System/RegisterPackageGroupOrAcc";
-
 
 class System extends Component {
   render() {
@@ -39,7 +41,12 @@ class System extends Component {
             <Route path="/system/product-report" component={ProductReport} />
             <Route path="/system/customer-report" component={CustomerReport} />
             <Route path="/system/supplier-report" component={SupplierReport} />
-
+            <Route path="/system/stock-check" component={StockCheck} />
+            <Route path="/system/stock-check-add" component={StockCheckAdd} />
+            <Route
+              path="/system/stock-check-update"
+              component={StockCheckUpdate}
+            />
 
             <Route
               path="/system/register-package-group-or-account"
