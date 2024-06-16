@@ -10,7 +10,7 @@ import { Divider, Radio, Table } from "antd";
 import { getProductDoneSale } from "../../../services/productService";
 import { reduce, template } from "lodash";
 import { emitter } from "../../../utils/emitter";
-import { getAllCategory } from "../../../services/categoryService";
+import { getAllCategory, getAllLocation } from "../../../services/categoryService";
 import Checkbox from "antd/es/checkbox/Checkbox";
 import CustomScrollbars from "../../../components/CustomScrollbars";
 import Lightbox from "react-image-lightbox";
@@ -32,6 +32,7 @@ class ProductManage extends Component {
 
       arrCategorys: [],
       selectedItemCheckbox: [],
+      arrLocation: [],
       columns: [
         {
           title: "Tên sản phẩm",
@@ -117,7 +118,6 @@ class ProductManage extends Component {
   async componentDidMount() {
     this.props.fetchProductRedux();
     await this.getAllCategoryFromReact();
-    console.log("checkasdsadasd", await getProductDoneSale());
   }
 
   async componentDidUpdate(prevProps, prevState, snapshot) {
@@ -209,10 +209,16 @@ class ProductManage extends Component {
   };
   getAllCategoryFromReact = async () => {
     let response = await getAllCategory("ALL");
+    let response1 = await getAllLocation("ALL");
 
     if (response && response.errCode == 0) {
       this.setState({
         arrCategorys: response.categorys,
+      });
+    }
+    if (response1 && response1.errCode == 0) {
+      this.setState({
+        arrLocation: response1.lacations,
       });
     }
   };
@@ -254,6 +260,37 @@ class ProductManage extends Component {
     }
   };
 
+  handleSearchByLocation = (data) => {
+    console.log("check aaa", data);
+    const foundItems = this.state.productRedux.filter(
+      (item) => item.locationId === data.id
+    );
+
+    if (foundItems.length > 0) {
+      const isAlreadySelected = foundItems.some((item) => {
+        return this.state.selectedItemCheckbox.some(
+          (selectedItem) => selectedItem.locationId === item.locationId
+        );
+      });
+
+      if (isAlreadySelected) {
+        this.setState((prevState) => ({
+          selectedItemCheckbox: prevState.selectedItemCheckbox.filter(
+            (item) => item.locationId !== data.id
+          ),
+        }));
+      } else {
+        this.setState((prevState) => ({
+          selectedItemCheckbox: [
+            ...prevState.selectedItemCheckbox,
+            ...foundItems,
+          ],
+        }));
+      }
+    } else {
+      console.log("Không tìm thấy mục với id:", data.id);
+    }
+  };
   searchByCheckBoxOrInputSearch = () => {
     let tempList = [];
 
@@ -275,16 +312,17 @@ class ProductManage extends Component {
 
   render() {
     const filteredProducts = this.searchByCheckBoxOrInputSearch();
-    let { checkedList, arrCategorys } = this.state;
+    let { checkedList, arrCategorys, arrLocation } = this.state;
 
     return (
       <div className="product">
         <div className="product-content">
           <div className="main-left">
-            <div className="heading-page">
-              <span className="ng-binding">Hàng hóa</span>
-            </div>
-            <CustomScrollbars style={{ height: "100vh", width: "100%" }}>
+            <div className="category">
+              <div className="heading-page">
+                <span className="ng-binding">Hàng hóa</span>
+              </div>
+
               <div className="checkbox-fillList">
                 <label style={{ fontWeight: "600" }}>Loại hàng hóa</label>
                 {arrCategorys &&
@@ -301,7 +339,29 @@ class ProductManage extends Component {
                     );
                   })}
               </div>
-            </CustomScrollbars>
+
+            </div>
+            <div className="category">
+
+              <div className="checkbox-fillList">
+                <label style={{ fontWeight: "600" }}>Vị trí</label>
+                {arrLocation &&
+                  arrLocation.length > 0 &&
+                  arrLocation.map((item, index) => {
+                    return (
+                      <Checkbox
+                        className="check-box"
+                        key={index}
+                        onClick={() => this.handleSearchByLocation(item)}
+                      >
+                        {item.locationName}
+                      </Checkbox>
+                    );
+                  })}
+              </div>
+
+            </div>
+
           </div>
           <div className="main-right">
             <div className="mainWrap">

@@ -14,12 +14,20 @@
       width: 15%;
       margin-right: 2rem;
       margin-bottom: 2rem;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .category {
+      width: 100%;
+    
       .heading-page {
         .ng-binding {
           font-size: 2rem;
           font-weight: 700;
         }
       }
+    
       .checkbox-fillList {
         padding: 10px;
         margin-top: 30px;
@@ -28,24 +36,25 @@
         flex-direction: column;
         gap: 20px;
         background-color: #fff;
-
+    
         .check-box,
         .radio-box {
           font-size: 17px;
         }
-
+    
         .radio-box {
           display: flex;
           align-items: center;
           gap: 10px;
           margin-bottom: 10px;
         }
-
+    
         .radio-box input[type="radio"] {
           margin-right: 10px;
         }
       }
     }
+    
 
     .main-right {
       width: 85%;
