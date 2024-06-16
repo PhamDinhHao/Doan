@@ -11,9 +11,6 @@ import CustomScrollbars from "../../../components/CustomScrollbars";
 import Lightbox from "react-image-lightbox";
 import { withRouter } from "react-router-dom";
 
-
-
-
 import {
   ResponsiveContainer,
   LineChart,
@@ -26,7 +23,6 @@ import {
   Bar,
   BarChart,
 } from "recharts";
-
 
 class PurchaseManage extends Component {
   constructor(props) {
@@ -55,6 +51,7 @@ class PurchaseManage extends Component {
         {
           title: "Tổng Tiền",
           dataIndex: "total",
+          render: (text) => this.formatNumberWithCommas(text),
         },
         {
           title: "Hoạt động",
@@ -79,7 +76,6 @@ class PurchaseManage extends Component {
       ],
       isOpen: false,
       previewImgUrl: "",
-
     };
   }
 
@@ -188,6 +184,10 @@ class PurchaseManage extends Component {
 
     return tempList;
   };
+
+  formatNumberWithCommas(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
 
   render() {
     const { selectedPurchase, columns, listPurchase, selectedDateFilter } =

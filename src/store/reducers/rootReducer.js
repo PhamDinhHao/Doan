@@ -9,6 +9,7 @@ import customerReducer from "./customerReducer";
 import productReducer from "./productReducer";
 import purchaseReducer from "./purchaseReducer";
 import saleReducer from "./saleReducer";
+import stockReducer from "./stockReducer";
 import autoMergeLevel2 from "redux-persist/lib/stateReconciler/autoMergeLevel2";
 import storage from "redux-persist/lib/storage";
 import { persistReducer } from "redux-persist";
@@ -35,5 +36,6 @@ export default (history) =>
     customer: customerReducer,
     product: productReducer,
     purchase: purchaseReducer,
-    sale: saleReducer
+    sale: saleReducer,
+    stock: stockReducer,
   });

@@ -342,11 +342,13 @@ class PurchaseNew extends Component {
       console.error("Error saving purchase and details:", error);
     }
   };
+
   onSuggestionSelected = (event, { suggestion }) => {
     this.setState({
       selectedSupplierrId: suggestion.id,
     });
   };
+
   render() {
     const {
       supplierValue,
@@ -545,15 +547,15 @@ class PurchaseNew extends Component {
               <span>Tổng Tiền:</span>
               <span class="total-money">{this.getTotalMoney()}</span>
             </div>
-          </div>
-          <div class="wrap-button">
-            <a
-              href="#"
-              className="btn btn-success btn-font--medium"
-              onClick={() => this.savePurchaseAndDetails(selectedDate)}
-            >
-              <i class="fas fa-check"></i>
-            </a>
+            <div class="wrap-button">
+              <a
+                href="#"
+                className="btn btn-success btn-font--medium"
+                onClick={() => this.savePurchaseAndDetails(selectedDate)}
+              >
+                <i class="fas fa-check"></i>
+              </a>
+            </div>
           </div>
         </div>
       </div>

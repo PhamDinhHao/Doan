@@ -45,6 +45,10 @@ class SaleNew extends Component {
     });
   };
 
+  handleReturnToSale = () => {
+    this.props.history.push("/system/sale");
+  };
+
   handleAddNewProduct = () => {
     this.setState({
       isOpenNewProduct: true,
@@ -254,42 +258,47 @@ class SaleNew extends Component {
 
   saveSaleAndDetails = async (selectedDate) => {
     try {
-      await this.props.createNewSaleRedux({
-        saleDate: selectedDate,
-        customerId: this.state.selectedCustomerId,
-        total: this.state.total,
-      });
-      const { saleId } = this.props;
+      const { products, selectedCustomerId } = this.state;
+      if (products.length > 0 && selectedCustomerId) {
+        await this.props.createNewSaleRedux({
+          saleDate: selectedDate,
+          customerId: this.state.selectedCustomerId,
+          total: this.state.total,
+        });
+        const { saleId } = this.props;
 
-      await Promise.all(
-        this.state.products.map(async (product) => {
-          const {
-            id: productId,
-            name: productName,
-            quantity,
-            salePrice,
-            total,
-          } = product;
-          const res = await this.props.createSaleDetailRedux({
-            saleId: saleId,
-            productId: productId,
-            productName: productName,
-            quantity: quantity,
-            total: total,
-            salePrice: salePrice,
-          });
-          if (this.props.isSaleDetail == false) {
-            this.props.history.push("/system/sale");
-          }
-        })
-      );
-      console.log(
-        "Sale and details saved successfully!",
-        this.props.isSaleDetail
-      );
+        await Promise.all(
+          this.state.products.map(async (product) => {
+            const {
+              id: productId,
+              name: productName,
+              quantity,
+              salePrice,
+              total,
+            } = product;
+            const res = await this.props.createSaleDetailRedux({
+              saleId: saleId,
+              productId: productId,
+              productName: productName,
+              quantity: quantity,
+              total: total,
+              salePrice: salePrice,
+            });
+            if (this.props.isSaleDetail == false) {
+              this.props.history.push("/system/sale");
+            }
+          })
+        );
+        console.log(
+          "Sale and details saved successfully!",
+          this.props.isSaleDetail
+        );
 
-      console.log("Sale and details saved successfully!");
-      this.props.history.push("/system/sale");
+        console.log("Sale and details saved successfully!");
+        this.props.history.push("/system/sale");
+      } else {
+        alert("Thiếu thông tin khách hàng hoặc chưa có sản phẩm");
+      }
     } catch (error) {
       console.error("Error saving Sale and details:", error);
     }
@@ -326,7 +335,7 @@ class SaleNew extends Component {
         <div class="item-left">
           <div class="search-box">
             <div class="back-arrow">
-              <button>
+              <button onClick={() => this.handleReturnToSale()}>
                 <i class="fas fa-arrow-left"></i>
               </button>
             </div>
@@ -482,15 +491,15 @@ class SaleNew extends Component {
               <span>Tổng Tiền:</span>
               <span class="total-money">{this.getTotalMoney()}</span>
             </div>
-          </div>
-          <div class="wrap-button">
-            <a
-              href="#"
-              className="btn btn-success btn-font--medium"
-              onClick={() => this.saveSaleAndDetails(selectedDate)}
-            >
-              <i class="fas fa-check"></i>
-            </a>
+            <div class="wrap-button">
+              <a
+                href="#"
+                className="btn btn-success btn-font--medium"
+                onClick={() => this.saveSaleAndDetails(selectedDate)}
+              >
+                <i class="fas fa-check"></i>
+              </a>
+            </div>
           </div>
         </div>
       </div>

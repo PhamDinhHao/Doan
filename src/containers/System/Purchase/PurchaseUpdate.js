@@ -340,8 +340,7 @@ class PurchaseUpdate extends Component {
       await this.props.editPurchaseAndDetailsRedux(purchase, purchaseDetails);
       this.props.history.push("/system/purchase");
     }
-
-  }
+  };
 
   render() {
     const {
@@ -540,15 +539,15 @@ class PurchaseUpdate extends Component {
               <span>total:</span>
               <span class="total-money">{this.getTotalMoney()}</span>
             </div>
-          </div>
-          <div class="wrap-button">
-            <button
-              // href="#"
-              className="btn btn-success btn-font--medium"
-              onClick={() => this.updatePurchaseAndDetails(selectedDate)}
-            >
-              <i class="fas fa-check"></i>
-            </button>
+            <div class="wrap-button">
+              <button
+                // href="#"
+                className="btn btn-success btn-font--medium"
+                onClick={() => this.updatePurchaseAndDetails(selectedDate)}
+              >
+                <i class="fas fa-check"></i>
+              </button>
+            </div>
           </div>
         </div>
       </div>

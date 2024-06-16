@@ -542,15 +542,15 @@ class SaleUpdate extends Component {
               <span>Tổng Tiền:</span>
               <span class="total-money">{this.getTotalMoney()}</span>
             </div>
-          </div>
-          <div class="wrap-button">
-            <button
-              // href="#"
-              className="btn btn-success btn-font--medium"
-              onClick={() => this.updateSaleAndDetails(selectedDate)}
-            >
-              <i class="fas fa-check"></i>
-            </button>
+            <div class="wrap-button">
+              <button
+                // href="#"
+                className="btn btn-success btn-font--medium"
+                onClick={() => this.updateSaleAndDetails(selectedDate)}
+              >
+                <i class="fas fa-check"></i>
+              </button>
+            </div>
           </div>
         </div>
       </div>

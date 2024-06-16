@@ -7,15 +7,23 @@ import * as actions from "../../../store/actions";
 import { ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { emitter } from "../../../utils/emitter";
-import { CommonUtils } from '../../../utils';
-import './ModelNewProduct.scss'
-import Lightbox from 'react-image-lightbox';
-import Select from 'react-select';
+import { CommonUtils } from "../../../utils";
+import "./ModelNewProduct.scss";
+import Lightbox from "react-image-lightbox";
+import Select from "react-select";
 import ModelNewSupplier from "../Supplier/ModelNewSupplier";
 import ModelNewCategory from "./ModelNewCategory";
 import ModelNewUnit from "./ModelNewUnit";
-import { getAllCategory, createNewCategoryrService, getAllLocation, createNewLocationrService } from "../../../services/categoryService";
-import { getAllUnit, createNewUnitService } from "../../../services/unitService";
+import {
+  getAllCategory,
+  createNewCategoryrService,
+  getAllLocation,
+  createNewLocationrService,
+} from "../../../services/categoryService";
+import {
+  getAllUnit,
+  createNewUnitService,
+} from "../../../services/unitService";
 import ModelNewLocation from "./ModelNewLocation";
 class ModelNewProduct extends Component {
   constructor(props) {
@@ -52,7 +60,6 @@ class ModelNewProduct extends Component {
       listLocationState: [],
       selectedLocation: [],
       isOpenNewLocation: false,
-
     };
     this.listenToEmitter();
   }
@@ -76,7 +83,6 @@ class ModelNewProduct extends Component {
         listCategoryState: [],
         selectedCategory: [],
 
-
         arrUnits: [],
         listUnitState: [],
         selectedUnit: [],
@@ -84,29 +90,42 @@ class ModelNewProduct extends Component {
         arrLocations: [],
         listLocationState: [],
         selectedLocation: [],
-
       });
     });
   }
 
   async getAllCategoryFromReact() {
-    let response = await getAllCategory('ALL');
-    let response1 = await getAllUnit('ALL');
-    let response2 = await getAllLocation('ALL');
-    console.log("res", response2)
-    if (response && response.errCode === 0 && JSON.stringify(response.categorys) !== JSON.stringify(this.state.arrCategorys)) {
+    let response = await getAllCategory("ALL");
+    let response1 = await getAllUnit("ALL");
+    let response2 = await getAllLocation("ALL");
+    console.log("res", response2);
+    if (
+      response &&
+      response.errCode === 0 &&
+      JSON.stringify(response.categorys) !==
+        JSON.stringify(this.state.arrCategorys)
+    ) {
       this.setState({
-        arrCategorys: response.categorys
+        arrCategorys: response.categorys,
       });
     }
-    if (response1 && response1.errCode === 0 && JSON.stringify(response1.units) !== JSON.stringify(this.state.arrUnits)) {
+    if (
+      response1 &&
+      response1.errCode === 0 &&
+      JSON.stringify(response1.units) !== JSON.stringify(this.state.arrUnits)
+    ) {
       this.setState({
-        arrUnits: response1.units
+        arrUnits: response1.units,
       });
     }
-    if (response2 && response2.errCode === 0 && JSON.stringify(response2.lacations) !== JSON.stringify(this.state.arrLocations)) {
+    if (
+      response2 &&
+      response2.errCode === 0 &&
+      JSON.stringify(response2.lacations) !==
+        JSON.stringify(this.state.arrLocations)
+    ) {
       this.setState({
-        arrLocations: response2.lacations
+        arrLocations: response2.lacations,
       });
     }
   }
@@ -115,56 +134,53 @@ class ModelNewProduct extends Component {
   }
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.listSuppliers !== this.props.listSuppliers) {
-      let dataSelectSupplier = this.buildDataInputSelectSupplier(this.props.listSuppliers)
+      let dataSelectSupplier = this.buildDataInputSelectSupplier(
+        this.props.listSuppliers
+      );
       this.setState({
         supplierRedux: this.props.listSuppliers,
-        listSupplierState: dataSelectSupplier
-      })
+        listSupplierState: dataSelectSupplier,
+      });
     }
 
     if (prevState.arrCategorys !== this.state.arrCategorys) {
-      let dataSelectCategory = this.buildDataInputSelectCategory(this.state.arrCategorys)
-
+      let dataSelectCategory = this.buildDataInputSelectCategory(
+        this.state.arrCategorys
+      );
 
       this.setState({
         listCategoryState: dataSelectCategory,
-
-      })
+      });
       this.getAllCategoryFromReact();
     }
     if (prevState.arrUnits !== this.state.arrUnits) {
-
-      let dataSelectUnit = this.buildDataInputSelectUnit(this.state.arrUnits)
+      let dataSelectUnit = this.buildDataInputSelectUnit(this.state.arrUnits);
 
       this.setState({
-
-        listUnitState: dataSelectUnit
-      })
+        listUnitState: dataSelectUnit,
+      });
       this.getAllCategoryFromReact();
     }
     if (prevState.arrLocations !== this.state.arrLocations) {
-
-      let dataSelectLocation = this.buildDataInputSelectLocation(this.state.arrLocations)
+      let dataSelectLocation = this.buildDataInputSelectLocation(
+        this.state.arrLocations
+      );
 
       this.setState({
-
-        listLocationState: dataSelectLocation
-      })
+        listLocationState: dataSelectLocation,
+      });
       this.getAllCategoryFromReact();
     }
   }
 
   handleChangeSelectLocation = (selectedLocation) => {
     this.setState({ selectedLocation: selectedLocation });
-
   };
   handleChangeSelectCategory = (selectedCategory) => {
     this.setState({ selectedCategory: selectedCategory });
-
   };
   handleChangeSelectUnit = (selectedUnit) => {
     this.setState({ selectedUnit: selectedUnit });
-
   };
   toggle = () => {
     this.props.toggleFromParent();
@@ -186,7 +202,6 @@ class ModelNewProduct extends Component {
       "salePrice",
       "image",
       "quantity",
-      "description",
     ];
     for (let i = 0; i < arrInput.length; i++) {
       if (!this.state[arrInput[i]]) {
@@ -199,11 +214,7 @@ class ModelNewProduct extends Component {
   };
   checkValideInputSelect = () => {
     let isValid = true;
-    let arrInput = [
-
-      "selectedCategory",
-      "selectedUnit",
-    ];
+    let arrInput = ["selectedCategory", "selectedUnit"];
 
     for (let i = 0; i < arrInput.length; i++) {
       if (this.state[arrInput[i]].length == 0) {
@@ -213,7 +224,7 @@ class ModelNewProduct extends Component {
       }
     }
     return isValid;
-  }
+  };
 
   handleAddNewProduct = () => {
     let isValid = this.checkValideInput();
@@ -235,13 +246,10 @@ class ModelNewProduct extends Component {
 
       this.setState({
         previewImgUrl: objectUrl,
-        image: base64
-      })
-
+        image: base64,
+      });
     }
-
-
-  }
+  };
   buildDataInputSelectLocation = (inputData) => {
     let result = [];
 
@@ -251,11 +259,10 @@ class ModelNewProduct extends Component {
         object.label = item.locationName;
         object.value = item.id;
         result.push(object);
-      })
-
+      });
     }
-    return result
-  }
+    return result;
+  };
   buildDataInputSelectCategory = (inputData) => {
     let result = [];
 
@@ -265,11 +272,10 @@ class ModelNewProduct extends Component {
         object.label = item.categoryName;
         object.value = item.id;
         result.push(object);
-      })
-
+      });
     }
-    return result
-  }
+    return result;
+  };
   buildDataInputSelectUnit = (inputData) => {
     let result = [];
 
@@ -279,11 +285,10 @@ class ModelNewProduct extends Component {
         object.label = item.unitName;
         object.value = item.id;
         result.push(object);
-      })
-
+      });
     }
-    return result
-  }
+    return result;
+  };
   buildDataInputSelectSupplier = (inputData) => {
     let result = [];
 
@@ -293,110 +298,91 @@ class ModelNewProduct extends Component {
         object.label = item.locationName;
         object.value = item.id;
         result.push(object);
-      })
-
+      });
     }
-    return result
-  }
+    return result;
+  };
 
   toggleLocationModal = () => {
     this.setState({
       isOpenNewLocation: !this.state.isOpenNewLocation,
-    })
-  }
+    });
+  };
   toggleCategoryModal = () => {
     this.setState({
       isOpenNewCategory: !this.state.isOpenNewCategory,
-    })
-  }
+    });
+  };
   toggleUnitModal = () => {
     this.setState({
       isOpenNewUnit: !this.state.isOpenNewUnit,
-    })
-  }
+    });
+  };
   handleAddNewLocation = () => {
     this.setState({
-      isOpenNewLocation: true
-    })
-
-  }
+      isOpenNewLocation: true,
+    });
+  };
   handleAddNewCategory = () => {
     this.setState({
-      isOpenNewCategory: true
-    })
-
-  }
+      isOpenNewCategory: true,
+    });
+  };
   handleAddNewUnit = () => {
     this.setState({
-      isOpenNewUnit: true
-    })
-
-  }
+      isOpenNewUnit: true,
+    });
+  };
   createNewLocation = async (data) => {
     try {
       let response = await createNewLocationrService(data);
       if (response && response.errCode !== 0) {
-        alert(response.errMessage)
-      }
-      else {
+        alert(response.errMessage);
+      } else {
         this.setState({
-          isOpenNewLocation: false
-
-        })
-        emitter.emit('EVENT_CLEAR_MODAL_DATA', { 'id': 'your id' })
-
+          isOpenNewLocation: false,
+        });
+        emitter.emit("EVENT_CLEAR_MODAL_DATA", { id: "your id" });
       }
       console.log(response);
     } catch (error) {
       console.log(error);
     }
-
-  }
+  };
   createNewCategory = async (data) => {
     try {
       let response = await createNewCategoryrService(data);
       if (response && response.errCode !== 0) {
-        alert(response.errMessage)
-      }
-      else {
+        alert(response.errMessage);
+      } else {
         this.setState({
-          isOpenNewCategory: false
-
-        })
-        emitter.emit('EVENT_CLEAR_MODAL_DATA', { 'id': 'your id' })
-
+          isOpenNewCategory: false,
+        });
+        emitter.emit("EVENT_CLEAR_MODAL_DATA", { id: "your id" });
       }
       console.log(response);
     } catch (error) {
       console.log(error);
     }
-
-  }
+  };
   createNewUnit = async (data) => {
-
     try {
       let response = await createNewUnitService(data);
       if (response && response.errCode !== 0) {
-        alert(response.errMessage)
-      }
-      else {
+        alert(response.errMessage);
+      } else {
         this.setState({
-          isOpenNewUnit: false
-
-        })
-        emitter.emit('EVENT_CLEAR_MODAL_DATA', { 'id': 'your id' })
-
+          isOpenNewUnit: false,
+        });
+        emitter.emit("EVENT_CLEAR_MODAL_DATA", { id: "your id" });
       }
       console.log(response);
     } catch (error) {
       console.log(error);
     }
-
-  }
-
+  };
 
   render() {
-
     return (
       <div>
         <ModelNewLocation
@@ -443,20 +429,21 @@ class ModelNewProduct extends Component {
                 ></input>
               </div>
               <div className="input-container">
-                <label >
+                <label>
                   Loại sản phẩm
-                  <i className="fas fa-plus" style={{ marginLeft: "10px" }} onClick={() => this.handleAddNewCategory()}></i>
+                  <i
+                    className="fas fa-plus"
+                    style={{ marginLeft: "10px" }}
+                    onClick={() => this.handleAddNewCategory()}
+                  ></i>
                 </label>
 
                 <Select
                   onChange={this.handleChangeSelectCategory}
                   value={this.state.selectedCategory}
-                  options={this.state.listCategoryState}>
-
-
-                </Select>
+                  options={this.state.listCategoryState}
+                ></Select>
               </div>
-
 
               <div className="input-container">
                 <label>Số lượng</label>
@@ -469,20 +456,20 @@ class ModelNewProduct extends Component {
                 ></input>
               </div>
               <div className="input-container">
-                <label >
+                <label>
                   Kho
-                  <i className="fas fa-plus" style={{ marginLeft: "10px" }} onClick={() => this.handleAddNewLocation()}></i>
+                  <i
+                    className="fas fa-plus"
+                    style={{ marginLeft: "10px" }}
+                    onClick={() => this.handleAddNewLocation()}
+                  ></i>
                 </label>
 
                 <Select
                   onChange={this.handleChangeSelectLocation}
-
                   value={this.state.selectedLocation}
                   options={this.state.listLocationState}
-                >
-
-
-                </Select>
+                ></Select>
               </div>
               <div className="input-container">
                 <label>Giá nhập</label>
@@ -495,18 +482,20 @@ class ModelNewProduct extends Component {
                 ></input>
               </div>
               <div className="input-container">
-                <label >
+                <label>
                   Đơn vị
-                  <i className="fas fa-plus" style={{ marginLeft: "10px" }} onClick={() => this.handleAddNewUnit()}></i>
+                  <i
+                    className="fas fa-plus"
+                    style={{ marginLeft: "10px" }}
+                    onClick={() => this.handleAddNewUnit()}
+                  ></i>
                 </label>
 
                 <Select
                   onChange={this.handleChangeSelectUnit}
                   value={this.state.selectedUnit}
-                  options={this.state.listUnitState}>
-
-
-                </Select>
+                  options={this.state.listUnitState}
+                ></Select>
               </div>
               <div className="input-container">
                 <label>Giá bán</label>
@@ -539,20 +528,26 @@ class ModelNewProduct extends Component {
                 ></input>
               </div>
               <div className="col-md-3">
-                <label htmlFor="inputImage" className="form-label">Hình ảnh</label>
-                <div className='preview-img-container'>
-                  <input id='previewImg' type="file" hidden
+                <label htmlFor="inputImage" className="form-label">
+                  Hình ảnh
+                </label>
+                <div className="preview-img-container">
+                  <input
+                    id="previewImg"
+                    type="file"
+                    hidden
                     onChange={(event) => this.handleOnchangeImage(event)}
                   />
-                  <label className='label-upload' htmlFor='previewImg'>Tải ảnh <i className='fas fa-upload'></i></label>
-                  <div className='preview-image' style={{ backgroundImage: `url(${this.state.previewImgUrl})` }}
-
-                  >
-
-                  </div>
+                  <label className="label-upload" htmlFor="previewImg">
+                    Tải ảnh <i className="fas fa-upload"></i>
+                  </label>
+                  <div
+                    className="preview-image"
+                    style={{
+                      backgroundImage: `url(${this.state.previewImgUrl})`,
+                    }}
+                  ></div>
                 </div>
-
-
               </div>
             </div>
           </ModalBody>
@@ -576,20 +571,15 @@ class ModelNewProduct extends Component {
               Close
             </Button>
           </ModalFooter>
-
         </Modal>
-
       </div>
-
-
-
     );
   }
 }
 
 const mapStateToProps = (state) => {
   return {
-    listSuppliers: state.supplier.suppliers
+    listSuppliers: state.supplier.suppliers,
   };
 };
 
