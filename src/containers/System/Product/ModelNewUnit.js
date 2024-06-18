@@ -98,10 +98,10 @@ class ModelNewSupplier extends Component {
                 </ModalBody>
                 <ModalFooter>
                     <Button color="primary" className='px-3' onClick={() => { this.handleAddNewSupplier() }} >
-                        Add new
+                        Thêm mới
                     </Button>{' '}
                     <Button color="secondary" className='px-3' onClick={() => { this.toggle() }} >
-                        Close
+                        Đóng
                     </Button>
 
                 </ModalFooter>

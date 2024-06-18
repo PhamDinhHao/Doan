@@ -87,7 +87,7 @@ class ModelUpdateSupplier extends Component {
                 size='lg'
                 centered>
                 <ModalHeader toggle={() => { this.toggle() }} >
-                    Update User
+                    Cập nhật nhà cung cấp
                 </ModalHeader>
                 <ModalBody>
                     <div className='modal-supplier-body'>
@@ -126,10 +126,10 @@ class ModelUpdateSupplier extends Component {
                 </ModalBody>
                 <ModalFooter>
                     <Button color="primary" className='px-3' onClick={() => { this.handleEditSupplier() }} >
-                        Save
+                        Lưu
                     </Button>{' '}
                     <Button color="secondary" className='px-3' onClick={() => { this.toggle() }} >
-                        Close
+                        Đóng
                     </Button>
 
                 </ModalFooter>

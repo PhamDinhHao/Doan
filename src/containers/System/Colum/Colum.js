@@ -20,6 +20,7 @@ import {
   getAllHistoryPurchaseMonth,
 } from "../../../services/columService";
 import { Radio } from "antd";
+import CustomScrollbars from "../../../components/CustomScrollbars";
 
 class Colum extends Component {
   constructor(props) {

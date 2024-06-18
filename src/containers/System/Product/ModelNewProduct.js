@@ -414,7 +414,7 @@ class ModelNewProduct extends Component {
               this.toggle();
             }}
           >
-            Create a new product
+            Thêm mới sản phẩm
           </ModalHeader>
           <ModalBody>
             <div className="modal-supplier-body">
@@ -457,7 +457,7 @@ class ModelNewProduct extends Component {
               </div>
               <div className="input-container">
                 <label>
-                  Kho
+                  Vị trí kho
                   <i
                     className="fas fa-plus"
                     style={{ marginLeft: "10px" }}
@@ -559,7 +559,7 @@ class ModelNewProduct extends Component {
                 this.handleAddNewProduct();
               }}
             >
-              Add new
+              Thêm mới
             </Button>{" "}
             <Button
               color="secondary"
@@ -568,7 +568,7 @@ class ModelNewProduct extends Component {
                 this.toggle();
               }}
             >
-              Close
+              Đóng
             </Button>
           </ModalFooter>
         </Modal>
