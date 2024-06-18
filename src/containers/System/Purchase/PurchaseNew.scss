@@ -12,6 +12,7 @@ button {
 .cover-div {
   width: 90%;
   margin: 0 auto;
+  margin-top: 10px;
   display: flex;
 }
 
@@ -19,7 +20,6 @@ button {
   width: 65%;
   display: flex;
   background-color: lightblue;
-  //   align-items: center;
   padding: 10px;
   flex-direction: column;
 }
@@ -64,41 +64,39 @@ button {
   font-size: 16px;
 }
 
-/* Đảm bảo phần suggest không ảnh hưởng đến vị trí của các phần khác */
 .react-autosuggest__suggestions-container {
   position: absolute;
   width: 100%;
-  top: calc(70% + 4px); /* Hiển thị phía dưới input và có khoảng cách */
+  top: calc(70% + 4px);
   left: 0;
-  z-index: 999; /* Đảm bảo nó hiển thị trên các phần khác */
+  z-index: 999;
   background-color: white;
-  // border: 1px solid #ccc;
-  // border-radius: 4px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  // max-height: 200px; /* Giới hạn chiều cao của danh sách suggestion */
-  overflow-y: auto; /* Cho phép cuộn nếu danh sách quá dài */
+  overflow-y: auto;
 }
 
-/* Tùy chỉnh style cho mỗi suggestion */
 .react-autosuggest__suggestion {
   padding: 8px 12px;
   cursor: pointer;
   background-color: #ffffff;
 }
 
-/* Style cho suggestion được chọn hoặc focus */
 .react-autosuggest__suggestion--highlighted {
   background-color: #cceeff;
 }
 
-/* Khi di chuột qua suggestion, hiện background màu xanh */
 .react-autosuggest__suggestion:hover {
-  background-color: #cceeff; /* Màu xanh nhạt */
+  background-color: #cceeff;
 }
 
 .item-table {
-  overflow-x: auto; /* Add horizontal scroll if table content overflows */
+  height: 70vh;
+  overflow-y: auto;
 }
+
+// .empty-table {
+//   height: 600px;
+// }
 
 table {
   width: 100%;
@@ -158,7 +156,6 @@ th {
 }
 
 .item-right div {
-  //   margin-bottom: 10px;
   padding: 5px;
   background-color: #fff;
 }
@@ -183,24 +180,26 @@ th {
 }
 
 .quantity-box,
-.money-box {
+.money-box,
+.money-difference-box {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .quantity-box .total-quantity,
-.money-box .total-money {
+.money-box .total-money,
+.money-difference-box .total-money-difference {
   margin-left: 10px;
 }
 
 .total-quantity {
   border: 1px solid black;
-  // border-radius: 5px;
   padding: 5px;
 }
 
-.total-money {
+.total-money,
+.total-money-difference {
   font-weight: bold;
 }
 
@@ -217,4 +216,34 @@ th {
 
 .wrap-button .btn span {
   text-align: center;
+}
+
+.note-box {
+  margin-top: 10px;
+}
+
+.note-input {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 5px;
+  background-color: white;
+}
+
+.note-input i {
+  margin-right: 5px;
+  color: #888;
+}
+
+.note-input textarea {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  padding: 5px;
+  resize: none;
+  height: 70px;
+  overflow-y: auto;
+  white-space: pre-wrap;
 }

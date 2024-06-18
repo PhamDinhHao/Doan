@@ -1,92 +1,93 @@
+import {
+  FaHome,
+  FaBoxOpen,
+  FaHandshake,
+  FaFileInvoice,
+  FaChartBar,
+} from "react-icons/fa";
+
 export const adminMenu = [
-    { //hệ thống
-        name: 'Tổng quan', menus: [
-            {
-                name: 'menu.system.system-administrator.header', link: '/system/aaaaaa'
-                // subMenus: [
-                //     { name: 'menu.system.system-administrator.user-manage', link: '/system/user-manage' },
-                //     { name: 'menu.system.system-administrator.product-manage', link: '/system/product-manage' },
-                //     { name: 'menu.system.system-administrator.register-package-group-or-account', link: '/system/register-package-group-or-account' },
-                // ]
-            },
-            {
-                name: 'menu.system.system-administrator.user-manage', link: '/system/aaaa'
-            }
+  {
+    name: "Tổng quan",
+    icon: <FaHome />,
+    menus: [
+      {
+        name: "menu.system.system-administrator.header",
+        link: "/system/colum",
+      },
+    ],
+  },
+  {
+    name: "Hàng hóa",
+    icon: <FaBoxOpen />,
+    menus: [
+      {
+        name: "Danh mục",
+        link: "/system/product",
+      },
+      {
+        name: "Kiểm kho",
+        link: "/system/stock-check",
+      },
+    ],
+  },
+  {
+    name: "Giao dịch",
+    icon: <FaFileInvoice />,
+    menus: [
+      {
+        name: "Hóa đơn",
+        link: "/system/sale",
+      },
+      {
+        name: "Nhập hàng",
+        link: "/system/purchase",
+      },
+    ],
+  },
+  {
+    name: "Đối tác",
+    icon: <FaHandshake />,
+    menus: [
+      {
+        name: "Khách hàng",
+        link: "/system/customer",
+      },
+      {
+        name: "Nhà cung cấp",
+        link: "/system/supplier",
+      },
+    ],
+  },
+  {
+    name: "Báo cáo",
+    icon: <FaChartBar />,
+    menus: [
+      {
+        name: "Hàng hóa",
+        link: "/system/product-report",
+      },
+      {
+        name: "Khách hàng",
+        link: "/system/customer-report",
+      },
+      {
+        name: "Nhà cung cấp",
+        link: "/system/supplier-report",
+      },
+    ],
+  },
+];
 
-        ]
-    },
-    {
-        name: 'Hàng hóa', menus: [
-            {
-                name: 'Danh mục', link: '/system/product'
-
-            },
-            {
-                name: 'Thiết lập giá', link: '/system/product-manage'
-            }
-            ,
-            {
-                name: 'Kiểm kho', link: '/system/product-manage'
-            }
-
-        ]
-    }
-    ,
-    {
-        name: 'Giao dịch', menus: [
-            {
-                name: 'Đặt hàng', link: '/system/order'
-
-            },
-            {
-                name: 'Hóa đơn', link: '/system/receipt'
-            }
-            ,
-            {
-                name: 'Nhập hàng', link: '/system/purchase'
-            }
-
-        ]
-    }
-    ,
-    {
-        name: 'Đối tác', menus: [
-            {
-                name: 'Khách hàng', link: '/system/customer'
-
-            },
-            {
-                name: 'Nhà cung cấp', link: '/system/supplier'
-            }
-
-
-        ]
-    }
-    ,
-    {
-        name: 'Sổ quỹ', link: '/system/user-manage'
-    }
-    ,
-    {
-        name: 'Báo cáo', menus: [
-            {
-                name: 'Bán hàng', link: '/system/aaa'
-
-            },
-            {
-                name: 'Đặt hàng', link: '/system/aaaa'
-            },
-            {
-                name: 'Hàng hóa', link: '/system/aaaa'
-            },
-            {
-                name: 'Khách hàng', link: '/system/aaaa'
-            },
-            {
-                name: 'Nhà cung cấp', link: '/system/aaaa'
-            },
-
-
-        ]
-    }
+export const adminMenuSale = [
+  {
+    name: "Bán hàng",
+    icon: <FaFileInvoice />,
+    menus: [
+      {
+        name: "Hóa đơn",
+        link: "/system/sale-new",
+      },
+    ],
+  },
 ];

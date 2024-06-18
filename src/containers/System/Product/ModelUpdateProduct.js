@@ -9,11 +9,19 @@ import { ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { emitter } from "../../../utils/emitter";
 import _, { isEmpty } from "lodash";
-import Select from 'react-select';
-import { CommonUtils } from '../../../utils';
-import { getAllCategory, createNewCategoryrService } from "../../../services/categoryService";
-import { getAllUnit, createNewUnitService } from "../../../services/unitService";
-import ModelNewSupplier from "../Supplier/ModelNewSupplier";
+import Select from "react-select";
+import { CommonUtils } from "../../../utils";
+import {
+  getAllCategory,
+  createNewCategoryrService,
+  getAllLocation,
+  createNewLocationrService,
+} from "../../../services/categoryService";
+import {
+  getAllUnit,
+  createNewUnitService,
+} from "../../../services/unitService";
+import ModelNewLocation from "./ModelNewLocation";
 class ModelUpdateProduct extends Component {
   constructor(props) {
     super(props);
@@ -41,6 +49,11 @@ class ModelUpdateProduct extends Component {
       listUnitState: [],
       selectedUnit: [],
       isOpenNewUnit: false,
+
+      arrLocations: [],
+      listLocationState: [],
+      selectedLocation: [],
+      isOpenNewLocation: false,
     };
     this.listenToEmitter();
   }
@@ -54,37 +67,43 @@ class ModelUpdateProduct extends Component {
         image: "",
         quantity: "",
         description: "",
-        previewImgUrl: ""
+        previewImgUrl: "",
       });
     });
   }
   async componentDidMount() {
     this.props.fetchSupplierRedux();
     await this.getAllCategoryFromReact();
-    let product = this.props.currentProduct;
-    let resultChooseSupplier = [];
-    let resultChooseCategory = [];
-    let resultChooseUnit = [];
-    let object = {};
-    object.label = product.Supplier.name;
-    object.value = product.Supplier.id;
-    resultChooseSupplier.push(object);
+    this.setProductState(this.props.currentProduct);
+  }
 
-    object = {};
-    object.label = product.Category.categoryName;
-    object.value = product.Category.id;
-    resultChooseCategory.push(object);
-
-    object = {};
-    object.label = product.Unit.unitName;
-    object.value = product.Unit.id;
-    resultChooseUnit.push(object);
-
-    let imageBase64 = '';
-    if (product.image) {
-      imageBase64 = Buffer.from(product.image, 'base64').toString('binary');
-    }
+  setProductState = (product) => {
     if (product && !isEmpty(product)) {
+      let resultChooseLocation = [
+        {
+          label: product.Location.locationName,
+          value: product.Location.id,
+        },
+      ];
+      let resultChooseCategory = [
+        {
+          label: product.Category.categoryName,
+          value: product.Category.id,
+        },
+      ];
+
+      let resultChooseUnit = [
+        {
+          label: product.Unit.unitName,
+          value: product.Unit.id,
+        },
+      ];
+
+      let imageBase64 = "";
+      if (product.image) {
+        imageBase64 = Buffer.from(product.image, "base64").toString("binary");
+      }
+
       this.setState({
         id: product.id,
         productName: product.productName,
@@ -94,59 +113,92 @@ class ModelUpdateProduct extends Component {
         description: product.description,
         previewImgUrl: imageBase64,
         image: imageBase64,
-        selectedSupplier: resultChooseSupplier,
+        selectedLocation: resultChooseLocation,
         selectedCategory: resultChooseCategory,
-        selectedUnit: resultChooseUnit
-
-
-
+        selectedUnit: resultChooseUnit,
       });
     }
-
-  }
+  };
   handleChangeSelectSupplier = (selectedSupplier) => {
     this.setState({ selectedSupplier: selectedSupplier });
-
   };
   handleChangeSelectCategory = (selectedCategory) => {
     this.setState({ selectedCategory: selectedCategory });
-
   };
   handleChangeSelectUnit = (selectedUnit) => {
     this.setState({ selectedUnit: selectedUnit });
-
   };
   getAllCategoryFromReact = async () => {
-
-    let response = await getAllCategory('ALL');
-    let response1 = await getAllUnit('ALL');
-    if (response && response.errCode == 0) {
+    let response = await getAllCategory("ALL");
+    let response1 = await getAllUnit("ALL");
+    let response2 = await getAllLocation("ALL");
+    if (
+      response &&
+      response.errCode === 0 &&
+      JSON.stringify(response.categorys) !==
+        JSON.stringify(this.state.arrCategorys)
+    ) {
       this.setState({
-        arrCategorys: response.categorys
-      })
+        arrCategorys: response.categorys,
+      });
     }
-    if (response1 && response1.errCode == 0) {
+    if (
+      response1 &&
+      response1.errCode === 0 &&
+      JSON.stringify(response1.units) !== JSON.stringify(this.state.arrUnits)
+    ) {
       this.setState({
-        arrUnits: response1.units
-      })
+        arrUnits: response1.units,
+      });
     }
-  }
+    if (
+      response2 &&
+      response2.errCode === 0 &&
+      JSON.stringify(response2.lacations) !==
+        JSON.stringify(this.state.arrLocations)
+    ) {
+      this.setState({
+        arrLocations: response2.lacations,
+      });
+    }
+  };
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.listSuppliers !== this.props.listSuppliers) {
-      let dataSelectSupplier = this.buildDataInputSelectSupplier(this.props.listSuppliers)
+      let dataSelectSupplier = this.buildDataInputSelectSupplier(
+        this.props.listSuppliers
+      );
       this.setState({
         supplierRedux: this.props.listSuppliers,
-        listSupplierState: dataSelectSupplier
-      })
+        listSupplierState: dataSelectSupplier,
+      });
     }
     if (prevState.arrCategorys !== this.state.arrCategorys) {
-      let dataSelectCategory = this.buildDataInputSelectCategory(this.state.arrCategorys)
-      let dataSelectUnit = this.buildDataInputSelectUnit(this.state.arrUnits)
-      this.getAllCategoryFromReact();
+      let dataSelectCategory = this.buildDataInputSelectCategory(
+        this.state.arrCategorys
+      );
+
       this.setState({
         listCategoryState: dataSelectCategory,
-        listUnitState: dataSelectUnit
-      })
+      });
+      this.getAllCategoryFromReact();
+    }
+    if (prevState.arrUnits !== this.state.arrUnits) {
+      let dataSelectUnit = this.buildDataInputSelectUnit(this.state.arrUnits);
+
+      this.setState({
+        listUnitState: dataSelectUnit,
+      });
+      this.getAllCategoryFromReact();
+    }
+    if (prevState.arrLocations !== this.state.arrLocations) {
+      let dataSelectLocation = this.buildDataInputSelectLocation(
+        this.state.arrLocations
+      );
+
+      this.setState({
+        listLocationState: dataSelectLocation,
+      });
+      this.getAllCategoryFromReact();
     }
   }
   handleOnchangeImage = async (event) => {
@@ -155,18 +207,14 @@ class ModelUpdateProduct extends Component {
     if (file) {
       let base64 = await CommonUtils.getBase64(file);
 
-
       let objectUrl = URL.createObjectURL(file);
 
       this.setState({
         previewImgUrl: objectUrl,
-        image: base64
-      })
-
+        image: base64,
+      });
     }
-
-
-  }
+  };
 
   toggle = () => {
     this.props.toggleFromParent();
@@ -181,11 +229,7 @@ class ModelUpdateProduct extends Component {
   };
   checkValideInputSelect = () => {
     let isValid = true;
-    let arrInput = [
-      "selectedSupplier",
-      "selectedCategory",
-      "selectedUnit",
-    ];
+    let arrInput = ["selectedSupplier", "selectedCategory", "selectedUnit"];
 
     for (let i = 0; i < arrInput.length; i++) {
       if (this.state[arrInput[i]].length == 0) {
@@ -195,7 +239,20 @@ class ModelUpdateProduct extends Component {
       }
     }
     return isValid;
-  }
+  };
+  buildDataInputSelectLocation = (inputData) => {
+    let result = [];
+
+    if (inputData && inputData.length > 0) {
+      inputData.map((item, index) => {
+        let object = {};
+        object.label = item.locationName;
+        object.value = item.id;
+        result.push(object);
+      });
+    }
+    return result;
+  };
   buildDataInputSelectCategory = (inputData) => {
     let result = [];
 
@@ -205,11 +262,10 @@ class ModelUpdateProduct extends Component {
         object.label = item.categoryName;
         object.value = item.id;
         result.push(object);
-      })
-
+      });
     }
-    return result
-  }
+    return result;
+  };
   buildDataInputSelectUnit = (inputData) => {
     let result = [];
 
@@ -219,11 +275,10 @@ class ModelUpdateProduct extends Component {
         object.label = item.unitName;
         object.value = item.id;
         result.push(object);
-      })
-
+      });
     }
-    return result
-  }
+    return result;
+  };
   buildDataInputSelectSupplier = (inputData) => {
     let result = [];
 
@@ -233,106 +288,88 @@ class ModelUpdateProduct extends Component {
         object.label = item.name;
         object.value = item.id;
         result.push(object);
-      })
-
+      });
     }
-    return result
-  }
+    return result;
+  };
 
-  toggleSupplierModal = () => {
+  toggleLocationModal = () => {
     this.setState({
-      isOpenNewSupplier: !this.state.isOpenNewSupplier,
-    })
-  }
+      isOpenNewLocation: !this.state.isOpenNewLocation,
+    });
+  };
   toggleCategoryModal = () => {
     this.setState({
       isOpenNewCategory: !this.state.isOpenNewCategory,
-    })
-  }
+    });
+  };
   toggleUnitModal = () => {
     this.setState({
       isOpenNewUnit: !this.state.isOpenNewUnit,
-    })
-  }
+    });
+  };
   handleAddNewSupplier = () => {
     this.setState({
-      isOpenNewSupplier: true
-    })
-
-  }
+      isOpenNewSupplier: true,
+    });
+  };
   handleAddNewCategory = () => {
     this.setState({
-      isOpenNewCategory: true
-    })
-
-  }
+      isOpenNewCategory: true,
+    });
+  };
   handleAddNewUnit = () => {
     this.setState({
-      isOpenNewUnit: true
-    })
-
-  }
+      isOpenNewUnit: true,
+    });
+  };
   createNewSupplier = async (data) => {
     try {
       let response = await this.props.createNewSupplierRedux(data);
       if (response && response.errCode !== 0) {
-        alert(response.errMessage)
-      }
-      else {
+        alert(response.errMessage);
+      } else {
         this.setState({
-          isOpenNewSupplier: false
-
-        })
-        emitter.emit('EVENT_CLEAR_MODAL_DATA', { 'id': 'your id' })
-
+          isOpenNewSupplier: false,
+        });
+        emitter.emit("EVENT_CLEAR_MODAL_DATA", { id: "your id" });
       }
-
     } catch (error) {
       console.log(error);
     }
-
-  }
+  };
   createNewCategory = async (data) => {
     try {
       let response = await createNewCategoryrService(data);
       if (response && response.errCode !== 0) {
-        alert(response.errMessage)
-      }
-      else {
+        alert(response.errMessage);
+      } else {
         this.setState({
-          isOpenNewCategory: false
-
-        })
-        emitter.emit('EVENT_CLEAR_MODAL_DATA', { 'id': 'your id' })
-
+          isOpenNewCategory: false,
+        });
+        emitter.emit("EVENT_CLEAR_MODAL_DATA", { id: "your id" });
       }
       console.log(response);
     } catch (error) {
       console.log(error);
     }
-
-  }
+  };
   createNewUnit = async (data) => {
-
     try {
       let response = await createNewUnitService(data);
       if (response && response.errCode !== 0) {
-        alert(response.errMessage)
-      }
-      else {
+        alert(response.errMessage);
+      } else {
         this.setState({
-          isOpenNewUnit: false
-
-        })
-        emitter.emit('EVENT_CLEAR_MODAL_DATA', { 'id': 'your id' })
-
+          isOpenNewUnit: false,
+        });
+        emitter.emit("EVENT_CLEAR_MODAL_DATA", { id: "your id" });
       }
       console.log(response);
     } catch (error) {
       console.log(error);
     }
-
-  }
+  };
 
   checkValideInput = () => {
     let isValid = true;
@@ -343,7 +380,6 @@ class ModelUpdateProduct extends Component {
       // "sale",
       //   "image",
       "quantity",
-      "description",
     ];
     for (let i = 0; i < arrInput.length; i++) {
       if (!this.state[arrInput[i]]) {
@@ -360,21 +396,40 @@ class ModelUpdateProduct extends Component {
     if (isValid == true) {
       //call apicreat modal
       this.props.editProduct(this.state);
-      console.log("check product", this.state)
+      console.log("check product", this.state);
     }
   };
   handleChangeSelectCategory = (selectedCategory) => {
     this.setState({ selectedCategory: selectedCategory });
-
   };
-
+  handleAddNewLocation = () => {
+    this.setState({
+      isOpenNewLocation: true,
+    });
+  };
+  createNewLocation = async (data) => {
+    try {
+      let response = await createNewLocationrService(data);
+      if (response && response.errCode !== 0) {
+        alert(response.errMessage);
+      } else {
+        this.setState({
+          isOpenNewLocation: false,
+        });
+        emitter.emit("EVENT_CLEAR_MODAL_DATA", { id: "your id" });
+      }
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   render() {
     return (
       <div>
-        <ModelNewSupplier
-          isOpen={this.state.isOpenNewSupplier}
-          toggleFromParent={this.toggleSupplierModal}
-          createNewSupplier={this.createNewSupplier}
+        <ModelNewLocation
+          isOpen={this.state.isOpenNewLocation}
+          toggleFromParent={this.toggleLocationModal}
+          createNewLocation={this.createNewLocation}
         />
         <ModelNewCategory
           isOpen={this.state.isOpenNewCategory}
@@ -400,7 +455,7 @@ class ModelUpdateProduct extends Component {
               this.toggle();
             }}
           >
-            Create a new product
+            Cập nhật hàng hóa
           </ModalHeader>
           <ModalBody>
             <div className="modal-supplier-body">
@@ -415,20 +470,21 @@ class ModelUpdateProduct extends Component {
                 ></input>
               </div>
               <div className="input-container">
-                <label >
+                <label>
                   Loại sản phẩm
-                  <i className="fas fa-plus" style={{ marginLeft: "10px" }} onClick={() => this.handleAddNewCategory()}></i>
+                  <i
+                    className="fas fa-plus"
+                    style={{ marginLeft: "10px" }}
+                    onClick={() => this.handleAddNewCategory()}
+                  ></i>
                 </label>
 
                 <Select
                   onChange={this.handleChangeSelectCategory}
                   value={this.state.selectedCategory}
-                  options={this.state.listCategoryState}>
-
-
-                </Select>
+                  options={this.state.listCategoryState}
+                ></Select>
               </div>
-
 
               <div className="input-container">
                 <label>Số lượng</label>
@@ -441,20 +497,20 @@ class ModelUpdateProduct extends Component {
                 ></input>
               </div>
               <div className="input-container">
-                <label >
-                  Nhà cung cấp
-                  <i className="fas fa-plus" style={{ marginLeft: "10px" }} onClick={() => this.handleAddNewSupplier()}></i>
+                <label>
+                  Kho
+                  <i
+                    className="fas fa-plus"
+                    style={{ marginLeft: "10px" }}
+                    onClick={() => this.handleAddNewLocation()}
+                  ></i>
                 </label>
 
                 <Select
-                  onChange={this.handleChangeSelectSupplier}
-
-                  value={this.state.selectedSupplier}
-                  options={this.state.listSupplierState}
-                >
-
-
-                </Select>
+                  onChange={this.handleChangeSelectLocation}
+                  value={this.state.selectedLocation}
+                  options={this.state.listLocationState}
+                ></Select>
               </div>
               <div className="input-container">
                 <label>Giá nhập</label>
@@ -467,18 +523,20 @@ class ModelUpdateProduct extends Component {
                 ></input>
               </div>
               <div className="input-container">
-                <label >
+                <label>
                   Đơn vị
-                  <i className="fas fa-plus" style={{ marginLeft: "10px" }} onClick={() => this.handleAddNewUnit()}></i>
+                  <i
+                    className="fas fa-plus"
+                    style={{ marginLeft: "10px" }}
+                    onClick={() => this.handleAddNewUnit()}
+                  ></i>
                 </label>
 
                 <Select
                   onChange={this.handleChangeSelectUnit}
                   value={this.state.selectedUnit}
-                  options={this.state.listUnitState}>
-
-
-                </Select>
+                  options={this.state.listUnitState}
+                ></Select>
               </div>
               <div className="input-container">
                 <label>Giá bán</label>
@@ -490,9 +548,7 @@ class ModelUpdateProduct extends Component {
                   value={this.state.salePrice}
                 ></input>
               </div>
-              <div className="input-container">
-
-              </div>
+              <div className="input-container"></div>
               <div className="input-container max-width-input">
                 <label>Mô tả</label>
                 <input
@@ -504,20 +560,26 @@ class ModelUpdateProduct extends Component {
                 ></input>
               </div>
               <div className="col-md-3">
-                <label htmlFor="inputImage" className="form-label">Hình ảnh</label>
-                <div className='preview-img-container'>
-                  <input id='previewImg' type="file" hidden
+                <label htmlFor="inputImage" className="form-label">
+                  Hình ảnh
+                </label>
+                <div className="preview-img-container">
+                  <input
+                    id="previewImg"
+                    type="file"
+                    hidden
                     onChange={(event) => this.handleOnchangeImage(event)}
                   />
-                  <label className='label-upload' htmlFor='previewImg'>Tải ảnh <i className='fas fa-upload'></i></label>
-                  <div className='preview-image' style={{ backgroundImage: `url(${this.state.previewImgUrl})` }}
-
-                  >
-
-                  </div>
+                  <label className="label-upload" htmlFor="previewImg">
+                    Tải ảnh <i className="fas fa-upload"></i>
+                  </label>
+                  <div
+                    className="preview-image"
+                    style={{
+                      backgroundImage: `url(${this.state.previewImgUrl})`,
+                    }}
+                  ></div>
                 </div>
-
-
               </div>
             </div>
           </ModalBody>
@@ -529,7 +591,7 @@ class ModelUpdateProduct extends Component {
                 this.handleUpdateProduct();
               }}
             >
-              Update
+              Lưu
             </Button>{" "}
             <Button
               color="secondary"
@@ -538,12 +600,10 @@ class ModelUpdateProduct extends Component {
                 this.toggle();
               }}
             >
-              Close
+              Đóng
             </Button>
           </ModalFooter>
-
         </Modal>
-
       </div>
     );
   }
@@ -551,7 +611,7 @@ class ModelUpdateProduct extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    listSuppliers: state.supplier.suppliers
+    listSuppliers: state.supplier.suppliers,
   };
 };
 

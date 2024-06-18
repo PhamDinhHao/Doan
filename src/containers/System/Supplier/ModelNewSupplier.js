@@ -71,6 +71,13 @@ class ModelNewSupplier extends Component {
         if (isValid == true) {
             //call apicreat modal
             this.props.createNewSupplier(this.state);
+            this.setState({
+                name: "",
+                phoneNumber: "",
+                address: "",
+                debtSupplier: "",
+                email: "",
+            })
 
         }
     }
@@ -88,7 +95,7 @@ class ModelNewSupplier extends Component {
                 size='lg'
                 centered>
                 <ModalHeader toggle={() => { this.toggle() }} >
-                    Create a new user
+                    Thêm nhà cung cấp
                 </ModalHeader>
                 <ModalBody>
                     <div className='modal-supplier-body'>
@@ -127,10 +134,10 @@ class ModelNewSupplier extends Component {
                 </ModalBody>
                 <ModalFooter>
                     <Button color="primary" className='px-3' onClick={() => { this.handleAddNewSupplier() }} >
-                        Add new
+                        Thêm mới
                     </Button>{' '}
                     <Button color="secondary" className='px-3' onClick={() => { this.toggle() }} >
-                        Close
+                        Đóng
                     </Button>
 
                 </ModalFooter>

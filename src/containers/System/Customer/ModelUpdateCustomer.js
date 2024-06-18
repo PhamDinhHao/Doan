@@ -105,7 +105,7 @@ class ModelUpdateCustomer extends Component {
             this.toggle();
           }}
         >
-          Create a new user
+          Cập nhật khách hàng
         </ModalHeader>
         <ModalBody>
           <div className="modal-supplier-body">
@@ -173,7 +173,7 @@ class ModelUpdateCustomer extends Component {
               this.handleUpdateCustomer();
             }}
           >
-            Update
+            Lưu
           </Button>{" "}
           <Button
             color="secondary"
@@ -182,7 +182,7 @@ class ModelUpdateCustomer extends Component {
               this.toggle();
             }}
           >
-            Close
+            Đóng
           </Button>
         </ModalFooter>
       </Modal>

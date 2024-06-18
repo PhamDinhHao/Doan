@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import { FormattedMessage } from "react-intl";
 import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
 import "./PurchaseNew.scss";
 import Autosuggest from "react-autosuggest";
 import * as actions from "../../../store/actions";
 import DatePicker from "../../../components/Input/DatePicker";
-// import InputSuggest from "../../../components/Input/InputSuggest";
+
 import ModelNewProduct from "../../System/Product/ModelNewProduct";
 import ModelNewSupplier from "../../System/Supplier/ModelNewSupplier";
 import { emitter } from "../../../utils/emitter";
@@ -15,6 +16,7 @@ class PurchaseNew extends Component {
     super(props);
     this.state = {
       supplierValue: "",
+      supplierId: null,
       supplierSuggestions: [],
       productValue: "",
       productSuggestions: [],
@@ -23,10 +25,26 @@ class PurchaseNew extends Component {
       selectedDate: new Date(),
       isOpenNewProduct: false,
       isOpenNewSupplier: false,
+      total: null,
+      selectedSupplierrId: null,
+      // record: null,
     };
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    // const { state } = this.props.location;
+    // if (state && state.record) {
+    //   const { record } = state;
+    //   this.setState({
+    //     record,
+    //     // Cập nhật state khác nếu cần thiết, ví dụ:
+    //     // supplierValue: record.supplierValue,
+    //     supplierId: record.supplierId,
+    //     products: record.products,
+    //     selectedDate: new Date(record.purchaseDate),
+    //   });
+    // }
+  }
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.supplierSuggestions !== this.props.supplierSuggestions) {
@@ -45,6 +63,10 @@ class PurchaseNew extends Component {
     this.setState({
       isOpenNewProduct: !this.state.isOpenNewProduct,
     });
+  };
+
+  handleReturnToPurchase = () => {
+    this.props.history.push("/system/purchase");
   };
 
   handleAddNewProduct = () => {
@@ -127,11 +149,21 @@ class PurchaseNew extends Component {
 
   renderProductSuggestion = (suggestion) => <div>{suggestion.productName}</div>;
 
-  onSupplierChange = (event, { newValue }) => {
-    this.setState({
-      supplierValue: newValue,
-    });
-    this.getSupplierSuggestions(newValue);
+  onSupplierChange = (event, { newValue, method }) => {
+    if (method === "type") {
+      this.setState({
+        supplierValue: newValue,
+      });
+      this.getSupplierSuggestions(newValue);
+    } else if (method === "click" || method === "enter") {
+      const selectedSupplier = this.state.supplierSuggestions.find(
+        (supplier) => supplier.name === newValue
+      );
+      this.setState({
+        supplierValue: newValue,
+        supplierId: selectedSupplier ? selectedSupplier.id : null,
+      });
+    }
   };
 
   onProductChange = (event, { newValue }) => {
@@ -149,8 +181,12 @@ class PurchaseNew extends Component {
     this.getProductSuggestions(value);
   };
 
-  onSuggestionsClearRequested = () => {
+  onSupplierSuggestionsClearRequested = () => {
     this.setState({ supplierSuggestions: [] });
+  };
+
+  onProductSuggestionsClearRequested = () => {
+    this.setState({ productSuggestions: [] });
   };
 
   onProductTableSuggestionSelected = (event, { suggestion }) => {
@@ -189,6 +225,7 @@ class PurchaseNew extends Component {
       const newProducts = [...products, newProduct];
       this.setState({ products: newProducts });
     }
+    this.setState({ productValue: "" });
   };
 
   onQuantityIncrease = (index) => {
@@ -252,6 +289,7 @@ class PurchaseNew extends Component {
     products.forEach((product) => {
       totalMoney += product.quantity * product.costPrice;
     });
+    this.state.total = totalMoney;
     return totalMoney;
   };
 
@@ -261,77 +299,95 @@ class PurchaseNew extends Component {
 
   savePurchaseAndDetails = async (selectedDate) => {
     try {
-      // Dispatch action để tạo purchase mới
-      await this.props.createNewPurchaseRedux({
-        purchaseDate: selectedDate,
-      });
+      const { products, selectedSupplierrId } = this.state;
+      if (products.length > 0 && selectedSupplierrId) {
+        // Dispatch action để tạo purchase mới
+        await this.props.createNewPurchaseRedux({
+          purchaseDate: selectedDate,
 
-      // Truy cập purchaseId từ props
-      const { purchaseId } = this.props;
-      console.log("id", purchaseId);
+          supplierId: this.state.selectedSupplierrId,
+          total: this.state.total,
+        });
 
-      await Promise.all(
-        this.state.products.map(async (product) => {
-          const {
-            id: productId,
-            name: productName,
-            quantity,
-            costPrice,
-            total,
-          } = product;
-          await this.props.createPurchaseDetailRedux({
-            purchaseId: purchaseId,
-            productId: productId,
-            productName: productName,
-            quantity: quantity,
-            costPrice: costPrice,
-            total: total,
-          });
-        })
-      );
+        // Truy cập purchaseId từ props
+        const { purchaseId } = this.props;
+        console.log("id", purchaseId);
 
-      console.log("Purchase and details saved successfully!");
+        await Promise.all(
+          this.state.products.map(async (product) => {
+            const {
+              id: productId,
+              name: productName,
+              quantity,
+              costPrice,
+              total,
+            } = product;
+            await this.props.createPurchaseDetailRedux({
+              purchaseId: purchaseId,
+              productId: productId,
+              productName: productName,
+              quantity: quantity,
+              costPrice: costPrice,
+              total: total,
+            });
+          })
+        );
+
+        console.log("Purchase and details saved successfully!");
+        this.props.history.push("/system/purchase");
+      } else {
+        alert("Thiếu thông tin nhà cung cấp hoặc chưa có sản phẩm");
+      }
     } catch (error) {
       console.error("Error saving purchase and details:", error);
     }
   };
 
+  onSuggestionSelected = (event, { suggestion }) => {
+    this.setState({
+      selectedSupplierrId: suggestion.id,
+    });
+  };
+
   render() {
     const {
       supplierValue,
+      supplierId,
       supplierSuggestions,
       productValue,
       productSuggestions,
-      products,
+      products = [],
       updatedproducts,
       selectedDate,
+      // record,
     } = this.state;
-    console.log("products", products);
+
     const supplierInputProps = {
-      placeholder: "Search supplier",
+      placeholder: "Tìm nhà cung cấp",
       value: supplierValue,
       onChange: this.onSupplierChange,
+      // onBlur: () => {
+      //   const selectedSupplier = this.state.supplierSuggestions.find(
+      //     (supplier) => supplier.name === this.state.supplierValue
+      //   );
+      //   this.setState({
+      //     supplierId: selectedSupplier ? selectedSupplier.id : null,
+      //   });
+      // },
     };
 
     const productInputProps = {
-      placeholder: "Search product",
+      placeholder: "Tìm sản phẩm",
       value: productValue,
       onChange: this.onProductChange,
     };
-    // console.log("Autosuggest props:", {
-    //   suggestions: supplierSuggestions,
-    //   onSuggestionsFetchRequested: this.onSuggestionsFetchRequested,
-    //   onSuggestionsClearRequested: this.onSuggestionsClearRequested,
-    //   getSuggestionValue: this.getSuggestionValue,
-    //   renderSuggestion: this.renderSuggestion,
-    //   inputProps: supplierInputProps,
-    // });
+
     return (
       <div class="cover-div">
         <div class="item-left">
           <div class="search-box">
             <div class="back-arrow">
-              <button>
+              <button onClick={() => this.handleReturnToPurchase()}>
                 <i class="fas fa-arrow-left"></i>
               </button>
             </div>
@@ -339,14 +395,16 @@ class PurchaseNew extends Component {
               <button>
                 <i class="fas fa-search icon"></i>
               </button>
-              {/* <input type="text" placeholder="Search product"></input> */}
+
               <div class="suggestion-container">
                 <Autosuggest
                   suggestions={productSuggestions}
                   onSuggestionsFetchRequested={
                     this.onProductSuggestionsFetchRequested
                   }
-                  onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+                  onSuggestionsClearRequested={
+                    this.onProductSuggestionsClearRequested
+                  }
                   getSuggestionValue={(suggestion) => suggestion.productName}
                   renderSuggestion={this.renderProductSuggestion}
                   inputProps={productInputProps}
@@ -365,10 +423,10 @@ class PurchaseNew extends Component {
                   <th></th>
                   <th>STT</th>
                   <th>Id</th>
-                  <th>Name</th>
-                  <th>Quantity</th>
-                  <th>Price</th>
-                  <th>Total</th>
+                  <th>Tên</th>
+                  <th>Số Lượng</th>
+                  <th>Giá Nhập</th>
+                  <th>Tổng</th>
                 </tr>
               </thead>
               <tbody>
@@ -396,7 +454,7 @@ class PurchaseNew extends Component {
                       >
                         -
                       </button>
-                      {/* <span className="quantity">{product.quantity}</span> */}
+
                       <input
                         type="number"
                         className="quantity-input"
@@ -448,7 +506,7 @@ class PurchaseNew extends Component {
           <div class="purchare-order">
             <div class="user-box">
               <div class="user-name">
-                <span>user</span>
+                <span></span>
               </div>
               <div class="datetime-picker">
                 <DatePicker
@@ -461,17 +519,20 @@ class PurchaseNew extends Component {
               <button>
                 <i class="fas fa-search icon"></i>
               </button>
-              {/* <input type="text" placeholder="Search supplier"></input> */}
+
               <div class="suggestion-container">
                 <Autosuggest
                   suggestions={supplierSuggestions}
                   onSuggestionsFetchRequested={
                     this.onSupplierSuggestionsFetchRequested
                   }
-                  onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+                  onSuggestionsClearRequested={
+                    this.onSupplierSuggestionsClearRequested
+                  }
                   getSuggestionValue={(suggestion) => suggestion.name}
                   renderSuggestion={this.renderSupplierSuggestion}
                   inputProps={supplierInputProps}
+                  onSuggestionSelected={this.onSuggestionSelected}
                 />
               </div>
               <button onClick={() => this.handleAddNewSupplier()}>
@@ -479,22 +540,22 @@ class PurchaseNew extends Component {
               </button>
             </div>
             <div class="quantity-box">
-              <span>quantity:</span>
+              <span>Tổng số lượng:</span>
               <span class="total-quantity">{this.getTotalQuantity()}</span>
             </div>
             <div class="money-box">
-              <span>total:</span>
+              <span>Tổng Tiền:</span>
               <span class="total-money">{this.getTotalMoney()}</span>
             </div>
-          </div>
-          <div class="wrap-button">
-            <a
-              href="#"
-              className="btn btn-success btn-font--medium"
-              onClick={() => this.savePurchaseAndDetails(selectedDate)}
-            >
-              <i class="fas fa-check"></i>
-            </a>
+            <div class="wrap-button">
+              <a
+                href="#"
+                className="btn btn-success btn-font--medium"
+                onClick={() => this.savePurchaseAndDetails(selectedDate)}
+              >
+                <i class="fas fa-check"></i>
+              </a>
+            </div>
           </div>
         </div>
       </div>

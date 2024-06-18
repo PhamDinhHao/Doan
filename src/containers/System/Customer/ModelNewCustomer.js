@@ -33,7 +33,7 @@ class ModelNewCustomer extends Component {
       });
     });
   }
-  componentDidMount() {}
+  componentDidMount() { }
   toggle = () => {
     this.props.toggleFromParent();
   };
@@ -68,6 +68,14 @@ class ModelNewCustomer extends Component {
     if (isValid == true) {
       //call apicreat modal
       this.props.createNewCustomer(this.state);
+      this.setState({
+        name: "",
+        phoneNumber: "",
+        address: "",
+        gender: "",
+        birthday: "",
+        debtCustomer: "",
+      });
     }
   };
 
@@ -87,7 +95,7 @@ class ModelNewCustomer extends Component {
             this.toggle();
           }}
         >
-          Create a new user
+          Thêm khách hàng
         </ModalHeader>
         <ModalBody>
           <div className="modal-supplier-body">
@@ -121,11 +129,14 @@ class ModelNewCustomer extends Component {
             </div>
             <div className="input-container">
               <label>Giới Tính</label>
-              <input
-                type="text"
-                onChange={(event) => this.handleOnChangeInput(event, "gender")}
+              <select
                 value={this.state.gender}
-              ></input>
+                onChange={(event) => this.handleOnChangeInput(event, "gender")}
+              >
+                <option value="">Chọn giới tính</option>
+                <option value="Nam">Nam</option>
+                <option value="Nữ">Nữ</option>
+              </select>
             </div>
             <div className="input-container">
               <label>Ngày Sinh</label>
@@ -155,7 +166,7 @@ class ModelNewCustomer extends Component {
               this.handleAddNewCustomer();
             }}
           >
-            Add new
+            Thêm mới
           </Button>{" "}
           <Button
             color="secondary"
@@ -164,7 +175,7 @@ class ModelNewCustomer extends Component {
               this.toggle();
             }}
           >
-            Close
+            Đóng
           </Button>
         </ModalFooter>
       </Modal>

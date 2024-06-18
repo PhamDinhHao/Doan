@@ -15,10 +15,16 @@ const deleteUserService = (userid) => {
         }
     })
 }
+const checkEmail = (inputdata) => {
+    return axios.post('/api/check-email', { email: inputdata });
+}
 const editUserService = (inputdata) => {
     return axios.put('/api/edit-user', inputdata);
+}
+const editUserServicePassword = (inputdata) => {
+    return axios.put('/api/edit-user-password', inputdata);
 }
 const getAllCodeService = (inputdata) => {
     return axios.get(`/api/allcode?type=${inputdata}`)
 }
-export { handleLoginAPI, getAllUser, createNewUserService, deleteUserService, editUserService, getAllCodeService }
+export { handleLoginAPI, getAllUser, createNewUserService, deleteUserService, editUserService, getAllCodeService, editUserServicePassword, checkEmail }
